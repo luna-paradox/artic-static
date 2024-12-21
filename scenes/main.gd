@@ -63,6 +63,7 @@ var available_static = 0
 
 # ---- OTHER STATS ----
 @export var STATIC_CONSUMPTION_RATE = 150
+@export var TURBO_BOOST_ENERGY_RATE = 200
 @export var CRUSH_DEPTH = 5800
 var current_depth = 5550
 
@@ -117,6 +118,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	camera.global_position = player.global_position
+	
 	if pause:
 		return
 	
@@ -130,6 +132,14 @@ func _process(delta: float) -> void:
 	
 	crush_by_depth_audio(delta)
 	
+	# TURBO BOOST PRICE
+	if player.is_boosting:
+		var speed = player.velocity.length()
+		var speed_index = speed / player.MAX_SPEED
+		# Reverse Tagent growrth to energy usage vs speed percentage
+		var speed_modifier = 0.7 * atan(rad_to_deg(7 * speed_index))
+		
+		update_energy(-delta * TURBO_BOOST_ENERGY_RATE * speed_modifier)
 	
 	#INTERACT WITH STATIC NODES
 	if Input.is_action_pressed("interact") and static_nodes_in_range.size() > 0:
@@ -141,6 +151,7 @@ func _process(delta: float) -> void:
 		update_collecting_static(false)
 	elif static_nodes_in_range.size() == 0:
 		update_collecting_static(false)
+
 
 func _input(event: InputEvent) -> void:
 	# DEBUG 

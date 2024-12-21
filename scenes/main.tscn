@@ -15778,6 +15778,8 @@ level_3_color = Color(0.376471, 1, 1, 1)
 level_1_min = 0.0
 level_2_min = 0.0
 use_after_image = false
+tween_on_fill = false
+tween_on_deplete = false
 
 [node name="progress_bar" parent="ui_exploration/top_left/energy_bar" index="2"]
 color = Color(0.376471, 1, 1, 1)
@@ -16408,7 +16410,7 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
-offset_top = -73.0
+offset_top = -103.0
 offset_right = 227.0
 offset_bottom = -8.0
 grow_vertical = 0
@@ -16420,14 +16422,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.3976, 0.704793, 0.71, 0.513726)
+color = Color(0.180267, 0.25652, 0.257813, 1)
 
 [node name="more_hp_btn" type="Button" parent="DEBUG_UI/container"]
 layout_mode = 0
 offset_left = 7.0
-offset_top = 8.0
+offset_top = 31.0
 offset_right = 46.0
-offset_bottom = 31.0
+offset_bottom = 54.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
 theme_override_font_sizes/font_size = 12
@@ -16436,9 +16438,9 @@ text = "+HP"
 [node name="less_hp_btn" type="Button" parent="DEBUG_UI/container"]
 layout_mode = 0
 offset_left = 6.0
-offset_top = 36.0
+offset_top = 59.0
 offset_right = 45.0
-offset_bottom = 59.0
+offset_bottom = 82.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
 theme_override_font_sizes/font_size = 12
@@ -16447,9 +16449,9 @@ text = "-HP"
 [node name="more_energy_btn" type="Button" parent="DEBUG_UI/container"]
 layout_mode = 0
 offset_left = 51.0
-offset_top = 8.0
+offset_top = 31.0
 offset_right = 90.0
-offset_bottom = 31.0
+offset_bottom = 54.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
 theme_override_font_sizes/font_size = 12
@@ -16458,9 +16460,9 @@ text = "+EN"
 [node name="less_energy_btn" type="Button" parent="DEBUG_UI/container"]
 layout_mode = 0
 offset_left = 51.0
-offset_top = 37.0
+offset_top = 60.0
 offset_right = 90.0
-offset_bottom = 60.0
+offset_bottom = 83.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
 theme_override_font_sizes/font_size = 12
@@ -16469,9 +16471,9 @@ text = "-EN"
 [node name="more_static_btn" type="Button" parent="DEBUG_UI/container"]
 layout_mode = 0
 offset_left = 96.0
-offset_top = 8.0
+offset_top = 31.0
 offset_right = 135.0
-offset_bottom = 31.0
+offset_bottom = 54.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
 theme_override_font_sizes/font_size = 12
@@ -16480,9 +16482,9 @@ text = "+ST"
 [node name="less_static_btn" type="Button" parent="DEBUG_UI/container"]
 layout_mode = 0
 offset_left = 97.0
-offset_top = 37.0
+offset_top = 60.0
 offset_right = 136.0
-offset_bottom = 60.0
+offset_bottom = 83.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
 theme_override_font_sizes/font_size = 12
@@ -16496,6 +16498,42 @@ offset_right = 214.0
 offset_bottom = 32.0
 theme_override_fonts/font = ExtResource("25_gbrq3")
 text = "99999.9"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="hp_label" type="Label" parent="DEBUG_UI/container"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 12.0
+offset_right = 46.0
+offset_bottom = 24.0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 10
+text = "9999"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="energy_label" type="Label" parent="DEBUG_UI/container"]
+layout_mode = 0
+offset_left = 52.0
+offset_top = 12.0
+offset_right = 91.0
+offset_bottom = 24.0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 10
+text = "9999"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="static_label" type="Label" parent="DEBUG_UI/container"]
+layout_mode = 0
+offset_left = 96.0
+offset_top = 12.0
+offset_right = 135.0
+offset_bottom = 24.0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 10
+text = "9999"
 horizontal_alignment = 1
 vertical_alignment = 1
 

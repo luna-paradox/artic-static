@@ -1,20 +1,24 @@
 extends CanvasLayer
 
-var main_controller: MainController
-
 @onready var speedometer = $container/speedometer
+@onready var hp_label = $container/hp_label
+@onready var energy_label = $container/energy_label
+@onready var static_label = $container/static_label
 
 @export var DELTA_HP: int = 20
 @export var DELTA_ENERGY: int = 200
 @export var DELTA_STATIC: int = 400
 
-@onready var player: CharacterBody2D = $"../player"
+@onready var main_controller: MainController = $".."
+@onready var player: Player = $"../player"
 
-func _ready() -> void:
-	main_controller = get_parent()
 
 func _process(_delta: float) -> void:
 	update_speedometer()
+	if main_controller:
+		hp_label.text = str(main_controller.current_hp)
+		energy_label.text = str(main_controller.current_energy)
+		static_label.text = str(main_controller.player_current_static)
 
 # ---- HP ----
 func _on_more_hp_btn_pressed() -> void:
