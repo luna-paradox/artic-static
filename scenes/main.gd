@@ -11,6 +11,7 @@ class_name MainController
 @onready var cage_sprite_top = $room/BASE/cage_front 
 # UI
 @onready var hp_bar = $ui_exploration/top_left/hp_bar
+@onready var energy_bar = $ui_exploration/top_left/energy_bar
 @onready var static_bar = $ui_exploration/top_right/static_bar
 @onready var game_over_overlay = $game_over_overlay
 @onready var depth_gauge = $ui_exploration/top_center/depth_gauge
@@ -51,6 +52,9 @@ class_name MainController
 # ---- CURRENCY STATS ----
 @export var MAX_HP = 200
 var current_hp = 200
+
+@export var MAX_ENERGY = 1000
+var current_energy = 1000
 
 @export var MAX_PLAYER_STATIC = 5000.0
 var player_current_static = 0.0
@@ -104,11 +108,12 @@ func _ready() -> void:
 	
 	hp_bar.init(MAX_HP)
 	static_bar.init(MAX_PLAYER_STATIC, player_current_static)
+	energy_bar.init(MAX_ENERGY)
 	depth_max_ui.update_depth(CRUSH_DEPTH)
 	
 	third_eye.mode = 0
 	restart()
-	show_instructions()
+	#show_instructions()
 
 func _process(delta: float) -> void:
 	camera.global_position = player.global_position
@@ -138,14 +143,14 @@ func _process(delta: float) -> void:
 		update_collecting_static(false)
 
 func _input(event: InputEvent) -> void:
-	#if event.is_action_pressed("exit_debug"):
-		#get_tree().quit()
-		#return
-	##
-	#if event.is_action_pressed("1_debug"):
-		#progress(third_eye.mode + 1)
-	#if event.is_action_pressed("2_debug"):
-		#update_static(500)
+	if event.is_action_pressed("exit_debug"):
+		get_tree().quit()
+		return
+	#
+	if event.is_action_pressed("1_debug"):
+		progress(third_eye.mode + 1)
+	if event.is_action_pressed("2_debug"):
+		update_static(500)
 	
 	if instructions_ui.visible and event.is_action_pressed("interact"):
 		hide_instructions()
@@ -199,6 +204,20 @@ func update_hp(delta_hp: int) -> void:
 		
 		game_over()
 		return
+
+func update_energy(delta_energy: int) -> void:
+	#print('UPDATE ENERGY: ' + str(delta_energy))
+	
+	#UPDATE DATA
+	current_energy += delta_energy
+	
+	if current_energy > MAX_ENERGY:
+		current_energy = MAX_ENERGY
+	elif current_energy < 0:
+		current_energy = 0
+	
+	#UPDATE UI
+	energy_bar.update_bar(current_energy)
 
 func update_static(delta_static: float) -> void:
 	#print('UPDATE STATIC: ' + str(delta_static))
