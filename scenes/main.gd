@@ -1,8 +1,6 @@
 extends Node
 class_name MainController
 
-# Test for dev
-
 # CAMERA
 @onready var camera = $camera
 # PLAYER
