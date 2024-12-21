@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="SS2D_Material_Shape" load_steps=10 format=3 uid="uid://ekn08wpjmous"]
+
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/edge_material_metadata.gd" id="1_dib2m"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/edge_material.gd" id="2_hctem"]
+[ext_resource type="Texture2D" uid="uid://cnpphrq0jnwpp" path="res://assets/visual/TILE_cave_border_02.5.png" id="3_srx6y"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/normal_range.gd" id="4_pgxkj"]
+[ext_resource type="Texture2D" uid="uid://d2qo2wbie1s1s" path="res://assets/visual/TILE_cave_border_fill_0.png" id="5_2xl07"]
+[ext_resource type="Script" path="res://addons/rmsmartshape/materials/shape_material.gd" id="6_r6hvr"]
+
+[sub_resource type="Resource" id="Resource_lm25c"]
+script = ExtResource("2_hctem")
+textures = Array[Texture2D]([ExtResource("3_srx6y")])
+textures_corner_outer = Array[Texture2D]([])
+textures_corner_inner = Array[Texture2D]([])
+textures_taper_left = Array[Texture2D]([])
+textures_taper_right = Array[Texture2D]([])
+textures_taper_corner_left = Array[Texture2D]([])
+textures_taper_corner_right = Array[Texture2D]([])
+randomize_texture = false
+use_corner_texture = true
+use_taper_texture = true
+fit_mode = 0
+
+[sub_resource type="Resource" id="Resource_lws2k"]
+script = ExtResource("4_pgxkj")
+begin = 0.0
+distance = 360.0
+edgeRendering = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Resource_thihw"]
+script = ExtResource("1_dib2m")
+edge_material = SubResource("Resource_lm25c")
+normal_range = SubResource("Resource_lws2k")
+weld = true
+taper_sharp_corners = false
+render = true
+z_index = 0
+z_as_relative = true
+offset = -0.7
+
+[resource]
+script = ExtResource("6_r6hvr")
+_edge_meta_materials = Array[ExtResource("1_dib2m")]([SubResource("Resource_thihw")])
+fill_textures = Array[Texture2D]([ExtResource("5_2xl07")])
+fill_texture_z_index = -10
+fill_texture_show_behind_parent = false
+fill_texture_scale = 1.0
+fill_texture_absolute_position = false
+fill_texture_absolute_rotation = false
+fill_texture_offset = Vector2(0, 0)
+fill_texture_angle_offset = 0.0
+fill_mesh_offset = 0.0
+render_offset = 0.0

@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://efrsw7gfolmv"]
+
+[ext_resource type="Texture2D" uid="uid://bogu7wqubpb6k" path="res://assets/visual/SPR_lamp_0.0.png" id="1_78ojq"]
+[ext_resource type="Script" path="res://scenes/homebase_lamp.gd" id="1_k1t28"]
+
+[sub_resource type="Gradient" id="Gradient_6112w"]
+offsets = PackedFloat32Array(0, 0.41791, 0.746269, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.817164, 0.817164, 0.817164, 1, 0.639064, 0.639064, 0.639064, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_yg4f6"]
+gradient = SubResource("Gradient_6112w")
+width = 2000
+height = 2000
+fill = 1
+fill_from = Vector2(0.495726, 0.521368)
+fill_to = Vector2(0.192308, 0.837607)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_4rgdk"]
+polygon = PackedVector2Array(-18, 14, 12, 14, 29, 21, 50, 29, 23, 5, -27, 5, -57, 30, -33, 21)
+
+[node name="lamp" type="Node2D"]
+script = ExtResource("1_k1t28")
+
+[node name="sprite" type="Sprite2D" parent="."]
+rotation = -0.374495
+texture = ExtResource("1_78ojq")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+visibility_layer = 3
+rotation = 2.35619
+range_item_cull_mask = 3
+shadow_enabled = true
+shadow_item_cull_mask = 2
+texture = SubResource("GradientTexture2D_yg4f6")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="."]
+position = Vector2(2, -18)
+occluder = SubResource("OccluderPolygon2D_4rgdk")
+occluder_light_mask = 2

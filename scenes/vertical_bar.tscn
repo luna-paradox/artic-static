@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3 uid="uid://ewisv2vb0r16"]
+
+[ext_resource type="Script" path="res://scenes/vertical_bar.gd" id="1_f1ire"]
+
+[node name="vertical_bar" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 15.0
+offset_bottom = 200.0
+script = ExtResource("1_f1ire")
+background_color = Color(0.179688, 0.179688, 0.179688, 1)
+
+[node name="bg" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.117188, 0.117188, 0.117188, 1)
+
+[node name="after_image_bar" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 200.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1, -1)
+color = Color(1, 0.278431, 0.278431, 1)
+
+[node name="progress_bar" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 200.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1, -1)
+color = Color(0.305387, 0.56, 0.2128, 1)
