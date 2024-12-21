@@ -143,43 +143,59 @@ func _process(delta: float) -> void:
 		update_collecting_static(false)
 
 func _input(event: InputEvent) -> void:
+	# DEBUG 
 	if event.is_action_pressed("exit_debug"):
 		get_tree().quit()
 		return
-	#
+	
 	if event.is_action_pressed("1_debug"):
 		progress(third_eye.mode + 1)
+		return
 	if event.is_action_pressed("2_debug"):
 		update_static(500)
-	
-	if instructions_ui.visible and event.is_action_pressed("interact"):
-		hide_instructions()
-		return
-	if instructions_ui.visible and event.is_action_pressed("E_action"):
-		hide_instructions()
-		return
-	if instructions_ui.visible and event.is_action_pressed("escape"):
-		hide_instructions()
 		return
 	
-	if event.is_action_pressed("interact") and dock_menu.visible:
-		close_dock_menu()
-	elif event.is_action_pressed("escape") and dock_menu.visible:
-		close_dock_menu()
-	elif event.is_action_pressed("interact") and can_dock:
-		start_dock_menu()
+	# WHILE INSTRUCTIONS ARE VISIBLE
+	if instructions_ui.visible:
+		if event.is_action_pressed("interact"):
+			hide_instructions()
+		if event.is_action_pressed("E_action"):
+			hide_instructions()
+		if event.is_action_pressed("escape"):
+			hide_instructions()
+		if event.is_action_pressed("space_action"):
+			hide_instructions()
+		return
 	
+	# WHILE DOCK MENU IS VISIBLE
+	if dock_menu.visible:
+		if event.is_action_pressed("interact"):
+			close_dock_menu()
+		elif event.is_action_pressed("escape"):
+			close_dock_menu()
+		return
+	
+	# PAUSE MEANS NOT MOVING AROUND
 	if pause:
+		return
+	
+	# WHILE MOVING AROUND
+	if event.is_action_pressed("interact") and can_dock:
+		start_dock_menu()
 		return
 	
 	if event.is_action_pressed("E_action"):
 		sonar()
+		return
 	
+	# PROGRESS
 	if can_interact_with_statue_p2 and event.is_action_pressed("interact") and third_eye.mode == 2:
 		progress(3)
+		return
 	
 	if can_interact_with_statue_p4 and event.is_action_pressed("interact") and third_eye.mode == 4:
 		progress(5)
+		return
 
 
 # ---- UPDATE STATS ----
