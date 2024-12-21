@@ -15457,7 +15457,7 @@ visible = false
 polygon = PackedVector2Array(-201.5, -763, -206, 27, -183, 45, -151, 53, 76, 52, 100, 42, 116, 28, 116.5, -763)
 
 [node name="cage_back" type="Sprite2D" parent="room/BASE"]
-self_modulate = Color(0.371094, 0.366745, 0.366745, 1)
+light_mask = 33
 position = Vector2(-33, -1445)
 texture = ExtResource("14_xkv4r")
 
