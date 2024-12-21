@@ -188,6 +188,10 @@ func _input(event: InputEvent) -> void:
 		sonar()
 		return
 	
+	if event.is_action_pressed("space_action"):
+		
+		return
+	
 	# PROGRESS
 	if can_interact_with_statue_p2 and event.is_action_pressed("interact") and third_eye.mode == 2:
 		progress(3)
@@ -293,6 +297,10 @@ func game_over() -> void:
 func _on_restart_btn_pressed() -> void:
 	restart()
 
+func reset_all_static_nodes() -> void:
+	for node in get_all_static_nodes($room):
+		node.reset()
+
 
 # ---- STATIC NODES ----
 var static_nodes_in_range: Array[Node2D] = []
@@ -306,8 +314,8 @@ func _on_player_interaction_area_exited(area: Area2D) -> void:
 	if static_nodes_in_range.size() <= 0:
 		player_alert_0.hide()
 
-# ---- PAUSE GAME ----
 
+# ---- PAUSE GAME ----
 func update_pause(new_state: bool) -> void:
 	pause = new_state
 	player.update_pause(new_state)
@@ -396,7 +404,6 @@ func _on_upgrade_depth_button_pressed() -> void:
 	
 	var can_buy_depth = CRUSH_DEPTH_UPGRADE >= available_static
 	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
-	
 
 
 # ---- CRUSHING ----
@@ -426,6 +433,38 @@ func crush_by_depth_audio(delta: float) -> void:
 
 
 # ---- PROGRESSION ----
+func progress(new_mode: int) -> void:
+	third_eye.mode = new_mode
+	
+	if new_mode == 1:
+		enable_third_eye()
+		shop_third_eye_ui.hide()
+	elif new_mode == 2:
+		$progress/point_1_area_2d.queue_free()
+		activate_area_1()
+		follow_the_eye_ui.show_message()
+		$progress/eye_point_1.hide()
+	elif new_mode == 3:
+		secret_success_sound.play()
+		follow_the_eye_ui.show_message()
+		$progress/eye_point_3.show()
+		update_static(3000)
+	elif new_mode == 4:
+		$progress/point_3_area_2d.queue_free()
+		activate_area_2()
+		follow_the_eye_ui.show_message()
+		$progress/eye_point_3.hide()
+	elif new_mode == 5:
+		secret_success_sound.play()
+		follow_the_eye_ui.show_message()
+		$progress/eye_point_5.show()
+		update_static(3500)
+	elif new_mode == 6:
+		$progress/point_5_area_2d.queue_free()
+		activate_area_3()
+		follow_the_eye_ui.show_message()
+		$progress/eye_point_5.hide()
+
 
 # MODE 0
 func _on_get_eye_button_pressed() -> void:
@@ -482,7 +521,6 @@ func activate_area_2() -> void:
 # MODE 4
 var can_interact_with_statue_p4 = false
 
-
 # MODE 5
 func _on_point_5_area_2d_area_entered(area: Area2D) -> void:
 	if area.name == "player_area_2D" and third_eye.mode == 5:
@@ -493,28 +531,13 @@ func activate_area_3() -> void:
 	area_3_door.queue_free()
 	area_3.show()
 
+# MODE 6
+func _on_final_sphere_area_2d_area_entered(_area: Area2D) -> void:
+	update_pause(true)
+	$ending_screen.show()
 
 
-
-func get_all_static_nodes(parent: Node) -> Array:
-	var matching_nodes = []
-	
-	# CHECK CURRENT NODE
-	if parent.has_meta('type') and parent.get_meta('type') == 'STATIC_NODE':
-		matching_nodes.append(parent)
-	
-	# CHECK CHILDREN RECURSIVE
-	for child in parent.get_children():
-# 		Ensure the child is a Node (in case of odd node types)
-		if child is Node: 
-			matching_nodes += get_all_static_nodes(child)
-	
-	return matching_nodes
-
-func reset_all_static_nodes() -> void:
-	for node in get_all_static_nodes($room):
-		node.reset()
-
+# ---- SONNAR ----
 func get_nearest_static_node() -> Node2D:
 	var nearest_node: Node2D = null
 	var shorteest_distance: float = 0.0
@@ -540,10 +563,7 @@ func sonar():
 		player.activate_sonar(nearest_static_node)
 
 
-func _on_open_instructions_btn_pressed() -> void:
-	show_instructions()
-
-
+# ---- INSTRUCTIONS ----
 func show_instructions():
 	instructions_ui.show()
 	update_pause(true)
@@ -551,41 +571,23 @@ func show_instructions():
 func hide_instructions():
 	instructions_ui.hide()
 	update_pause(false)
+
+func _on_open_instructions_btn_pressed() -> void:
+	show_instructions()
+
+
+# ---- TOOLS ----
+func get_all_static_nodes(parent: Node) -> Array:
+	var matching_nodes = []
 	
-
-
-func _on_final_sphere_area_2d_area_entered(_area: Area2D) -> void:
-	update_pause(true)
-	$ending_screen.show()
-
-func progress(new_mode: int) -> void:
-	third_eye.mode = new_mode
+	# CHECK CURRENT NODE
+	if parent.has_meta('type') and parent.get_meta('type') == 'STATIC_NODE':
+		matching_nodes.append(parent)
 	
-	if new_mode == 1:
-		enable_third_eye()
-		shop_third_eye_ui.hide()
-	elif new_mode == 2:
-		$progress/point_1_area_2d.queue_free()
-		activate_area_1()
-		follow_the_eye_ui.show_message()
-		$progress/eye_point_1.hide()
-	elif new_mode == 3:
-		secret_success_sound.play()
-		follow_the_eye_ui.show_message()
-		$progress/eye_point_3.show()
-		update_static(3000)
-	elif new_mode == 4:
-		$progress/point_3_area_2d.queue_free()
-		activate_area_2()
-		follow_the_eye_ui.show_message()
-		$progress/eye_point_3.hide()
-	elif new_mode == 5:
-		secret_success_sound.play()
-		follow_the_eye_ui.show_message()
-		$progress/eye_point_5.show()
-		update_static(3500)
-	elif new_mode == 6:
-		$progress/point_5_area_2d.queue_free()
-		activate_area_3()
-		follow_the_eye_ui.show_message()
-		$progress/eye_point_5.hide()
+	# CHECK CHILDREN RECURSIVE
+	for child in parent.get_children():
+# 		Ensure the child is a Node (in case of odd node types)
+		if child is Node: 
+			matching_nodes += get_all_static_nodes(child)
+	
+	return matching_nodes
