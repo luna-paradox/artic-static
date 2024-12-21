@@ -387,6 +387,7 @@ func start_dock_menu() -> void:
 	
 	# REPAIR SUBMARINE
 	update_hp(MAX_HP)
+	update_energy(MAX_ENERGY)
 	
 	# RESTART ALL STATIC NODES
 	reset_all_static_nodes()
