@@ -1,4 +1,4 @@
-[gd_scene load_steps=2175 format=3 uid="uid://chovb3krt6q56"]
+[gd_scene load_steps=2178 format=3 uid="uid://chovb3krt6q56"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_nuh7j"]
 [ext_resource type="AudioStream" uid="uid://cjjlq52c5q6oh" path="res://assets/audio/large-underwater-explosion-190270-TRIM.ogg" id="2_shk0a"]
@@ -48,6 +48,7 @@
 [ext_resource type="Texture2D" uid="uid://dxju2yemdl8gr" path="res://assets/visual/SPR_third_eye_esclera_0.0.png" id="35_nf50o"]
 [ext_resource type="Texture2D" uid="uid://drw2usl3sqw4i" path="res://assets/visual/SPR_third_eye_pupil_0.0.png" id="36_tgba7"]
 [ext_resource type="Texture2D" uid="uid://blqqdo0sw5er8" path="res://assets/visual/SPR_third_eye_front_0.0.png" id="37_8guw8"]
+[ext_resource type="Script" path="res://scenes/diegetic_ui.gd" id="39_yt8q6"]
 [ext_resource type="Texture2D" uid="uid://dnd85u4jb0mrl" path="res://assets/visual/SPR_third_eye_0.0.png" id="42_ia0bw"]
 [ext_resource type="Script" path="res://scenes/follow_the_eye.gd" id="44_o375y"]
 [ext_resource type="Texture2D" uid="uid://diiy7damaqey7" path="res://assets/visual/IMG_instructions_0.3.png" id="51_inuak"]
@@ -14831,6 +14832,18 @@ size = Vector2(23, 30)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_estw5"]
 size = Vector2(14.8198, 42.6078)
 
+[sub_resource type="Gradient" id="Gradient_0qtou"]
+offsets = PackedFloat32Array(0, 0.238095, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.575397, 0.575397, 0.575397, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_7gql4"]
+gradient = SubResource("Gradient_0qtou")
+width = 55
+height = 55
+fill = 1
+fill_from = Vector2(0.504274, 0.495726)
+fill_to = Vector2(0.209402, 0.807692)
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6atqe"]
 shader = ExtResource("13_02jgh")
 shader_parameter/amount = 40.0
@@ -15637,6 +15650,7 @@ script = ExtResource("5_ygof4")
 metadata/_edit_group_ = true
 
 [node name="bg" type="Sprite2D" parent="camera"]
+light_mask = 33
 z_index = -20
 material = SubResource("CanvasItemMaterial_d51sn")
 texture = ExtResource("3_n01ow")
@@ -15653,24 +15667,29 @@ material = SubResource("CanvasItemMaterial_sla7e")
 texture = ExtResource("32_4qck4")
 
 [node name="player" type="CharacterBody2D" parent="."]
-position = Vector2(-1150, -389)
+position = Vector2(563, 440)
 motion_mode = 1
 script = ExtResource("3_fuboh")
 metadata/_edit_group_ = true
 
-[node name="collider" type="CollisionPolygon2D" parent="player"]
-position = Vector2(-0.5, 0)
-polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
+[node name="audio" type="Node" parent="player"]
+
+[node name="motor_sound" type="AudioStreamPlayer" parent="player/audio"]
+stream = ExtResource("13_t1jpn")
+parameters/looping = true
+
+[node name="damage_sound" type="AudioStreamPlayer" parent="player/audio"]
+stream = ExtResource("14_2eb2l")
 
 [node name="sprite" type="Sprite2D" parent="player"]
 material = SubResource("CanvasItemMaterial_bj2y8")
 texture = ExtResource("22_o4k7e")
 
 [node name="light_origin" type="Node2D" parent="player"]
+scale = Vector2(1, 1)
 
 [node name="light_container" type="Node2D" parent="player"]
 position = Vector2(73, -12)
-rotation = -0.0577723
 script = ExtResource("23_yan1n")
 
 [node name="lamp_sprinte" type="Sprite2D" parent="player/light_container"]
@@ -15706,48 +15725,83 @@ material = SubResource("CanvasItemMaterial_6tjjh")
 position = Vector2(42, -67)
 texture = ExtResource("12_q8n8v")
 
-[node name="audio" type="Node" parent="player"]
+[node name="collider" type="CollisionPolygon2D" parent="player"]
+visible = false
+position = Vector2(-0.5, 0)
+polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
 
-[node name="motor_sound" type="AudioStreamPlayer" parent="player/audio"]
-stream = ExtResource("13_t1jpn")
-parameters/looping = true
+[node name="areas_2d" type="Node2D" parent="player"]
+visible = false
 
-[node name="damage_sound" type="AudioStreamPlayer" parent="player/audio"]
-stream = ExtResource("14_2eb2l")
-
-[node name="interaction_area_2d" type="Area2D" parent="player"]
+[node name="interaction_area_2d" type="Area2D" parent="player/areas_2d"]
+visible = false
 position = Vector2(97, 23)
 collision_layer = 2
 collision_mask = 2
 
-[node name="collider" type="CollisionShape2D" parent="player/interaction_area_2d"]
+[node name="collider" type="CollisionShape2D" parent="player/areas_2d/interaction_area_2d"]
 shape = SubResource("RectangleShape2D_3vd2s")
 
-[node name="interaction_area_2d_others" type="Area2D" parent="player"]
+[node name="interaction_area_2d_others" type="Area2D" parent="player/areas_2d"]
+visible = false
 position = Vector2(97, 23)
 collision_layer = 32
 collision_mask = 32
 
-[node name="collider" type="CollisionShape2D" parent="player/interaction_area_2d_others"]
+[node name="collider" type="CollisionShape2D" parent="player/areas_2d/interaction_area_2d_others"]
 shape = SubResource("RectangleShape2D_3vd2s")
 
-[node name="player_cage_interaction_area_2d" type="Area2D" parent="player"]
+[node name="player_cage_interaction_area_2d" type="Area2D" parent="player/areas_2d"]
 visible = false
 collision_layer = 8
 collision_mask = 8
 
-[node name="collider" type="CollisionShape2D" parent="player/player_cage_interaction_area_2d"]
+[node name="collider" type="CollisionShape2D" parent="player/areas_2d/player_cage_interaction_area_2d"]
 position = Vector2(2.59009, 6.30389)
 shape = SubResource("RectangleShape2D_estw5")
 
-[node name="player_area_2D" type="Area2D" parent="player"]
+[node name="player_area_2D" type="Area2D" parent="player/areas_2d"]
 visible = false
 collision_layer = 532
 collision_mask = 532
 
-[node name="collider" type="CollisionPolygon2D" parent="player/player_area_2D"]
+[node name="collider" type="CollisionPolygon2D" parent="player/areas_2d/player_area_2D"]
 position = Vector2(-0.5, 0)
 polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
+
+[node name="diegetic_ui" type="Node2D" parent="player"]
+script = ExtResource("39_yt8q6")
+
+[node name="energy_light" type="Node2D" parent="player/diegetic_ui"]
+position = Vector2(-21, -30)
+
+[node name="light" type="PointLight2D" parent="player/diegetic_ui/energy_light"]
+position = Vector2(0, -6)
+color = Color(0, 0.851563, 0.791687, 1)
+energy = 16.0
+range_item_cull_mask = 32
+texture = SubResource("GradientTexture2D_7gql4")
+
+[node name="fake_light_source" type="Polygon2D" parent="player/diegetic_ui/energy_light"]
+light_mask = 32
+color = Color(1, 1, 1, 0.705882)
+polygon = PackedVector2Array(-4, -6, -2, -5, 2, -5, 4, -6, 4, -8, 1, -10, -1, -10, -4, -8)
+
+[node name="turbo_light" type="Node2D" parent="player/diegetic_ui"]
+position = Vector2(13, -31)
+
+[node name="light" type="PointLight2D" parent="player/diegetic_ui/turbo_light"]
+position = Vector2(0, -7)
+color = Color(0.851563, 0, 0.838257, 1)
+energy = 16.0
+range_item_cull_mask = 32
+texture = SubResource("GradientTexture2D_7gql4")
+
+[node name="fake_light_source" type="Polygon2D" parent="player/diegetic_ui/turbo_light"]
+light_mask = 32
+position = Vector2(0, -1)
+color = Color(1, 1, 1, 0.705882)
+polygon = PackedVector2Array(-4, -6, -2, -5, 2, -5, 4, -6, 4, -8, 1, -10, -1, -10, -4, -8)
 
 [node name="global_mod" type="CanvasModulate" parent="."]
 color = Color(0.355469, 0.355469, 0.355469, 1)
@@ -16402,6 +16456,7 @@ text = "THE
 END"
 
 [node name="DEBUG_UI" type="CanvasLayer" parent="."]
+visible = false
 script = ExtResource("52_uh1u6")
 
 [node name="container" type="Control" parent="DEBUG_UI"]
@@ -16545,10 +16600,10 @@ vertical_alignment = 1
 [connection signal="area_entered" from="progress/point_1_area_2d" to="." method="_on_point_1_area_2d_area_entered"]
 [connection signal="area_entered" from="progress/point_3_area_2d" to="." method="_on_point_3_area_2d_area_entered"]
 [connection signal="area_entered" from="progress/point_5_area_2d" to="." method="_on_point_5_area_2d_area_entered"]
-[connection signal="area_entered" from="player/interaction_area_2d" to="." method="_on_player_interaction_area_entered"]
-[connection signal="area_exited" from="player/interaction_area_2d" to="." method="_on_player_interaction_area_exited"]
-[connection signal="area_entered" from="player/interaction_area_2d_others" to="." method="_on_interaction_area_2d_others_area_entered"]
-[connection signal="area_exited" from="player/interaction_area_2d_others" to="." method="_on_interaction_area_2d_others_area_exited"]
+[connection signal="area_entered" from="player/areas_2d/interaction_area_2d" to="." method="_on_player_interaction_area_entered"]
+[connection signal="area_exited" from="player/areas_2d/interaction_area_2d" to="." method="_on_player_interaction_area_exited"]
+[connection signal="area_entered" from="player/areas_2d/interaction_area_2d_others" to="." method="_on_interaction_area_2d_others_area_entered"]
+[connection signal="area_exited" from="player/areas_2d/interaction_area_2d_others" to="." method="_on_interaction_area_2d_others_area_exited"]
 [connection signal="pressed" from="ui_exploration/bottom_left/open_instructions_btn" to="." method="_on_open_instructions_btn_pressed"]
 [connection signal="pressed" from="ui_dock_menu/container/close_btn" to="." method="_on_ui_dock_menu_close_btn_pressed"]
 [connection signal="pressed" from="ui_dock_menu/container/depth_upgrade/upgrade_depth_button" to="." method="_on_upgrade_depth_button_pressed"]

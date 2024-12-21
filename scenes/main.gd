@@ -7,6 +7,7 @@ class_name MainController
 @onready var player = $player
 @onready var player_alert_0 = $player/alert_0
 @onready var player_start_pos = $player_start_pos
+@onready var diegetic_ui = $player/diegetic_ui
 # CAGE
 @onready var cage_sprite_top = $room/BASE/cage_front 
 # UI
@@ -20,7 +21,6 @@ class_name MainController
 # UI DOCK MENU
 @onready var alert_docking = $ui_exploration/top_right/dock_alert/docking_icon
 @onready var alert_can_dock = $ui_exploration/top_right/dock_alert/can_dock
-
 @onready var dock_menu = $ui_dock_menu
 @onready var dock_enable_sound = $global_audio/dock_enable_sound
 @onready var dock_menu_static_counter_label = $ui_dock_menu/container/static_counter/label
@@ -121,7 +121,6 @@ func _process(delta: float) -> void:
 	
 	if pause:
 		return
-	
 	
 	# UPDATE DEPTH GAUGE
 	current_depth = player.global_position.y/20 + 5550

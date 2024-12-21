@@ -3,7 +3,7 @@ class_name Player
 
 @onready var sprite = $sprite
 @onready var light_container = $light_container
-@onready var interaction_area_2d = $interaction_area_2d
+@onready var interaction_area_2d = $areas_2d/interaction_area_2d
 @onready var motor_sound = $audio/motor_sound
 @onready var damage_sound = $audio/damage_sound
 
