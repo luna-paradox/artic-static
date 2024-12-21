@@ -122,9 +122,11 @@ func _process(delta: float) -> void:
 	if pause:
 		return
 	
+	
 	# UPDATE DEPTH GAUGE
 	current_depth = player.global_position.y/20 + 5550
 	depth_gauge.update_depth(current_depth)
+	
 	
 	# CRUSH BY DEPTH
 	if current_depth > CRUSH_DEPTH and crusher_timer.is_stopped():
@@ -132,7 +134,11 @@ func _process(delta: float) -> void:
 	
 	crush_by_depth_audio(delta)
 	
-	# TURBO BOOST PRICE
+	
+	# TURBO BOOST 
+	if current_energy <= 0 and player.is_boosting:
+		player.disable_turbo_boost()
+	
 	if player.is_boosting:
 		var speed = player.velocity.length()
 		var speed_index = speed / player.MAX_SPEED
@@ -140,6 +146,7 @@ func _process(delta: float) -> void:
 		var speed_modifier = 0.7 * atan(rad_to_deg(7 * speed_index))
 		
 		update_energy(-delta * TURBO_BOOST_ENERGY_RATE * speed_modifier)
+	
 	
 	#INTERACT WITH STATIC NODES
 	if Input.is_action_pressed("interact") and static_nodes_in_range.size() > 0:
@@ -151,7 +158,6 @@ func _process(delta: float) -> void:
 		update_collecting_static(false)
 	elif static_nodes_in_range.size() == 0:
 		update_collecting_static(false)
-
 
 func _input(event: InputEvent) -> void:
 	# DEBUG 
@@ -199,7 +205,7 @@ func _input(event: InputEvent) -> void:
 		sonar()
 		return
 	
-	if event.is_action_pressed("shift_action"):
+	if event.is_action_pressed("shift_action") and current_energy > 0:
 		player.turbo_boost()
 		return
 	elif event.is_action_released("shift_action"):
