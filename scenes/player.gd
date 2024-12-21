@@ -9,10 +9,6 @@ extends CharacterBody2D
 var main_controller: MainController
 var pause: bool = true
 
-@export var ACCELERATION: int = 200
-@export var DECELERATION: int = 100
-@export var MAX_SPEED: int = 400
-
 @onready var virtual_position: Node2D = $"../virtual_player_pos"
 
 
@@ -26,18 +22,13 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if is_sonar_enabled:
-		var new_angle = virtual_position.get_angle_to(sonar_target_node.global_position)
-		new_angle += deg_to_rad(90)
-		sonar.rotation = new_angle
-		
-		var new_alpha = sonar_timer.time_left / sonar_timer.wait_time
-		sonar_sprite.self_modulate.a = new_alpha
+		process_sonar()
 
 func _input(event: InputEvent) -> void:
 	if pause:
 		return
 	
-	if event.is_action_pressed("turn_sub"):
+	if event.is_action_pressed("ctrl_action"):
 		self.scale.x *= -1
 
 func _physics_process(delta):
@@ -55,6 +46,10 @@ func init(new_acceleration: int, new_deceleration: int, new_max_peed: int):
 
 
 # ---- MOVEMENT ----
+@export var ACCELERATION: int = 200
+@export var DECELERATION: int = 100
+@export var MAX_SPEED: int = 400
+
 func move_vessel(delta: float) -> KinematicCollision2D:
 	# GET INPUT
 	var direction = Input.get_vector("left", "right", "top", "bottom")
@@ -117,6 +112,49 @@ func activate_sonar(new_target_node: Node2D) -> void:
 func hide_sonnar() -> void:
 	sonar.hide()
 	is_sonar_enabled = false
+
+func process_sonar() -> void:
+	var new_angle = virtual_position.get_angle_to(sonar_target_node.global_position)
+	new_angle += deg_to_rad(90)
+	sonar.rotation = new_angle
+	
+	var new_alpha = sonar_timer.time_left / sonar_timer.wait_time
+	sonar_sprite.self_modulate.a = new_alpha
+
+
+# ---- TURBO BOOST ----
+@export var TURBO_ACCELERATION: int = 3
+@export var TURBO_DECELERATION: int = 5
+@export var TURBO_MAX_SPEED: int = 3
+var is_boosting: bool = false
+
+var pre_boost_acceleration: int
+var pre_boost_deceleration: int
+var pre_boost_max_speed: int
+
+func turbo_boost() -> void:
+	if is_boosting:
+		return
+	
+	is_boosting = true
+	
+	pre_boost_acceleration = ACCELERATION
+	pre_boost_deceleration = DECELERATION
+	pre_boost_max_speed = MAX_SPEED
+
+	ACCELERATION *= TURBO_ACCELERATION
+	DECELERATION *= TURBO_DECELERATION
+	MAX_SPEED *= TURBO_MAX_SPEED
+
+func disable_turbo_boost() -> void:
+	if !is_boosting:
+		return
+	
+	is_boosting = false
+	
+	ACCELERATION = pre_boost_acceleration
+	DECELERATION = pre_boost_deceleration
+	MAX_SPEED = pre_boost_max_speed
 
 
 # ---- PAUSE ----

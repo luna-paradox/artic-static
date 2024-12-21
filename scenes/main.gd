@@ -188,8 +188,11 @@ func _input(event: InputEvent) -> void:
 		sonar()
 		return
 	
-	if event.is_action_pressed("space_action"):
-		
+	if event.is_action_pressed("shift_action"):
+		player.turbo_boost()
+		return
+	elif event.is_action_released("shift_action"):
+		player.disable_turbo_boost()
 		return
 	
 	# PROGRESS
