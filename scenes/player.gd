@@ -26,7 +26,8 @@ func _process(delta: float) -> void:
 	if is_sonar_enabled:
 		process_sonar()
 	
-	control_turbo_volume(delta)
+	if !pause:
+		control_turbo_volume(delta)
 
 func _input(event: InputEvent) -> void:
 	if pause:
@@ -166,6 +167,10 @@ func update_pause(new_state: bool) -> void:
 	pause = new_state
 	if pause:
 		motor_sound.stop()
+		
+		turbo_sound.volume_db = linear_to_db(0)
+		current_turbo_volume = 0
+		is_boosting = false
 
 
 # ---- MOTOR AUDIO ----
@@ -199,7 +204,7 @@ func control_motor_volume(delta: float, direction: Vector2) -> void:
 
 # ---- TURBO AUDIO ----
 var current_turbo_volume = 0
-var MAX_TURBO_VOLUME = 2
+var MAX_TURBO_VOLUME = 1.5
 var TURBO_AUDIO_FADE_IN_SPEED = 4
 var TURBO_AUDIO_FADE_OUT_SPEED = 4
 
