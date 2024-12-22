@@ -6,6 +6,7 @@ class_name Player
 @onready var interaction_area_2d = $areas_2d/interaction_area_2d
 @onready var motor_sound = $audio/motor_sound
 @onready var damage_sound = $audio/damage_sound
+@onready var turbo_sound = $audio/turbo_sound
 
 var main_controller: MainController
 var pause: bool = true
@@ -21,9 +22,11 @@ func _ready() -> void:
 	sonar_timer.timeout.connect(hide_sonnar)
 	add_child(sonar_timer)
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if is_sonar_enabled:
 		process_sonar()
+	
+	control_turbo_volume(delta)
 
 func _input(event: InputEvent) -> void:
 	if pause:
@@ -174,15 +177,17 @@ var MOTOR_AUDIO_FADE_OUT_SPEED = 3
 # Manually tween motor sound volume depending on user input
 # I couldn't makem the Tweens work, I hate them :( 
 func control_motor_volume(delta: float, direction: Vector2) -> void:
-	if direction.length() > 0 and !motor_sound.playing:
+	var speed = direction.length()
+	
+	if speed > 0 and !motor_sound.playing:
 		motor_sound.play()
 		motor_sound.volume_db = linear_to_db(0.01)
-	elif direction.length() > 0 and motor_sound.playing:
+	elif speed > 0 and motor_sound.playing:
 		current_motor_volume += delta * MOTOR_AUDIO_FADE_IN_SPEED
 		if current_motor_volume > MAX_MOTOR_VOLUME:
 			current_motor_volume = MAX_MOTOR_VOLUME
 		motor_sound.volume_db = linear_to_db(current_motor_volume)
-	elif direction.length() == 0 and motor_sound.playing:
+	elif speed == 0 and motor_sound.playing:
 		current_motor_volume -= delta * MOTOR_AUDIO_FADE_OUT_SPEED
 		if current_motor_volume <= 0:
 			current_motor_volume = 0
@@ -190,3 +195,31 @@ func control_motor_volume(delta: float, direction: Vector2) -> void:
 	
 	if db_to_linear(motor_sound.volume_db) <= 0 and motor_sound.playing:
 		motor_sound.stop()
+
+
+# ---- TURBO AUDIO ----
+var current_turbo_volume = 0
+var MAX_TURBO_VOLUME = 2
+var TURBO_AUDIO_FADE_IN_SPEED = 4
+var TURBO_AUDIO_FADE_OUT_SPEED = 4
+
+# Manually tween boost sound volume depending on user input
+# I couldn't makem the Tweens work, I hate them :( 
+func control_turbo_volume(delta: float) -> void:
+	
+	if is_boosting and !turbo_sound.playing:
+		turbo_sound.play()
+		turbo_sound.volume_db = linear_to_db(0.01)
+	elif is_boosting and turbo_sound.playing:
+		current_turbo_volume += delta * TURBO_AUDIO_FADE_IN_SPEED
+		if current_turbo_volume > MAX_TURBO_VOLUME:
+			current_turbo_volume = MAX_TURBO_VOLUME
+		turbo_sound.volume_db = linear_to_db(current_turbo_volume)
+	elif !is_boosting and turbo_sound.playing:
+		current_turbo_volume -= delta * TURBO_AUDIO_FADE_OUT_SPEED
+		if current_turbo_volume <= 0:
+			current_turbo_volume = 0
+		turbo_sound.volume_db = linear_to_db(current_turbo_volume)
+	
+	if db_to_linear(turbo_sound.volume_db) <= 0 and turbo_sound.playing:
+		turbo_sound.stop()

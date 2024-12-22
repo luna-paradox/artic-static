@@ -15681,6 +15681,11 @@ parameters/looping = true
 [node name="damage_sound" type="AudioStreamPlayer" parent="player/audio"]
 stream = ExtResource("14_2eb2l")
 
+[node name="turbo_sound" type="AudioStreamPlayer" parent="player/audio"]
+stream = ExtResource("13_t1jpn")
+pitch_scale = 1.3
+parameters/looping = true
+
 [node name="sprite" type="Sprite2D" parent="player"]
 material = SubResource("CanvasItemMaterial_bj2y8")
 texture = ExtResource("22_o4k7e")
@@ -16456,7 +16461,6 @@ text = "THE
 END"
 
 [node name="DEBUG_UI" type="CanvasLayer" parent="."]
-visible = false
 script = ExtResource("52_uh1u6")
 
 [node name="container" type="Control" parent="DEBUG_UI"]
