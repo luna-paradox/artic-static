@@ -15776,17 +15776,17 @@ polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.
 [node name="diegetic_ui" type="Node2D" parent="player"]
 script = ExtResource("39_yt8q6")
 
-[node name="energy_light" type="Node2D" parent="player/diegetic_ui"]
+[node name="heater_light" type="Node2D" parent="player/diegetic_ui"]
 position = Vector2(-21, -30)
 
-[node name="light" type="PointLight2D" parent="player/diegetic_ui/energy_light"]
+[node name="light" type="PointLight2D" parent="player/diegetic_ui/heater_light"]
 position = Vector2(0, -6)
-color = Color(0, 0.851563, 0.791687, 1)
+color = Color(1, 0, 0, 1)
 energy = 16.0
 range_item_cull_mask = 32
 texture = SubResource("GradientTexture2D_7gql4")
 
-[node name="fake_light_source" type="Polygon2D" parent="player/diegetic_ui/energy_light"]
+[node name="fake_light_source" type="Polygon2D" parent="player/diegetic_ui/heater_light"]
 light_mask = 32
 color = Color(1, 1, 1, 0.705882)
 polygon = PackedVector2Array(-4, -6, -2, -5, 2, -5, 4, -6, 4, -8, 1, -10, -1, -10, -4, -8)
@@ -15796,7 +15796,7 @@ position = Vector2(13, -31)
 
 [node name="light" type="PointLight2D" parent="player/diegetic_ui/turbo_light"]
 position = Vector2(0, -7)
-color = Color(0.851563, 0, 0.838257, 1)
+color = Color(0.96875, 1, 0, 1)
 energy = 16.0
 range_item_cull_mask = 32
 texture = SubResource("GradientTexture2D_7gql4")

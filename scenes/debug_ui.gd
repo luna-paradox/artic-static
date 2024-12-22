@@ -19,9 +19,9 @@ func _process(_delta: float) -> void:
 	update_speedometer()
 	if main_controller:
 		hp_label.text = str(main_controller.current_hp)
-		energy_label.text = str(main_controller.current_energy)
 		static_label.text = str(round(main_controller.player_current_static))
 		
+		update_energy()
 		update_temperature()
 
 # ---- HP ----
@@ -38,6 +38,17 @@ func _on_more_energy_btn_pressed() -> void:
 
 func _on_less_energy_btn_pressed() -> void:
 	main_controller.update_energy(-DELTA_ENERGY)
+
+func update_energy() -> void:
+	var energy = main_controller.current_energy
+	var string = str(energy)
+	
+	if energy - floor(energy) == 0:
+		string += ".00"
+	elif energy*10 - floor(energy*10) == 0:
+		string += "0"
+	
+	energy_label.text = string
 
 
 # ---- STATIC ----

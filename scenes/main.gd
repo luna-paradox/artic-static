@@ -109,7 +109,6 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	camera.global_position = player.global_position
-	
 	if pause:
 		return
 	
@@ -117,17 +116,18 @@ func _process(delta: float) -> void:
 	current_depth = player.global_position.y/20 + 5550
 	depth_gauge.update_depth(current_depth)
 	
-	
 	# TEMPERATURE CONTROL
 	control_temp(delta)
 	
+	if is_heater_on:
+		var delta_energy = -HEATER_ENERGY_COST * delta
+		update_energy(delta_energy)
 	
 	# CRUSH BY DEPTH
 	if current_depth > CRUSH_DEPTH and crusher_timer.is_stopped():
 		crusher_timer.start()
 	
 	crush_by_depth_audio(delta)
-	
 	
 	# TURBO BOOST 
 	if current_energy <= 0 and player.is_boosting:
@@ -199,6 +199,10 @@ func _input(event: InputEvent) -> void:
 		sonar()
 		return
 	
+	if event.is_action_pressed("Q_action"):
+		update_heater_state(!is_heater_on)
+		return
+	
 	if event.is_action_pressed("shift_action") and current_energy > 0:
 		player.turbo_boost()
 		return
@@ -219,8 +223,8 @@ func _input(event: InputEvent) -> void:
 # ---- STATS ----
 @export var MAX_HP = 200
 var current_hp = 200
-@export var MAX_ENERGY = 1000
-var current_energy = 1000
+@export var MAX_ENERGY: float = 1000.0
+var current_energy: float = 1000.0
 @export var MAX_PLAYER_STATIC = 5000.0
 # Static stored on the submarine
 var player_current_static = 0.0
@@ -249,11 +253,12 @@ func update_hp(delta_hp: int) -> void:
 		game_over()
 		return
 
-func update_energy(delta_energy: int) -> void:
+func update_energy(delta_energy: float) -> void:
 	#print('UPDATE ENERGY: ' + str(delta_energy))
 	
 	#UPDATE DATA
 	current_energy += delta_energy
+	current_energy = round(current_energy*100.0) / 100.0
 	
 	if current_energy > MAX_ENERGY:
 		current_energy = MAX_ENERGY
@@ -512,7 +517,25 @@ func control_temp(delta: float) -> void:
 		return
 	
 	temp_action_counter = 0.0
-	update_temp(-TEMP_CONT_ENVIRONMENT_LOSS)
+	
+	# CALCULATE HEAT TRANSFER
+	var heat_transfer = -TEMP_CONT_ENVIRONMENT_LOSS
+	
+	if is_heater_on:
+		heat_transfer += 0.1
+	
+	update_temp(heat_transfer)
+
+
+# ---- HEATER ----
+var is_heater_on = false
+var HEATER_ENERGY_COST = 10
+
+func update_heater_state(new_state: bool) -> void:
+	if is_heater_on == new_state:
+		return
+	
+	is_heater_on = new_state
 
 
 # ---- PROGRESSION ----
