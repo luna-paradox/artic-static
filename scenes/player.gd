@@ -60,12 +60,12 @@ func move_vessel(delta: float) -> KinematicCollision2D:
 	var direction = Input.get_vector("left", "right", "top", "bottom")
 	
 	# SEA CURRENT
-	#if global_position.y > 500:
-		#direction += Vector2.RIGHT / 3
+	var current_influence = Vector2.UP * 0
 	
-	if direction != Vector2.ZERO:
+	# MOVE
+	if direction != Vector2.ZERO or current_influence != Vector2.ZERO:
 		# APPLY ACCELERATION
-		velocity = velocity.move_toward(direction * MAX_SPEED, ACCELERATION * delta)
+		velocity = velocity.move_toward(direction * MAX_SPEED + current_influence, ACCELERATION * delta)
 	else:
 		# WORK LIKE FRICTION
 		velocity = velocity.move_toward(Vector2.ZERO, DECELERATION * delta)
