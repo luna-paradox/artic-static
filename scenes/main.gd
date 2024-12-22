@@ -56,6 +56,10 @@ var current_hp = 200
 @export var MAX_ENERGY = 1000
 var current_energy = 1000
 
+var MAX_TEMP: float = 100
+var MIN_TEMP: float = -10
+var current_temp: float = 9.0
+
 @export var MAX_PLAYER_STATIC = 5000.0
 var player_current_static = 0.0
 
@@ -287,6 +291,24 @@ func update_collecting_static(new_state: bool) -> void:
 		collecting_static_sound.play()
 	elif !collecting_static and collecting_static_sound.playing:
 		collecting_static_sound.stop()
+
+func update_temp(delta_temp: float):
+	delta_temp = round(delta_temp * 10.0) / 10.0
+	
+	#print('UPDATE TEMP: ' + str(delta_temp))
+	
+	#UPDATE DATA
+	current_temp += delta_temp
+	current_temp = round(current_temp * 10.0) / 10.0
+	
+	if current_temp > MAX_TEMP:
+		current_temp = MAX_TEMP
+	elif current_temp < MIN_TEMP:
+		current_temp = MIN_TEMP
+	
+	#TODO UPDATE UI
+	print(current_temp)
+	pass
 
 
 # ---- GAME OVER ----

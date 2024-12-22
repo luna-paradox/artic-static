@@ -4,10 +4,12 @@ extends CanvasLayer
 @onready var hp_label = $container/hp_label
 @onready var energy_label = $container/energy_label
 @onready var static_label = $container/static_label
+@onready var temp_label = $container/temp
 
 @export var DELTA_HP: int = 20
 @export var DELTA_ENERGY: int = 200
 @export var DELTA_STATIC: int = 400
+@export var DELTA_TEMP: float = 0.1
 
 @onready var main_controller: MainController = $".."
 @onready var player: Player = $"../player"
@@ -19,6 +21,8 @@ func _process(_delta: float) -> void:
 		hp_label.text = str(main_controller.current_hp)
 		energy_label.text = str(main_controller.current_energy)
 		static_label.text = str(main_controller.player_current_static)
+		
+		update_temperature()
 
 # ---- HP ----
 func _on_more_hp_btn_pressed() -> void:
@@ -55,3 +59,27 @@ func update_speedometer() -> void:
 		speed_str = "0" + speed_str
 	
 	speedometer.text = speed_str
+
+# ---- TEMPERATURE ----
+func update_temperature() -> void:
+	var temp = main_controller.current_temp
+	var temp_str = str(temp)
+	
+	if temp - floor(temp) == 0:
+		temp_str += ".0"
+	if temp < 10:
+		temp_str = " " + temp_str
+	
+	temp_label.text = temp_str + "°C"
+
+func _on_more_temp_pressed() -> void:
+	if Input.is_key_pressed(KEY_ALT):
+		main_controller.update_temp(DELTA_TEMP * 10)
+	else:
+		main_controller.update_temp(DELTA_TEMP)
+
+func _on_less_temp_pressed() -> void:
+	if Input.is_key_pressed(KEY_ALT):
+		main_controller.update_temp(-DELTA_TEMP * 10)
+	else:
+		main_controller.update_temp(-DELTA_TEMP)

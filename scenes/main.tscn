@@ -16469,7 +16469,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
 offset_top = -103.0
-offset_right = 227.0
+offset_right = 278.0
 offset_bottom = -8.0
 grow_vertical = 0
 
@@ -16548,16 +16548,27 @@ theme_override_fonts/font = ExtResource("25_gbrq3")
 theme_override_font_sizes/font_size = 12
 text = "-ST"
 
-[node name="speedometer" type="Label" parent="DEBUG_UI/container"]
+[node name="more_temp" type="Button" parent="DEBUG_UI/container"]
 layout_mode = 0
-offset_left = 143.0
-offset_top = 9.0
-offset_right = 214.0
-offset_bottom = 32.0
+offset_left = 142.0
+offset_top = 31.0
+offset_right = 181.0
+offset_bottom = 54.0
+focus_mode = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
-text = "99999.9"
-horizontal_alignment = 1
-vertical_alignment = 1
+theme_override_font_sizes/font_size = 12
+text = "+°C"
+
+[node name="less_temp" type="Button" parent="DEBUG_UI/container"]
+layout_mode = 0
+offset_left = 142.0
+offset_top = 60.0
+offset_right = 181.0
+offset_bottom = 83.0
+focus_mode = 0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 12
+text = "-°C"
 
 [node name="hp_label" type="Label" parent="DEBUG_UI/container"]
 layout_mode = 0
@@ -16595,6 +16606,36 @@ text = "9999"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="speedometer" type="Label" parent="DEBUG_UI/container"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -79.0
+offset_top = 34.0
+offset_right = -8.0
+offset_bottom = 57.0
+grow_horizontal = 0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+text = "99999.9"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="temp" type="Label" parent="DEBUG_UI/container"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -79.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = 29.0
+grow_horizontal = 0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+text = "99999.9"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="area_entered" from="room/A3/final_sphere/final_sphere_area_2d" to="." method="_on_final_sphere_area_2d_area_entered"]
 [connection signal="area_entered" from="room/BASE/cage_front/cage_area_2d" to="." method="_on_cage_area_2d_area_entered"]
 [connection signal="area_exited" from="room/BASE/cage_front/cage_area_2d" to="." method="_on_cage_area_2d_area_exited"]
@@ -16618,6 +16659,8 @@ vertical_alignment = 1
 [connection signal="pressed" from="DEBUG_UI/container/less_energy_btn" to="DEBUG_UI" method="_on_less_energy_btn_pressed"]
 [connection signal="pressed" from="DEBUG_UI/container/more_static_btn" to="DEBUG_UI" method="_on_more_static_btn_pressed"]
 [connection signal="pressed" from="DEBUG_UI/container/less_static_btn" to="DEBUG_UI" method="_on_less_static_btn_pressed"]
+[connection signal="pressed" from="DEBUG_UI/container/more_temp" to="DEBUG_UI" method="_on_more_temp_pressed"]
+[connection signal="pressed" from="DEBUG_UI/container/less_temp" to="DEBUG_UI" method="_on_less_temp_pressed"]
 
 [editable path="ui_exploration/top_left/hp_bar"]
 [editable path="ui_exploration/top_left/energy_bar"]
