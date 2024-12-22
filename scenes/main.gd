@@ -63,7 +63,7 @@ var available_static = 0
 
 # ---- OTHER STATS ----
 @export var STATIC_CONSUMPTION_RATE = 150
-@export var TURBO_BOOST_ENERGY_RATE = 200
+@export var TURBO_BOOST_ENERGY_RATE = 100
 @export var CRUSH_DEPTH = 5800
 var current_depth = 5550
 
