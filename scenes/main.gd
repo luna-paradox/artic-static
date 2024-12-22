@@ -466,9 +466,9 @@ func crush_by_depth_audio(delta: float) -> void:
 		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
 	elif current_depth <= CRUSH_DEPTH and getting_crushed_sound.playing:
 		current_crashing_volume -= 3 * delta
-		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
 		if current_crashing_volume < 0:
 			current_crashing_volume = 0
+		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
 	
 	if current_crashing_volume == 0:
 		getting_crushed_sound.stop()
