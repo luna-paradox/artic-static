@@ -170,7 +170,7 @@ func update_pause(new_state: bool) -> void:
 		
 		turbo_sound.volume_db = linear_to_db(0)
 		current_turbo_volume = 0
-		is_boosting = false
+		disable_turbo_boost()
 
 
 # ---- MOTOR AUDIO ----
