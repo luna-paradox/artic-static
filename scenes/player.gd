@@ -52,7 +52,7 @@ func init(new_acceleration: int, new_deceleration: int, new_max_peed: int):
 
 # ---- MOVEMENT ----
 @export var ACCELERATION: int = 200
-@export var DECELERATION: int = 100
+@export var DECELERATION: int = 200
 @export var MAX_SPEED: int = 400
 
 func move_vessel(delta: float) -> KinematicCollision2D:
