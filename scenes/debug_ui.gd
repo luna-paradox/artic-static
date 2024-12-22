@@ -66,7 +66,9 @@ func update_temperature() -> void:
 	var temp_str = str(temp)
 	
 	if temp - floor(temp) == 0:
-		temp_str += ".0"
+		temp_str += ".00"
+	elif temp*10 - floor(temp*10) == 0:
+		temp_str += "0"
 	if temp < 10:
 		temp_str = " " + temp_str
 	

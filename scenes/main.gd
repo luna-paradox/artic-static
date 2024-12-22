@@ -49,28 +49,15 @@ class_name MainController
 @export var DECELERATION: int = 100
 @export var MAX_SPEED: int = 450
 
-# ---- CURRENCY STATS ----
-@export var MAX_HP = 200
-var current_hp = 200
-
-@export var MAX_ENERGY = 1000
-var current_energy = 1000
-
-var MAX_TEMP: float = 100
-var MIN_TEMP: float = -10
-var current_temp: float = 9.0
-
-@export var MAX_PLAYER_STATIC = 5000.0
-var player_current_static = 0.0
-
-var available_static = 0
-
 # ---- OTHER STATS ----
 @export var STATIC_CONSUMPTION_RATE = 150
 @export var TURBO_BOOST_ENERGY_RATE = 100
+
+# ---- DEPTH ----
 @export var CRUSH_DEPTH = 5800
 var current_depth = 5550
 
+# ---- STORE ----
 # Cost in Static
 @export var CRUSH_DEPTH_UPGRADE = 1000
 
@@ -129,6 +116,10 @@ func _process(delta: float) -> void:
 	# UPDATE DEPTH GAUGE
 	current_depth = player.global_position.y/20 + 5550
 	depth_gauge.update_depth(current_depth)
+	
+	
+	# TEMPERATURE CONTROL
+	control_temp(delta)
 	
 	
 	# CRUSH BY DEPTH
@@ -225,7 +216,17 @@ func _input(event: InputEvent) -> void:
 		return
 
 
-# ---- UPDATE STATS ----
+# ---- STATS ----
+@export var MAX_HP = 200
+var current_hp = 200
+@export var MAX_ENERGY = 1000
+var current_energy = 1000
+@export var MAX_PLAYER_STATIC = 5000.0
+# Static stored on the submarine
+var player_current_static = 0.0
+# Static stored on the base
+var available_static = 0
+
 func update_hp(delta_hp: int) -> void:
 	#print('UPDATE HP: ' + str(delta_hp))
 	
@@ -293,13 +294,11 @@ func update_collecting_static(new_state: bool) -> void:
 		collecting_static_sound.stop()
 
 func update_temp(delta_temp: float):
-	delta_temp = round(delta_temp * 10.0) / 10.0
-	
-	#print('UPDATE TEMP: ' + str(delta_temp))
+	delta_temp = round(delta_temp * 100.0) / 100.0
 	
 	#UPDATE DATA
 	current_temp += delta_temp
-	current_temp = round(current_temp * 10.0) / 10.0
+	current_temp = round(current_temp * 100.0) / 100.0
 	
 	if current_temp > MAX_TEMP:
 		current_temp = MAX_TEMP
@@ -307,7 +306,7 @@ func update_temp(delta_temp: float):
 		current_temp = MIN_TEMP
 	
 	#TODO UPDATE UI
-	print(current_temp)
+	#print(current_temp)
 	pass
 
 
@@ -390,7 +389,7 @@ func _on_cage_interaction_area_2d_area_exited(area: Area2D) -> void:
 		return
 	can_dock = false
 	alert_can_dock.hide()
-	
+
 
 # ---- DOCKER MENU ----
 func _on_ui_dock_menu_close_btn_pressed() -> void:
@@ -472,6 +471,48 @@ func crush_by_depth_audio(delta: float) -> void:
 	
 	if current_crashing_volume == 0:
 		getting_crushed_sound.stop()
+
+
+# ---- SONNAR ----
+func get_nearest_static_node() -> Node2D:
+	var nearest_node: Node2D = null
+	var shorteest_distance: float = 0.0
+	
+	for node in get_all_static_nodes($room):
+		if !node.enabled:
+			continue
+		
+		var distance = node.global_position.distance_to(player.global_position)
+		if nearest_node == null:
+			shorteest_distance = distance
+			nearest_node = node
+		elif distance < shorteest_distance:
+			shorteest_distance = distance
+			nearest_node = node
+	
+	return nearest_node
+
+func sonar(): 
+	if !player.is_sonar_enabled:
+		sonar_sound.play()
+		var nearest_static_node = get_nearest_static_node()
+		player.activate_sonar(nearest_static_node)
+
+
+# ---- TEMPERATURE ----
+var MAX_TEMP: float = 100
+var MIN_TEMP: float = -10
+var current_temp: float = 9.0 
+var TEMP_CONT_ENVIRONMENT_LOSS: float = 0.05
+
+var temp_action_counter = 0
+func control_temp(delta: float) -> void:
+	temp_action_counter += delta
+	if temp_action_counter < 1.0:
+		return
+	
+	temp_action_counter = 0.0
+	update_temp(-TEMP_CONT_ENVIRONMENT_LOSS)
 
 
 # ---- PROGRESSION ----
@@ -577,32 +618,6 @@ func activate_area_3() -> void:
 func _on_final_sphere_area_2d_area_entered(_area: Area2D) -> void:
 	update_pause(true)
 	$ending_screen.show()
-
-
-# ---- SONNAR ----
-func get_nearest_static_node() -> Node2D:
-	var nearest_node: Node2D = null
-	var shorteest_distance: float = 0.0
-	
-	for node in get_all_static_nodes($room):
-		if !node.enabled:
-			continue
-		
-		var distance = node.global_position.distance_to(player.global_position)
-		if nearest_node == null:
-			shorteest_distance = distance
-			nearest_node = node
-		elif distance < shorteest_distance:
-			shorteest_distance = distance
-			nearest_node = node
-	
-	return nearest_node
-
-func sonar(): 
-	if !player.is_sonar_enabled:
-		sonar_sound.play()
-		var nearest_static_node = get_nearest_static_node()
-		player.activate_sonar(nearest_static_node)
 
 
 # ---- INSTRUCTIONS ----
