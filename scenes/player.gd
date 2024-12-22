@@ -51,9 +51,9 @@ func init(new_acceleration: int, new_deceleration: int, new_max_peed: int):
 
 
 # ---- MOVEMENT ----
-@export var ACCELERATION: int = 200
-@export var DECELERATION: int = 200
-@export var MAX_SPEED: int = 400
+@export var ACCELERATION: int
+@export var DECELERATION: int
+@export var MAX_SPEED: int
 
 func move_vessel(delta: float) -> KinematicCollision2D:
 	# GET INPUT
@@ -132,7 +132,7 @@ func process_sonar() -> void:
 
 # ---- TURBO BOOST ----
 @export var TURBO_ACCELERATION: int = 3
-@export var TURBO_DECELERATION: int = 5
+@export var TURBO_DECELERATION: int = 7
 @export var TURBO_MAX_SPEED: int = 3
 var is_boosting: bool = false
 
