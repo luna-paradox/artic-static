@@ -7,6 +7,7 @@ class_name MainController
 @onready var player = $player
 @onready var player_alert_0 = $player/alert_0
 @onready var player_start_pos = $player_start_pos
+@onready var diegetic_ui = $player/diegetic_ui
 # CAGE
 @onready var cage_sprite_top = $room/BASE/cage_front 
 # UI
@@ -20,7 +21,6 @@ class_name MainController
 # UI DOCK MENU
 @onready var alert_docking = $ui_exploration/top_right/dock_alert/docking_icon
 @onready var alert_can_dock = $ui_exploration/top_right/dock_alert/can_dock
-
 @onready var dock_menu = $ui_dock_menu
 @onready var dock_enable_sound = $global_audio/dock_enable_sound
 @onready var dock_menu_static_counter_label = $ui_dock_menu/container/static_counter/label
@@ -63,6 +63,7 @@ var available_static = 0
 
 # ---- OTHER STATS ----
 @export var STATIC_CONSUMPTION_RATE = 150
+@export var TURBO_BOOST_ENERGY_RATE = 100
 @export var CRUSH_DEPTH = 5800
 var current_depth = 5550
 
@@ -117,6 +118,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	camera.global_position = player.global_position
+	
 	if pause:
 		return
 	
@@ -124,11 +126,25 @@ func _process(delta: float) -> void:
 	current_depth = player.global_position.y/20 + 5550
 	depth_gauge.update_depth(current_depth)
 	
+	
 	# CRUSH BY DEPTH
 	if current_depth > CRUSH_DEPTH and crusher_timer.is_stopped():
 		crusher_timer.start()
 	
 	crush_by_depth_audio(delta)
+	
+	
+	# TURBO BOOST 
+	if current_energy <= 0 and player.is_boosting:
+		player.disable_turbo_boost()
+	
+	if player.is_boosting:
+		var speed = player.velocity.length()
+		var speed_index = speed / player.MAX_SPEED
+		# Reverse Tagent growrth to energy usage vs speed percentage
+		var speed_modifier = 0.7 * atan(rad_to_deg(7 * speed_index))
+		
+		update_energy(-delta * TURBO_BOOST_ENERGY_RATE * speed_modifier)
 	
 	
 	#INTERACT WITH STATIC NODES
@@ -143,43 +159,66 @@ func _process(delta: float) -> void:
 		update_collecting_static(false)
 
 func _input(event: InputEvent) -> void:
+	# DEBUG 
 	if event.is_action_pressed("exit_debug"):
 		get_tree().quit()
 		return
-	#
+	
 	if event.is_action_pressed("1_debug"):
 		progress(third_eye.mode + 1)
+		return
 	if event.is_action_pressed("2_debug"):
 		update_static(500)
-	
-	if instructions_ui.visible and event.is_action_pressed("interact"):
-		hide_instructions()
-		return
-	if instructions_ui.visible and event.is_action_pressed("E_action"):
-		hide_instructions()
-		return
-	if instructions_ui.visible and event.is_action_pressed("escape"):
-		hide_instructions()
 		return
 	
-	if event.is_action_pressed("interact") and dock_menu.visible:
-		close_dock_menu()
-	elif event.is_action_pressed("escape") and dock_menu.visible:
-		close_dock_menu()
-	elif event.is_action_pressed("interact") and can_dock:
-		start_dock_menu()
+	# WHILE INSTRUCTIONS ARE VISIBLE
+	if instructions_ui.visible:
+		if event.is_action_pressed("interact"):
+			hide_instructions()
+		if event.is_action_pressed("E_action"):
+			hide_instructions()
+		if event.is_action_pressed("escape"):
+			hide_instructions()
+		if event.is_action_pressed("space_action"):
+			hide_instructions()
+		return
 	
+	# WHILE DOCK MENU IS VISIBLE
+	if dock_menu.visible:
+		if event.is_action_pressed("interact"):
+			close_dock_menu()
+		elif event.is_action_pressed("escape"):
+			close_dock_menu()
+		return
+	
+	# PAUSE MEANS NOT MOVING AROUND
 	if pause:
+		return
+	
+	# WHILE MOVING AROUND
+	if event.is_action_pressed("interact") and can_dock:
+		start_dock_menu()
 		return
 	
 	if event.is_action_pressed("E_action"):
 		sonar()
+		return
 	
+	if event.is_action_pressed("shift_action") and current_energy > 0:
+		player.turbo_boost()
+		return
+	elif event.is_action_released("shift_action"):
+		player.disable_turbo_boost()
+		return
+	
+	# PROGRESS
 	if can_interact_with_statue_p2 and event.is_action_pressed("interact") and third_eye.mode == 2:
 		progress(3)
+		return
 	
 	if can_interact_with_statue_p4 and event.is_action_pressed("interact") and third_eye.mode == 4:
 		progress(5)
+		return
 
 
 # ---- UPDATE STATS ----
@@ -277,6 +316,10 @@ func game_over() -> void:
 func _on_restart_btn_pressed() -> void:
 	restart()
 
+func reset_all_static_nodes() -> void:
+	for node in get_all_static_nodes($room):
+		node.reset()
+
 
 # ---- STATIC NODES ----
 var static_nodes_in_range: Array[Node2D] = []
@@ -290,8 +333,8 @@ func _on_player_interaction_area_exited(area: Area2D) -> void:
 	if static_nodes_in_range.size() <= 0:
 		player_alert_0.hide()
 
-# ---- PAUSE GAME ----
 
+# ---- PAUSE GAME ----
 func update_pause(new_state: bool) -> void:
 	pause = new_state
 	player.update_pause(new_state)
@@ -343,6 +386,7 @@ func start_dock_menu() -> void:
 	
 	# REPAIR SUBMARINE
 	update_hp(MAX_HP)
+	update_energy(MAX_ENERGY)
 	
 	# RESTART ALL STATIC NODES
 	reset_all_static_nodes()
@@ -380,7 +424,6 @@ func _on_upgrade_depth_button_pressed() -> void:
 	
 	var can_buy_depth = CRUSH_DEPTH_UPGRADE >= available_static
 	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
-	
 
 
 # ---- CRUSHING ----
@@ -410,6 +453,38 @@ func crush_by_depth_audio(delta: float) -> void:
 
 
 # ---- PROGRESSION ----
+func progress(new_mode: int) -> void:
+	third_eye.mode = new_mode
+	
+	if new_mode == 1:
+		enable_third_eye()
+		shop_third_eye_ui.hide()
+	elif new_mode == 2:
+		$progress/point_1_area_2d.queue_free()
+		activate_area_1()
+		follow_the_eye_ui.show_message()
+		$progress/eye_point_1.hide()
+	elif new_mode == 3:
+		secret_success_sound.play()
+		follow_the_eye_ui.show_message()
+		$progress/eye_point_3.show()
+		update_static(3000)
+	elif new_mode == 4:
+		$progress/point_3_area_2d.queue_free()
+		activate_area_2()
+		follow_the_eye_ui.show_message()
+		$progress/eye_point_3.hide()
+	elif new_mode == 5:
+		secret_success_sound.play()
+		follow_the_eye_ui.show_message()
+		$progress/eye_point_5.show()
+		update_static(3500)
+	elif new_mode == 6:
+		$progress/point_5_area_2d.queue_free()
+		activate_area_3()
+		follow_the_eye_ui.show_message()
+		$progress/eye_point_5.hide()
+
 
 # MODE 0
 func _on_get_eye_button_pressed() -> void:
@@ -466,7 +541,6 @@ func activate_area_2() -> void:
 # MODE 4
 var can_interact_with_statue_p4 = false
 
-
 # MODE 5
 func _on_point_5_area_2d_area_entered(area: Area2D) -> void:
 	if area.name == "player_area_2D" and third_eye.mode == 5:
@@ -477,28 +551,13 @@ func activate_area_3() -> void:
 	area_3_door.queue_free()
 	area_3.show()
 
+# MODE 6
+func _on_final_sphere_area_2d_area_entered(_area: Area2D) -> void:
+	update_pause(true)
+	$ending_screen.show()
 
 
-
-func get_all_static_nodes(parent: Node) -> Array:
-	var matching_nodes = []
-	
-	# CHECK CURRENT NODE
-	if parent.has_meta('type') and parent.get_meta('type') == 'STATIC_NODE':
-		matching_nodes.append(parent)
-	
-	# CHECK CHILDREN RECURSIVE
-	for child in parent.get_children():
-# 		Ensure the child is a Node (in case of odd node types)
-		if child is Node: 
-			matching_nodes += get_all_static_nodes(child)
-	
-	return matching_nodes
-
-func reset_all_static_nodes() -> void:
-	for node in get_all_static_nodes($room):
-		node.reset()
-
+# ---- SONNAR ----
 func get_nearest_static_node() -> Node2D:
 	var nearest_node: Node2D = null
 	var shorteest_distance: float = 0.0
@@ -524,10 +583,7 @@ func sonar():
 		player.activate_sonar(nearest_static_node)
 
 
-func _on_open_instructions_btn_pressed() -> void:
-	show_instructions()
-
-
+# ---- INSTRUCTIONS ----
 func show_instructions():
 	instructions_ui.show()
 	update_pause(true)
@@ -535,41 +591,23 @@ func show_instructions():
 func hide_instructions():
 	instructions_ui.hide()
 	update_pause(false)
+
+func _on_open_instructions_btn_pressed() -> void:
+	show_instructions()
+
+
+# ---- TOOLS ----
+func get_all_static_nodes(parent: Node) -> Array:
+	var matching_nodes = []
 	
-
-
-func _on_final_sphere_area_2d_area_entered(_area: Area2D) -> void:
-	update_pause(true)
-	$ending_screen.show()
-
-func progress(new_mode: int) -> void:
-	third_eye.mode = new_mode
+	# CHECK CURRENT NODE
+	if parent.has_meta('type') and parent.get_meta('type') == 'STATIC_NODE':
+		matching_nodes.append(parent)
 	
-	if new_mode == 1:
-		enable_third_eye()
-		shop_third_eye_ui.hide()
-	elif new_mode == 2:
-		$progress/point_1_area_2d.queue_free()
-		activate_area_1()
-		follow_the_eye_ui.show_message()
-		$progress/eye_point_1.hide()
-	elif new_mode == 3:
-		secret_success_sound.play()
-		follow_the_eye_ui.show_message()
-		$progress/eye_point_3.show()
-		update_static(3000)
-	elif new_mode == 4:
-		$progress/point_3_area_2d.queue_free()
-		activate_area_2()
-		follow_the_eye_ui.show_message()
-		$progress/eye_point_3.hide()
-	elif new_mode == 5:
-		secret_success_sound.play()
-		follow_the_eye_ui.show_message()
-		$progress/eye_point_5.show()
-		update_static(3500)
-	elif new_mode == 6:
-		$progress/point_5_area_2d.queue_free()
-		activate_area_3()
-		follow_the_eye_ui.show_message()
-		$progress/eye_point_5.hide()
+	# CHECK CHILDREN RECURSIVE
+	for child in parent.get_children():
+# 		Ensure the child is a Node (in case of odd node types)
+		if child is Node: 
+			matching_nodes += get_all_static_nodes(child)
+	
+	return matching_nodes
