@@ -61,6 +61,8 @@ func move_vessel(delta: float) -> KinematicCollision2D:
 	
 	# SEA CURRENT
 	var current_influence = Vector2.UP * 0
+	if is_boosting:
+		current_influence = Vector2.ZERO
 	
 	# MOVE
 	if direction != Vector2.ZERO or current_influence != Vector2.ZERO:
@@ -69,6 +71,7 @@ func move_vessel(delta: float) -> KinematicCollision2D:
 	else:
 		# WORK LIKE FRICTION
 		velocity = velocity.move_toward(Vector2.ZERO, DECELERATION * delta)
+	
 	
 	# SFX: CONTROL MOTOR AUDIO
 	control_motor_volume(delta, direction)

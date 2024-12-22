@@ -20,7 +20,7 @@ func _process(_delta: float) -> void:
 	if main_controller:
 		hp_label.text = str(main_controller.current_hp)
 		energy_label.text = str(main_controller.current_energy)
-		static_label.text = str(main_controller.player_current_static)
+		static_label.text = str(round(main_controller.player_current_static))
 		
 		update_temperature()
 
