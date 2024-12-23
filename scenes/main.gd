@@ -318,11 +318,16 @@ func restart():
 	game_over_overlay.hide()
 	
 	player.velocity = Vector2.ZERO
+	player.disable_turbo_boost()
 	player.global_position = player_start_pos.global_position
 	
 	update_hp(MAX_HP)
+	update_energy(MAX_ENERGY)
+	update_temp(20 - current_temp)
 	update_static(-MAX_PLAYER_STATIC)
-	update_pause(false)
+	
+	update_heater_power(0.5)
+	update_heater_state(true)
 	
 	reset_all_static_nodes()
 	background_sound_0.play()
@@ -331,6 +336,8 @@ func restart():
 	camera.global_position = player.global_position
 	await get_tree().process_frame
 	camera.position_smoothing_enabled = true
+	
+	update_pause(false)
 
 func game_over() -> void:
 	background_sound_0.stop()
@@ -411,6 +418,7 @@ func start_dock_menu() -> void:
 	# REPAIR SUBMARINE
 	update_hp(MAX_HP)
 	update_energy(MAX_ENERGY)
+	update_temp(20 - current_temp)
 	
 	# RESTART ALL STATIC NODES
 	reset_all_static_nodes()
