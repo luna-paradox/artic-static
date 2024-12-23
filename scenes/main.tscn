@@ -16496,7 +16496,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
 offset_top = -103.0
-offset_right = 337.0
+offset_right = 388.0
 offset_bottom = -8.0
 grow_vertical = 0
 
@@ -16597,63 +16597,6 @@ theme_override_fonts/font = ExtResource("25_gbrq3")
 theme_override_font_sizes/font_size = 12
 text = "-°C"
 
-[node name="heater_slider" type="HSlider" parent="DEBUG_UI/container"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -124.0
-offset_top = -44.0
-offset_right = -5.0
-offset_bottom = -28.0
-grow_horizontal = 0
-grow_vertical = 0
-max_value = 1.0
-step = 0.01
-value = 0.5
-tick_count = 5
-ticks_on_borders = true
-
-[node name="heater_label" type="Label" parent="DEBUG_UI/container"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -124.0
-offset_top = -21.0
-offset_right = -69.0
-offset_bottom = -6.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("25_gbrq3")
-theme_override_font_sizes/font_size = 12
-text = "0"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="heat_transfer_label" type="Label" parent="DEBUG_UI/container"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -61.0
-offset_top = -21.0
-offset_right = -6.0
-offset_bottom = -6.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_fonts/font = ExtResource("25_gbrq3")
-theme_override_font_sizes/font_size = 12
-text = "0"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="hp_label" type="Label" parent="DEBUG_UI/container"]
 layout_mode = 0
 offset_left = 7.0
@@ -16707,15 +16650,147 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -72.0
-offset_top = 7.0
-offset_right = -1.0
-offset_bottom = 30.0
+offset_left = -68.0
+offset_top = 6.0
+offset_right = 3.0
+offset_bottom = 29.0
 grow_horizontal = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
 text = "99999"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="heater_slider" type="HSlider" parent="DEBUG_UI/container"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -181.0
+offset_top = -37.0
+offset_right = -5.0
+offset_bottom = -21.0
+grow_horizontal = 0
+grow_vertical = 0
+max_value = 1.0
+step = 0.01
+value = 0.5
+tick_count = 5
+ticks_on_borders = true
+
+[node name="heater_label" type="Label" parent="DEBUG_UI/container"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -179.0
+offset_top = -17.0
+offset_right = -124.0
+offset_bottom = -2.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 12
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="heat_transfer_label" type="Label" parent="DEBUG_UI/container"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -64.0
+offset_top = -17.0
+offset_right = -9.0
+offset_bottom = -2.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 12
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="freq_controls" type="Control" parent="DEBUG_UI/container"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -179.0
+offset_top = -66.0
+offset_right = -7.0
+offset_bottom = -43.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="label_cont" type="Control" parent="DEBUG_UI/container/freq_controls"]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -66.0
+offset_right = 66.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="bg" type="ColorRect" parent="DEBUG_UI/container/freq_controls/label_cont"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0546875, 0.052124, 0.052124, 1)
+
+[node name="label" type="Label" parent="DEBUG_UI/container/freq_controls/label_cont"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("25_gbrq3")
+text = "lorem ipsum dolor sit amet"
+vertical_alignment = 1
+clip_text = true
+
+[node name="prev_freq" type="Button" parent="DEBUG_UI/container/freq_controls"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 17.0
+grow_vertical = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 12
+text = "<"
+
+[node name="next_freq" type="Button" parent="DEBUG_UI/container/freq_controls"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+grow_horizontal = 0
+grow_vertical = 2
+focus_mode = 0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 12
+text = ">"
 
 [connection signal="area_entered" from="room/A3/final_sphere/final_sphere_area_2d" to="." method="_on_final_sphere_area_2d_area_entered"]
 [connection signal="area_entered" from="room/BASE/cage_front/cage_area_2d" to="." method="_on_cage_area_2d_area_entered"]
