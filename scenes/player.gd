@@ -59,8 +59,16 @@ func move_vessel(delta: float) -> KinematicCollision2D:
 	
 	# MOVE
 	if direction != Vector2.ZERO or current_influence != Vector2.ZERO:
+		var final_acceleration = ACCELERATION
+		var final_max_speed = MAX_SPEED
+		if main_controller.current_temp < 0:
+			var temp_index = main_controller.current_temp / -10
+			
+			final_acceleration *= 1 - 0.5 * temp_index
+			final_max_speed *= 1 - 0.5 * temp_index
+		
 		# APPLY ACCELERATION
-		velocity = velocity.move_toward(direction * MAX_SPEED + current_influence, ACCELERATION * delta)
+		velocity = velocity.move_toward(direction * final_max_speed + current_influence, final_acceleration * delta)
 	else:
 		# WORK LIKE FRICTION
 		velocity = velocity.move_toward(Vector2.ZERO, DECELERATION * delta)
