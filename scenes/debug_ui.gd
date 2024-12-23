@@ -106,4 +106,4 @@ func _on_less_temp_pressed() -> void:
 
 # ---- HEATER ----
 func _on_heater_slider_value_changed(value: float) -> void:
-	main_controller.heater_power = value
+	main_controller.update_heater_power(value)

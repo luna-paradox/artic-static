@@ -1,4 +1,4 @@
-[gd_scene load_steps=2177 format=3 uid="uid://chovb3krt6q56"]
+[gd_scene load_steps=2178 format=3 uid="uid://chovb3krt6q56"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_nuh7j"]
 [ext_resource type="AudioStream" uid="uid://cjjlq52c5q6oh" path="res://assets/audio/large-underwater-explosion-190270-TRIM.ogg" id="2_shk0a"]
@@ -16,6 +16,7 @@
 [ext_resource type="Resource" uid="uid://ekn08wpjmous" path="res://scenes/wall_shape_material_0.tres" id="8_03o37"]
 [ext_resource type="Script" path="res://addons/rmsmartshape/shapes/shape_open.gd" id="8_7fml4"]
 [ext_resource type="AudioStream" uid="uid://bphfbgwestqve" path="res://assets/audio/sonar_pings-105417-TRIM.ogg" id="8_45rvg"]
+[ext_resource type="AudioStream" uid="uid://c5egqtwutnlih" path="res://assets/audio/heater-53820-LOOP.ogg" id="9_lmh1w"]
 [ext_resource type="PackedScene" uid="uid://b7b5r00rfcajv" path="res://scenes/static_node.tscn" id="10_dq6to"]
 [ext_resource type="Script" path="res://addons/rmsmartshape/shapes/shape.gd" id="10_guwg0"]
 [ext_resource type="Texture2D" uid="uid://cgir3nu3qevre" path="res://assets/visual/SPR_base_0.3.png" id="12_gkqo8"]
@@ -14891,6 +14892,10 @@ stream = ExtResource("7_7hub6")
 
 [node name="sonar_sound" type="AudioStreamPlayer" parent="global_audio"]
 stream = ExtResource("8_45rvg")
+
+[node name="heater_sound" type="AudioStreamPlayer" parent="global_audio"]
+stream = ExtResource("9_lmh1w")
+parameters/looping = true
 
 [node name="player_start_pos" type="Node2D" parent="."]
 position = Vector2(0, -720)

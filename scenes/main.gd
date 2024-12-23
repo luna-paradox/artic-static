@@ -33,6 +33,7 @@ class_name MainController
 @onready var getting_crushed_sound = $global_audio/getting_crushed_sound
 @onready var secret_success_sound = $global_audio/secret_success_sound
 @onready var sonar_sound = $global_audio/sonar_sound
+@onready var heater_sound = $global_audio/heater_sound
 # PROGRESS
 @onready var third_eye = $ui_exploration/top_right/third_eye
 
@@ -564,6 +565,11 @@ func update_heater_state(new_state: bool) -> void:
 		return
 	
 	is_heater_on = new_state
+	
+	if is_heater_on:
+		heater_sound.play()
+	else:
+		heater_sound.stop()
 
 func update_heater_power(new_value: float) -> void:
 	heater_power = new_value
@@ -572,6 +578,8 @@ func update_heater_power(new_value: float) -> void:
 		heater_power = 1
 	elif heater_power < 0:
 		heater_power = 0
+	
+	heater_sound.volume_db = linear_to_db(heater_power)
 
 func calculate_heater_heat_transfer() -> float:
 	var heat_transfer: float = TEMP_TRANSFER_HEATER_MAX * heater_power
