@@ -1,4 +1,4 @@
-[gd_scene load_steps=2178 format=3 uid="uid://chovb3krt6q56"]
+[gd_scene load_steps=2179 format=3 uid="uid://chovb3krt6q56"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_nuh7j"]
 [ext_resource type="AudioStream" uid="uid://cjjlq52c5q6oh" path="res://assets/audio/large-underwater-explosion-190270-TRIM.ogg" id="2_shk0a"]
@@ -49,6 +49,7 @@
 [ext_resource type="Texture2D" uid="uid://drw2usl3sqw4i" path="res://assets/visual/SPR_third_eye_pupil_0.0.png" id="36_tgba7"]
 [ext_resource type="Texture2D" uid="uid://blqqdo0sw5er8" path="res://assets/visual/SPR_third_eye_front_0.0.png" id="37_8guw8"]
 [ext_resource type="Script" path="res://scenes/diegetic_ui.gd" id="39_yt8q6"]
+[ext_resource type="PackedScene" uid="uid://dwjsno2vbc62d" path="res://scenes/cold_area.tscn" id="40_ogxqb"]
 [ext_resource type="Texture2D" uid="uid://dnd85u4jb0mrl" path="res://assets/visual/SPR_third_eye_0.0.png" id="42_ia0bw"]
 [ext_resource type="Script" path="res://scenes/follow_the_eye.gd" id="44_o375y"]
 [ext_resource type="Texture2D" uid="uid://diiy7damaqey7" path="res://assets/visual/IMG_instructions_0.3.png" id="51_inuak"]
@@ -15075,6 +15076,10 @@ rotation = -2.76396
 scale = Vector2(1, -1)
 max_static_amount = 500.0
 
+[node name="cold_area" parent="room/A0_left_0" instance=ExtResource("40_ogxqb")]
+position = Vector2(-2246, 1983)
+scale = Vector2(3.84686, 3.39999)
+
 [node name="A0_left_1" type="Node2D" parent="room"]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="room/A0_left_1"]
@@ -15176,6 +15181,27 @@ position = Vector2(6638, 9165)
 rotation = -2.8882
 scale = Vector2(1, -1)
 max_static_amount = 600.0
+
+[node name="cold_areas" type="Node2D" parent="room/A1"]
+
+[node name="cold_area_0" parent="room/A1/cold_areas" instance=ExtResource("40_ogxqb")]
+position = Vector2(3244, 5572)
+scale = Vector2(4.73263, 2.8275)
+
+[node name="cold_area_1" parent="room/A1/cold_areas" instance=ExtResource("40_ogxqb")]
+position = Vector2(6982, 5750)
+scale = Vector2(10.3564, 6.9075)
+heat_transfer = -1.0
+
+[node name="cold_area_3" parent="room/A1/cold_areas" instance=ExtResource("40_ogxqb")]
+position = Vector2(6439, 8469)
+scale = Vector2(8.39643, 3.8675)
+heat_transfer = -1.5
+
+[node name="cold_area_4" parent="room/A1/cold_areas" instance=ExtResource("40_ogxqb")]
+position = Vector2(9884, 8448)
+scale = Vector2(5.24686, 4.71999)
+heat_transfer = -2.0
 
 [node name="A1_wall_to_hide" type="Node2D" parent="room"]
 

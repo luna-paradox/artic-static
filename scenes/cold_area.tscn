@@ -3,10 +3,9 @@
 [ext_resource type="Script" path="res://scenes/cold_area.gd" id="1_i2ydt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y3qx2"]
-size = Vector2(1997, 1692)
+size = Vector2(500, 500)
 
 [node name="cold_area" type="Node2D"]
-position = Vector2(-215.621, -335.152)
 script = ExtResource("1_i2ydt")
 heat_transfer = -0.5
 
