@@ -16469,7 +16469,7 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
 offset_top = -103.0
-offset_right = 278.0
+offset_right = 326.0
 offset_bottom = -8.0
 grow_vertical = 0
 
@@ -16550,9 +16550,9 @@ text = "-ST"
 
 [node name="more_temp" type="Button" parent="DEBUG_UI/container"]
 layout_mode = 0
-offset_left = 142.0
+offset_left = 145.0
 offset_top = 31.0
-offset_right = 181.0
+offset_right = 184.0
 offset_bottom = 54.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
@@ -16561,14 +16561,69 @@ text = "+°C"
 
 [node name="less_temp" type="Button" parent="DEBUG_UI/container"]
 layout_mode = 0
-offset_left = 142.0
+offset_left = 145.0
 offset_top = 60.0
-offset_right = 181.0
+offset_right = 184.0
 offset_bottom = 83.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
 theme_override_font_sizes/font_size = 12
 text = "-°C"
+
+[node name="heater_slider" type="HSlider" parent="DEBUG_UI/container"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -124.0
+offset_top = -36.0
+offset_right = -5.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+max_value = 1.0
+step = 0.0
+value = 0.3
+
+[node name="heater_label" type="Label" parent="DEBUG_UI/container"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -124.0
+offset_top = -21.0
+offset_right = -69.0
+offset_bottom = -6.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 12
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="heat_transfer_label" type="Label" parent="DEBUG_UI/container"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -61.0
+offset_top = -21.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 12
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="hp_label" type="Label" parent="DEBUG_UI/container"]
 layout_mode = 0
@@ -16606,6 +16661,18 @@ text = "9999"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="temp" type="Label" parent="DEBUG_UI/container"]
+layout_mode = 1
+offset_left = 129.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 31.0
+theme_override_fonts/font = ExtResource("25_gbrq3")
+theme_override_font_sizes/font_size = 12
+text = "100.0°C"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="speedometer" type="Label" parent="DEBUG_UI/container"]
 layout_mode = 1
 anchors_preset = 1
@@ -16618,18 +16685,6 @@ offset_bottom = 30.0
 grow_horizontal = 0
 theme_override_fonts/font = ExtResource("25_gbrq3")
 text = "99999"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="temp" type="Label" parent="DEBUG_UI/container"]
-layout_mode = 1
-offset_left = 129.0
-offset_top = 8.0
-offset_right = 200.0
-offset_bottom = 31.0
-theme_override_fonts/font = ExtResource("25_gbrq3")
-theme_override_font_sizes/font_size = 12
-text = "100.0°C"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -16658,6 +16713,7 @@ vertical_alignment = 1
 [connection signal="pressed" from="DEBUG_UI/container/less_static_btn" to="DEBUG_UI" method="_on_less_static_btn_pressed"]
 [connection signal="pressed" from="DEBUG_UI/container/more_temp" to="DEBUG_UI" method="_on_more_temp_pressed"]
 [connection signal="pressed" from="DEBUG_UI/container/less_temp" to="DEBUG_UI" method="_on_less_temp_pressed"]
+[connection signal="value_changed" from="DEBUG_UI/container/heater_slider" to="DEBUG_UI" method="_on_heater_slider_value_changed"]
 
 [editable path="ui_exploration/top_left/hp_bar"]
 [editable path="ui_exploration/top_left/energy_bar"]

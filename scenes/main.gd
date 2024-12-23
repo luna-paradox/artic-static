@@ -120,7 +120,7 @@ func _process(delta: float) -> void:
 	control_temp(delta)
 	
 	if is_heater_on:
-		var delta_energy = -HEATER_ENERGY_COST * delta
+		var delta_energy = -HEATER_ENERGY_COST * heater_power * delta
 		update_energy(delta_energy)
 	
 	# CRUSH BY DEPTH
@@ -507,8 +507,10 @@ func sonar():
 # ---- TEMPERATURE ----
 var MAX_TEMP: float = 100
 var MIN_TEMP: float = -10
-var current_temp: float = 9.0 
-var TEMP_CONT_ENVIRONMENT_LOSS: float = 0.05
+var current_temp: float = 9.0
+var current_heat_transfer: float = 0.0
+var TEMP_TRANSFER_ENVIRONMENT: float = -0.5
+var TEMP_TRANSFER_BOOSTING: float = 0.3
 
 var temp_action_counter = 0
 func control_temp(delta: float) -> void:
@@ -519,17 +521,24 @@ func control_temp(delta: float) -> void:
 	temp_action_counter = 0.0
 	
 	# CALCULATE HEAT TRANSFER
-	var heat_transfer = -TEMP_CONT_ENVIRONMENT_LOSS
+	var heat_transfer = TEMP_TRANSFER_ENVIRONMENT
 	
 	if is_heater_on:
-		heat_transfer += 0.1
+		heat_transfer += calculate_heater_heat_transfer()
+	if player.is_boosting:
+		heat_transfer += TEMP_TRANSFER_BOOSTING
 	
+	heat_transfer = round(heat_transfer * 1000.0) / 1000.0
+	
+	current_heat_transfer = heat_transfer
 	update_temp(heat_transfer)
 
 
 # ---- HEATER ----
 var is_heater_on = false
 var HEATER_ENERGY_COST = 10
+var TEMP_TRANSFER_HEATER_MAX: float = 1.0
+var heater_power: float = 0.0
 
 func update_heater_state(new_state: bool) -> void:
 	if is_heater_on == new_state:
@@ -537,6 +546,18 @@ func update_heater_state(new_state: bool) -> void:
 	
 	is_heater_on = new_state
 
+func update_heater_power(new_value: float) -> void:
+	heater_power = new_value
+	
+	if heater_power > 1:
+		heater_power = 1
+	elif heater_power < 0:
+		heater_power = 0
+
+func calculate_heater_heat_transfer() -> float:
+	var heat_transfer: float = TEMP_TRANSFER_HEATER_MAX * heater_power
+	
+	return heat_transfer
 
 # ---- PROGRESSION ----
 func progress(new_mode: int) -> void:

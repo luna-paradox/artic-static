@@ -5,6 +5,8 @@ extends CanvasLayer
 @onready var energy_label = $container/energy_label
 @onready var static_label = $container/static_label
 @onready var temp_label = $container/temp
+@onready var heater_label = $container/heater_label
+@onready var heat_transfer_label = $container/heat_transfer_label
 
 @export var DELTA_HP: int = 20
 @export var DELTA_ENERGY: int = 200
@@ -20,6 +22,8 @@ func _process(_delta: float) -> void:
 	if main_controller:
 		hp_label.text = str(main_controller.current_hp)
 		static_label.text = str(round(main_controller.player_current_static))
+		heater_label.text = str(round(main_controller.heater_power * 100.0)/100.0)
+		heat_transfer_label.text = str(main_controller.current_heat_transfer)
 		
 		update_energy()
 		update_temperature()
@@ -96,3 +100,8 @@ func _on_less_temp_pressed() -> void:
 		main_controller.update_temp(-DELTA_TEMP * 10)
 	else:
 		main_controller.update_temp(-DELTA_TEMP)
+
+
+# ---- HEATER ----
+func _on_heater_slider_value_changed(value: float) -> void:
+	main_controller.heater_power = value
