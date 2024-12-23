@@ -122,6 +122,8 @@ close_instruction={
 2d_physics/layer_3="Cage Area"
 2d_physics/layer_4="Cage Interaction Area"
 2d_physics/layer_5="Progress Point Detection Area"
+2d_physics/layer_6="Cold Area"
+2d_physics/layer_10="Final Sphere"
 
 [rendering]
 

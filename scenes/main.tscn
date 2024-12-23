@@ -15765,11 +15765,19 @@ position = Vector2(2.59009, 6.30389)
 shape = SubResource("RectangleShape2D_estw5")
 
 [node name="player_area_2D" type="Area2D" parent="player/areas_2d"]
-visible = false
 collision_layer = 532
 collision_mask = 532
 
 [node name="collider" type="CollisionPolygon2D" parent="player/areas_2d/player_area_2D"]
+position = Vector2(-0.5, 0)
+polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
+
+[node name="cold_area_detector" type="Area2D" parent="player/areas_2d"]
+collision_layer = 32
+collision_mask = 32
+monitorable = false
+
+[node name="collider" type="CollisionPolygon2D" parent="player/areas_2d/cold_area_detector"]
 position = Vector2(-0.5, 0)
 polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
 
@@ -15808,6 +15816,7 @@ color = Color(1, 1, 1, 0.705882)
 polygon = PackedVector2Array(-4, -6, -2, -5, 2, -5, 4, -6, 4, -8, 1, -10, -1, -10, -4, -8)
 
 [node name="global_mod" type="CanvasModulate" parent="."]
+visible = false
 color = Color(0.355469, 0.355469, 0.355469, 1)
 
 [node name="ui_exploration" type="CanvasLayer" parent="."]
@@ -16702,6 +16711,8 @@ vertical_alignment = 1
 [connection signal="area_exited" from="player/areas_2d/interaction_area_2d" to="." method="_on_player_interaction_area_exited"]
 [connection signal="area_entered" from="player/areas_2d/interaction_area_2d_others" to="." method="_on_interaction_area_2d_others_area_entered"]
 [connection signal="area_exited" from="player/areas_2d/interaction_area_2d_others" to="." method="_on_interaction_area_2d_others_area_exited"]
+[connection signal="area_entered" from="player/areas_2d/cold_area_detector" to="player" method="_on_cold_area_entered"]
+[connection signal="area_exited" from="player/areas_2d/cold_area_detector" to="player" method="_on_cold_area_exited"]
 [connection signal="pressed" from="ui_exploration/bottom_left/open_instructions_btn" to="." method="_on_open_instructions_btn_pressed"]
 [connection signal="pressed" from="ui_dock_menu/container/close_btn" to="." method="_on_ui_dock_menu_close_btn_pressed"]
 [connection signal="pressed" from="ui_dock_menu/container/depth_upgrade/upgrade_depth_button" to="." method="_on_upgrade_depth_button_pressed"]

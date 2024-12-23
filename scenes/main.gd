@@ -513,11 +513,15 @@ func sonar():
 # ---- TEMPERATURE ----
 var MAX_TEMP: float = 100
 var MIN_TEMP: float = -10
-var current_temp: float = 9.0
-var current_heat_transfer: float = 0.0
 var TEMP_TRANSFER_ENVIRONMENT: float = -0.5
 var TEMP_TRANSFER_BOOSTING: float = 0.3
 var TEMP_TRANSFER_STATIC_FACTOR: float = -0.1 / 400 # X°C by each Y static
+
+var current_temp: float = 9.0
+var current_heat_transfer: float = 0.0
+# Heat transfer from areas of cold water
+# This is controlled by the player node because it was easier :)
+var cold_areas_heat_transfer: float = 0.0 
 
 var temp_action_counter = 0
 func control_temp(delta: float) -> void:
@@ -530,16 +534,21 @@ func control_temp(delta: float) -> void:
 	# CALCULATE HEAT TRANSFER
 	var heat_transfer = TEMP_TRANSFER_ENVIRONMENT
 	
+	# HEATER AND BOOSTING
 	if is_heater_on:
 		heat_transfer += calculate_heater_heat_transfer()
 	if player.is_boosting:
 		heat_transfer += TEMP_TRANSFER_BOOSTING
 	
+	# STATIC
 	var static_heat_transfer = player_current_static * TEMP_TRANSFER_STATIC_FACTOR
 	heat_transfer += static_heat_transfer
 	
-	heat_transfer = round(heat_transfer * 1000.0) / 1000.0
+	# COLD AREAS
+	heat_transfer += cold_areas_heat_transfer
 	
+	# CALCULATE FINAL HEAT TRANSFER AND UPDATE TEMP
+	heat_transfer = round(heat_transfer * 1000.0) / 1000.0
 	current_heat_transfer = heat_transfer
 	update_temp(heat_transfer)
 

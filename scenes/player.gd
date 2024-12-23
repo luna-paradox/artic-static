@@ -224,3 +224,25 @@ func control_turbo_volume(delta: float) -> void:
 	
 	if db_to_linear(turbo_sound.volume_db) <= 0 and turbo_sound.playing:
 		turbo_sound.stop()
+
+
+# ---- COLD AREA DETECTION ----
+
+func _on_cold_area_entered(area: Area2D) -> void:
+	var cold_area = area.get_parent()
+	if !"heat_transfer" in cold_area:
+		return
+	
+	var heat_transfer = cold_area.heat_transfer
+	main_controller.cold_areas_heat_transfer += heat_transfer
+
+func _on_cold_area_exited(area: Area2D) -> void:
+	var cold_area = area.get_parent()
+	if !"heat_transfer" in cold_area:
+		return
+	
+	var heat_transfer = cold_area.heat_transfer
+	main_controller.cold_areas_heat_transfer -= heat_transfer
+	
+	if main_controller.cold_areas_heat_transfer < 0:
+		main_controller.cold_areas_heat_transfer = 0
