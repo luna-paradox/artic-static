@@ -75,6 +75,7 @@ var progress_status = 0
 # ---- OTHERS ----
 var pause = false
 var crusher_timer: Timer
+var heat_timer: Timer
 
 func _ready() -> void:
 	$global_mod.show()
@@ -95,6 +96,12 @@ func _ready() -> void:
 	crusher_timer.one_shot = true
 	crusher_timer.timeout.connect(damage_by_pressure)
 	add_child(crusher_timer)
+	
+	heat_timer = Timer.new()
+	heat_timer.wait_time = 1.0
+	heat_timer.one_shot = true
+	heat_timer.timeout.connect(damage_by_heat)
+	add_child(heat_timer)
 	
 	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
 	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
@@ -119,6 +126,9 @@ func _process(delta: float) -> void:
 	
 	# TEMPERATURE CONTROL
 	control_temp(delta)
+	if (current_temp > 30 or current_temp < 0) and heat_timer.is_stopped():
+		heat_timer.start()
+	
 	
 	if is_heater_on:
 		var delta_energy = -HEATER_ENERGY_COST * heater_power * delta
@@ -220,8 +230,8 @@ func _input(event: InputEvent) -> void:
 
 
 # ---- STATS ----
-@export var MAX_HP = 200
-var current_hp = 200
+@export var MAX_HP: float = 200.0
+var current_hp: float = 200.0
 @export var MAX_ENERGY: float = 2000.0
 var current_energy: float = 2000.0
 @export var MAX_PLAYER_STATIC = 5000.0
@@ -230,7 +240,7 @@ var player_current_static = 0.0
 # Static stored on the base
 var available_static = 0
 
-func update_hp(delta_hp: int) -> void:
+func update_hp(delta_hp: float) -> void:
 	#print('UPDATE HP: ' + str(delta_hp))
 	
 	#UPDATE DATA
@@ -517,6 +527,7 @@ var MIN_TEMP: float = -10
 var TEMP_TRANSFER_ENVIRONMENT: float = -0.5
 var TEMP_TRANSFER_BOOSTING: float = 0.3
 var TEMP_TRANSFER_STATIC_FACTOR: float = -0.1 / 400 # X°C by each Y static
+var MAX_HP_DAMAGE_BY_HEAT: int = -50
 
 var current_temp: float = 9.0
 var current_heat_transfer: float = 0.0
@@ -552,6 +563,19 @@ func control_temp(delta: float) -> void:
 	heat_transfer = round(heat_transfer * 1000.0) / 1000.0
 	current_heat_transfer = heat_transfer
 	update_temp(heat_transfer)
+
+func damage_by_heat() -> void:
+	var heat_index = 0
+	if current_temp > 30:
+		heat_index = (current_temp - 30) / 30
+	elif current_temp < 0:
+		heat_index = current_temp * (-1) / 10
+	else:
+		return
+	
+	var damage = MAX_HP_DAMAGE_BY_HEAT * heat_index
+	
+	update_hp(damage)
 
 
 # ---- HEATER ----
