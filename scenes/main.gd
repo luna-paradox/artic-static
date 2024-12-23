@@ -534,7 +534,7 @@ func control_temp(delta: float) -> void:
 var is_heater_on = false
 var HEATER_ENERGY_COST = 10
 var TEMP_TRANSFER_HEATER_MAX: float = 1.0
-var heater_power: float = 0.0
+var heater_power: float = 0.5
 
 func update_heater_state(new_state: bool) -> void:
 	if is_heater_on == new_state:

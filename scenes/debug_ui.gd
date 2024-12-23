@@ -23,7 +23,9 @@ func _process(_delta: float) -> void:
 		hp_label.text = str(main_controller.current_hp)
 		static_label.text = str(round(main_controller.player_current_static))
 		heater_label.text = str(round(main_controller.heater_power * 100.0)/100.0)
+		
 		heat_transfer_label.text = str(main_controller.current_heat_transfer)
+		$container/heater_slider.value = main_controller.heater_power
 		
 		update_energy()
 		update_temperature()
