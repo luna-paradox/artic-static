@@ -29,13 +29,6 @@ func _process(delta: float) -> void:
 	if !pause:
 		control_turbo_volume(delta)
 
-func _input(event: InputEvent) -> void:
-	if pause:
-		return
-	
-	if event.is_action_pressed("ctrl_action"):
-		self.scale.x *= -1
-
 func _physics_process(delta):
 	if pause:
 		return

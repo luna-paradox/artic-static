@@ -168,21 +168,13 @@ func _input(event: InputEvent) -> void:
 	
 	# WHILE INSTRUCTIONS ARE VISIBLE
 	if instructions_ui.visible:
-		if event.is_action_pressed("interact"):
-			hide_instructions()
-		if event.is_action_pressed("E_action"):
-			hide_instructions()
-		if event.is_action_pressed("escape"):
-			hide_instructions()
-		if event.is_action_pressed("space_action"):
+		if event.is_action_pressed("close_instruction"):
 			hide_instructions()
 		return
 	
 	# WHILE DOCK MENU IS VISIBLE
 	if dock_menu.visible:
-		if event.is_action_pressed("interact"):
-			close_dock_menu()
-		elif event.is_action_pressed("escape"):
+		if event.is_action_pressed("exit_dock"):
 			close_dock_menu()
 		return
 	
@@ -190,23 +182,27 @@ func _input(event: InputEvent) -> void:
 	if pause:
 		return
 	
+	if event.is_action_pressed("turn_sub"):
+		player.scale.x *= -1
+		return
+	
 	# WHILE MOVING AROUND
 	if event.is_action_pressed("interact") and can_dock:
 		start_dock_menu()
 		return
 	
-	if event.is_action_pressed("E_action"):
+	if event.is_action_pressed("sonar_action"):
 		sonar()
 		return
 	
-	if event.is_action_pressed("Q_action"):
+	if event.is_action_pressed("heater_action"):
 		update_heater_state(!is_heater_on)
 		return
 	
-	if event.is_action_pressed("shift_action") and current_energy > 0:
+	if event.is_action_pressed("turbo_boost_action") and current_energy > 0:
 		player.turbo_boost()
 		return
-	elif event.is_action_released("shift_action"):
+	elif event.is_action_released("turbo_boost_action"):
 		player.disable_turbo_boost()
 		return
 	
