@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://dwjsno2vbc62d"]
+
+[ext_resource type="Script" path="res://scenes/cold_area.gd" id="1_i2ydt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y3qx2"]
+size = Vector2(500, 500)
+
+[node name="cold_area" type="Node2D"]
+script = ExtResource("1_i2ydt")
+heat_transfer = -0.5
+
+[node name="area_2d" type="Area2D" parent="."]
+collision_layer = 32
+collision_mask = 32
+input_pickable = false
+monitoring = false
+
+[node name="collider" type="CollisionShape2D" parent="area_2d"]
+shape = SubResource("RectangleShape2D_y3qx2")

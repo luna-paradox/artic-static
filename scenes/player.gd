@@ -29,13 +29,6 @@ func _process(delta: float) -> void:
 	if !pause:
 		control_turbo_volume(delta)
 
-func _input(event: InputEvent) -> void:
-	if pause:
-		return
-	
-	if event.is_action_pressed("ctrl_action"):
-		self.scale.x *= -1
-
 func _physics_process(delta):
 	if pause:
 		return
@@ -51,24 +44,35 @@ func init(new_acceleration: int, new_deceleration: int, new_max_peed: int):
 
 
 # ---- MOVEMENT ----
-@export var ACCELERATION: int = 200
-@export var DECELERATION: int = 100
-@export var MAX_SPEED: int = 400
+@export var ACCELERATION: int
+@export var DECELERATION: int
+@export var MAX_SPEED: int
 
 func move_vessel(delta: float) -> KinematicCollision2D:
 	# GET INPUT
 	var direction = Input.get_vector("left", "right", "top", "bottom")
 	
 	# SEA CURRENT
-	#if global_position.y > 500:
-		#direction += Vector2.RIGHT / 3
+	var current_influence = Vector2.UP * 0
+	if is_boosting:
+		current_influence = Vector2.ZERO
 	
-	if direction != Vector2.ZERO:
+	# MOVE
+	if direction != Vector2.ZERO or current_influence != Vector2.ZERO:
+		var final_acceleration = ACCELERATION
+		var final_max_speed = MAX_SPEED
+		if main_controller.current_temp < 0:
+			var temp_index = main_controller.current_temp / -10
+			
+			final_acceleration *= 1 - 0.5 * temp_index
+			final_max_speed *= 1 - 0.5 * temp_index
+		
 		# APPLY ACCELERATION
-		velocity = velocity.move_toward(direction * MAX_SPEED, ACCELERATION * delta)
+		velocity = velocity.move_toward(direction * final_max_speed + current_influence, final_acceleration * delta)
 	else:
 		# WORK LIKE FRICTION
 		velocity = velocity.move_toward(Vector2.ZERO, DECELERATION * delta)
+	
 	
 	# SFX: CONTROL MOTOR AUDIO
 	control_motor_volume(delta, direction)
@@ -129,7 +133,7 @@ func process_sonar() -> void:
 
 # ---- TURBO BOOST ----
 @export var TURBO_ACCELERATION: int = 3
-@export var TURBO_DECELERATION: int = 5
+@export var TURBO_DECELERATION: int = 7
 @export var TURBO_MAX_SPEED: int = 3
 var is_boosting: bool = false
 
@@ -170,7 +174,7 @@ func update_pause(new_state: bool) -> void:
 		
 		turbo_sound.volume_db = linear_to_db(0)
 		current_turbo_volume = 0
-		is_boosting = false
+		disable_turbo_boost()
 
 
 # ---- MOTOR AUDIO ----
@@ -228,3 +232,25 @@ func control_turbo_volume(delta: float) -> void:
 	
 	if db_to_linear(turbo_sound.volume_db) <= 0 and turbo_sound.playing:
 		turbo_sound.stop()
+
+
+# ---- COLD AREA DETECTION ----
+
+func _on_cold_area_entered(area: Area2D) -> void:
+	var cold_area = area.get_parent()
+	if !"heat_transfer" in cold_area:
+		return
+	
+	var heat_transfer = cold_area.heat_transfer
+	main_controller.cold_areas_heat_transfer += heat_transfer
+
+func _on_cold_area_exited(area: Area2D) -> void:
+	var cold_area = area.get_parent()
+	if !"heat_transfer" in cold_area:
+		return
+	
+	var heat_transfer = cold_area.heat_transfer
+	main_controller.cold_areas_heat_transfer -= heat_transfer
+	
+	if main_controller.cold_areas_heat_transfer < 0:
+		main_controller.cold_areas_heat_transfer = 0

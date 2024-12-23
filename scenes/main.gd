@@ -33,6 +33,7 @@ class_name MainController
 @onready var getting_crushed_sound = $global_audio/getting_crushed_sound
 @onready var secret_success_sound = $global_audio/secret_success_sound
 @onready var sonar_sound = $global_audio/sonar_sound
+@onready var heater_sound = $global_audio/heater_sound
 # PROGRESS
 @onready var third_eye = $ui_exploration/top_right/third_eye
 
@@ -49,24 +50,15 @@ class_name MainController
 @export var DECELERATION: int = 100
 @export var MAX_SPEED: int = 450
 
-# ---- CURRENCY STATS ----
-@export var MAX_HP = 200
-var current_hp = 200
-
-@export var MAX_ENERGY = 1000
-var current_energy = 1000
-
-@export var MAX_PLAYER_STATIC = 5000.0
-var player_current_static = 0.0
-
-var available_static = 0
-
 # ---- OTHER STATS ----
 @export var STATIC_CONSUMPTION_RATE = 150
 @export var TURBO_BOOST_ENERGY_RATE = 100
+
+# ---- DEPTH ----
 @export var CRUSH_DEPTH = 5800
 var current_depth = 5550
 
+# ---- STORE ----
 # Cost in Static
 @export var CRUSH_DEPTH_UPGRADE = 1000
 
@@ -83,6 +75,7 @@ var progress_status = 0
 # ---- OTHERS ----
 var pause = false
 var crusher_timer: Timer
+var heat_timer: Timer
 
 func _ready() -> void:
 	$global_mod.show()
@@ -104,6 +97,12 @@ func _ready() -> void:
 	crusher_timer.timeout.connect(damage_by_pressure)
 	add_child(crusher_timer)
 	
+	heat_timer = Timer.new()
+	heat_timer.wait_time = 1.0
+	heat_timer.one_shot = true
+	heat_timer.timeout.connect(damage_by_heat)
+	add_child(heat_timer)
+	
 	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
 	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
 	
@@ -118,7 +117,6 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	camera.global_position = player.global_position
-	
 	if pause:
 		return
 	
@@ -126,6 +124,18 @@ func _process(delta: float) -> void:
 	current_depth = player.global_position.y/20 + 5550
 	depth_gauge.update_depth(current_depth)
 	
+	# TEMPERATURE CONTROL
+	control_temp(delta)
+	if (current_temp > 30 or current_temp < 0) and heat_timer.is_stopped():
+		heat_timer.start()
+	
+	
+	if is_heater_on:
+		var delta_energy = -HEATER_ENERGY_COST * heater_power * delta
+		update_energy(delta_energy)
+		
+		if current_energy <= 0:
+			update_heater_state(false)
 	
 	# CRUSH BY DEPTH
 	if current_depth > CRUSH_DEPTH and crusher_timer.is_stopped():
@@ -133,11 +143,7 @@ func _process(delta: float) -> void:
 	
 	crush_by_depth_audio(delta)
 	
-	
 	# TURBO BOOST 
-	if current_energy <= 0 and player.is_boosting:
-		player.disable_turbo_boost()
-	
 	if player.is_boosting:
 		var speed = player.velocity.length()
 		var speed_index = speed / player.MAX_SPEED
@@ -145,7 +151,9 @@ func _process(delta: float) -> void:
 		var speed_modifier = 0.7 * atan(rad_to_deg(7 * speed_index))
 		
 		update_energy(-delta * TURBO_BOOST_ENERGY_RATE * speed_modifier)
-	
+		
+		if current_energy <= 0:
+			player.disable_turbo_boost()
 	
 	#INTERACT WITH STATIC NODES
 	if Input.is_action_pressed("interact") and static_nodes_in_range.size() > 0:
@@ -173,21 +181,13 @@ func _input(event: InputEvent) -> void:
 	
 	# WHILE INSTRUCTIONS ARE VISIBLE
 	if instructions_ui.visible:
-		if event.is_action_pressed("interact"):
-			hide_instructions()
-		if event.is_action_pressed("E_action"):
-			hide_instructions()
-		if event.is_action_pressed("escape"):
-			hide_instructions()
-		if event.is_action_pressed("space_action"):
+		if event.is_action_pressed("close_instruction"):
 			hide_instructions()
 		return
 	
 	# WHILE DOCK MENU IS VISIBLE
 	if dock_menu.visible:
-		if event.is_action_pressed("interact"):
-			close_dock_menu()
-		elif event.is_action_pressed("escape"):
+		if event.is_action_pressed("exit_dock"):
 			close_dock_menu()
 		return
 	
@@ -195,19 +195,27 @@ func _input(event: InputEvent) -> void:
 	if pause:
 		return
 	
+	if event.is_action_pressed("turn_sub"):
+		player.scale.x *= -1
+		return
+	
 	# WHILE MOVING AROUND
 	if event.is_action_pressed("interact") and can_dock:
 		start_dock_menu()
 		return
 	
-	if event.is_action_pressed("E_action"):
+	if event.is_action_pressed("sonar_action"):
 		sonar()
 		return
 	
-	if event.is_action_pressed("shift_action") and current_energy > 0:
+	if event.is_action_pressed("heater_action"):
+		update_heater_state(!is_heater_on)
+		return
+	
+	if event.is_action_pressed("turbo_boost_action") and current_energy > 0:
 		player.turbo_boost()
 		return
-	elif event.is_action_released("shift_action"):
+	elif event.is_action_released("turbo_boost_action"):
 		player.disable_turbo_boost()
 		return
 	
@@ -221,8 +229,18 @@ func _input(event: InputEvent) -> void:
 		return
 
 
-# ---- UPDATE STATS ----
-func update_hp(delta_hp: int) -> void:
+# ---- STATS ----
+@export var MAX_HP: float = 200.0
+var current_hp: float = 200.0
+@export var MAX_ENERGY: float = 2000.0
+var current_energy: float = 2000.0
+@export var MAX_PLAYER_STATIC = 5000.0
+# Static stored on the submarine
+var player_current_static = 0.0
+# Static stored on the base
+var available_static = 0
+
+func update_hp(delta_hp: float) -> void:
 	#print('UPDATE HP: ' + str(delta_hp))
 	
 	#UPDATE DATA
@@ -244,11 +262,12 @@ func update_hp(delta_hp: int) -> void:
 		game_over()
 		return
 
-func update_energy(delta_energy: int) -> void:
+func update_energy(delta_energy: float) -> void:
 	#print('UPDATE ENERGY: ' + str(delta_energy))
 	
 	#UPDATE DATA
 	current_energy += delta_energy
+	current_energy = round(current_energy*100.0) / 100.0
 	
 	if current_energy > MAX_ENERGY:
 		current_energy = MAX_ENERGY
@@ -288,17 +307,38 @@ func update_collecting_static(new_state: bool) -> void:
 	elif !collecting_static and collecting_static_sound.playing:
 		collecting_static_sound.stop()
 
+func update_temp(delta_temp: float):
+	delta_temp = round(delta_temp * 100.0) / 100.0
+	
+	#UPDATE DATA
+	current_temp += delta_temp
+	current_temp = round(current_temp * 100.0) / 100.0
+	
+	if current_temp > MAX_TEMP:
+		current_temp = MAX_TEMP
+	elif current_temp < MIN_TEMP:
+		current_temp = MIN_TEMP
+	
+	#TODO UPDATE UI
+	#print(current_temp)
+	pass
+
 
 # ---- GAME OVER ----
 func restart():
 	game_over_overlay.hide()
 	
 	player.velocity = Vector2.ZERO
-	player.global_position = player_start_pos.global_position
+	player.disable_turbo_boost()
+	#player.global_position = player_start_pos.global_position
 	
 	update_hp(MAX_HP)
+	update_energy(MAX_ENERGY)
+	update_temp(20 - current_temp)
 	update_static(-MAX_PLAYER_STATIC)
-	update_pause(false)
+	
+	update_heater_power(0.5)
+	update_heater_state(true)
 	
 	reset_all_static_nodes()
 	background_sound_0.play()
@@ -307,6 +347,8 @@ func restart():
 	camera.global_position = player.global_position
 	await get_tree().process_frame
 	camera.position_smoothing_enabled = true
+	
+	update_pause(false)
 
 func game_over() -> void:
 	background_sound_0.stop()
@@ -368,7 +410,7 @@ func _on_cage_interaction_area_2d_area_exited(area: Area2D) -> void:
 		return
 	can_dock = false
 	alert_can_dock.hide()
-	
+
 
 # ---- DOCKER MENU ----
 func _on_ui_dock_menu_close_btn_pressed() -> void:
@@ -387,6 +429,7 @@ func start_dock_menu() -> void:
 	# REPAIR SUBMARINE
 	update_hp(MAX_HP)
 	update_energy(MAX_ENERGY)
+	update_temp(20 - current_temp)
 	
 	# RESTART ALL STATIC NODES
 	reset_all_static_nodes()
@@ -444,13 +487,128 @@ func crush_by_depth_audio(delta: float) -> void:
 		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
 	elif current_depth <= CRUSH_DEPTH and getting_crushed_sound.playing:
 		current_crashing_volume -= 3 * delta
-		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
 		if current_crashing_volume < 0:
 			current_crashing_volume = 0
+		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
 	
 	if current_crashing_volume == 0:
 		getting_crushed_sound.stop()
 
+
+# ---- SONNAR ----
+func get_nearest_static_node() -> Node2D:
+	var nearest_node: Node2D = null
+	var shorteest_distance: float = 0.0
+	
+	for node in get_all_static_nodes($room):
+		if !node.enabled:
+			continue
+		
+		var distance = node.global_position.distance_to(player.global_position)
+		if nearest_node == null:
+			shorteest_distance = distance
+			nearest_node = node
+		elif distance < shorteest_distance:
+			shorteest_distance = distance
+			nearest_node = node
+	
+	return nearest_node
+
+func sonar(): 
+	if !player.is_sonar_enabled:
+		sonar_sound.play()
+		var nearest_static_node = get_nearest_static_node()
+		player.activate_sonar(nearest_static_node)
+
+
+# ---- TEMPERATURE ----
+var MAX_TEMP: float = 100
+var MIN_TEMP: float = -10
+var TEMP_TRANSFER_ENVIRONMENT: float = -0.5
+var TEMP_TRANSFER_BOOSTING: float = 0.3
+var TEMP_TRANSFER_STATIC_FACTOR: float = -0.1 / 400 # X°C by each Y static
+var MAX_HP_DAMAGE_BY_HEAT: int = -10
+
+var current_temp: float = 9.0
+var current_heat_transfer: float = 0.0
+# Heat transfer from areas of cold water
+# This is controlled by the player node because it was easier :)
+var cold_areas_heat_transfer: float = 0.0 
+
+var temp_action_counter = 0
+func control_temp(delta: float) -> void:
+	temp_action_counter += delta
+	if temp_action_counter < 1.0:
+		return
+	
+	temp_action_counter = 0.0
+	
+	# CALCULATE HEAT TRANSFER
+	var heat_transfer = TEMP_TRANSFER_ENVIRONMENT
+	
+	# HEATER AND BOOSTING
+	if is_heater_on:
+		heat_transfer += calculate_heater_heat_transfer()
+	if player.is_boosting:
+		heat_transfer += TEMP_TRANSFER_BOOSTING
+	
+	# STATIC
+	var static_heat_transfer = player_current_static * TEMP_TRANSFER_STATIC_FACTOR
+	heat_transfer += static_heat_transfer
+	
+	# COLD AREAS
+	heat_transfer += cold_areas_heat_transfer
+	
+	# CALCULATE FINAL HEAT TRANSFER AND UPDATE TEMP
+	heat_transfer = round(heat_transfer * 1000.0) / 1000.0
+	current_heat_transfer = heat_transfer
+	update_temp(heat_transfer)
+
+func damage_by_heat() -> void:
+	var heat_index = 0
+	if current_temp > 30:
+		heat_index = (current_temp - 30) / 30
+	elif current_temp < 0:
+		heat_index = current_temp * (-1) / 10
+	else:
+		return
+	
+	var damage = MAX_HP_DAMAGE_BY_HEAT * heat_index
+	
+	update_hp(damage)
+
+
+# ---- HEATER ----
+var is_heater_on = false
+var HEATER_ENERGY_COST = 10
+var TEMP_TRANSFER_HEATER_MAX: float = 1.0
+var heater_power: float = 0.5
+
+func update_heater_state(new_state: bool) -> void:
+	if is_heater_on == new_state:
+		return
+	
+	is_heater_on = new_state
+	
+	if is_heater_on:
+		heater_sound.play()
+	else:
+		heater_sound.stop()
+
+func update_heater_power(new_value: float) -> void:
+	heater_power = new_value
+	
+	if heater_power > 1:
+		heater_power = 1
+	elif heater_power < 0:
+		heater_power = 0
+	
+	heater_sound.volume_db = linear_to_db(heater_power)
+
+func calculate_heater_heat_transfer() -> float:
+	var heat_transfer: float = TEMP_TRANSFER_HEATER_MAX * heater_power
+	
+	return heat_transfer
 
 # ---- PROGRESSION ----
 func progress(new_mode: int) -> void:
@@ -555,32 +713,6 @@ func activate_area_3() -> void:
 func _on_final_sphere_area_2d_area_entered(_area: Area2D) -> void:
 	update_pause(true)
 	$ending_screen.show()
-
-
-# ---- SONNAR ----
-func get_nearest_static_node() -> Node2D:
-	var nearest_node: Node2D = null
-	var shorteest_distance: float = 0.0
-	
-	for node in get_all_static_nodes($room):
-		if !node.enabled:
-			continue
-		
-		var distance = node.global_position.distance_to(player.global_position)
-		if nearest_node == null:
-			shorteest_distance = distance
-			nearest_node = node
-		elif distance < shorteest_distance:
-			shorteest_distance = distance
-			nearest_node = node
-	
-	return nearest_node
-
-func sonar(): 
-	if !player.is_sonar_enabled:
-		sonar_sound.play()
-		var nearest_static_node = get_nearest_static_node()
-		player.activate_sonar(nearest_static_node)
 
 
 # ---- INSTRUCTIONS ----
