@@ -221,8 +221,8 @@ func _input(event: InputEvent) -> void:
 # ---- STATS ----
 @export var MAX_HP = 200
 var current_hp = 200
-@export var MAX_ENERGY: float = 1000.0
-var current_energy: float = 1000.0
+@export var MAX_ENERGY: float = 2000.0
+var current_energy: float = 2000.0
 @export var MAX_PLAYER_STATIC = 5000.0
 # Static stored on the submarine
 var player_current_static = 0.0
@@ -319,7 +319,7 @@ func restart():
 	
 	player.velocity = Vector2.ZERO
 	player.disable_turbo_boost()
-	player.global_position = player_start_pos.global_position
+	#player.global_position = player_start_pos.global_position
 	
 	update_hp(MAX_HP)
 	update_energy(MAX_ENERGY)
