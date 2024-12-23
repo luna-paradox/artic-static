@@ -517,6 +517,7 @@ var current_temp: float = 9.0
 var current_heat_transfer: float = 0.0
 var TEMP_TRANSFER_ENVIRONMENT: float = -0.5
 var TEMP_TRANSFER_BOOSTING: float = 0.3
+var TEMP_TRANSFER_STATIC_FACTOR: float = -0.1 / 400 # X°C by each Y static
 
 var temp_action_counter = 0
 func control_temp(delta: float) -> void:
@@ -533,6 +534,9 @@ func control_temp(delta: float) -> void:
 		heat_transfer += calculate_heater_heat_transfer()
 	if player.is_boosting:
 		heat_transfer += TEMP_TRANSFER_BOOSTING
+	
+	var static_heat_transfer = player_current_static * TEMP_TRANSFER_STATIC_FACTOR
+	heat_transfer += static_heat_transfer
 	
 	heat_transfer = round(heat_transfer * 1000.0) / 1000.0
 	
