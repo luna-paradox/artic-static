@@ -20,7 +20,7 @@ extends CanvasLayer
 func _process(_delta: float) -> void:
 	update_speedometer()
 	if main_controller:
-		hp_label.text = str(main_controller.current_hp)
+		hp_label.text = str(round(main_controller.current_hp * 100.0)/100.0)
 		static_label.text = str(round(main_controller.player_current_static))
 		heater_label.text = str(round(main_controller.heater_power * 100.0)/100.0)
 		

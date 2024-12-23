@@ -527,7 +527,7 @@ var MIN_TEMP: float = -10
 var TEMP_TRANSFER_ENVIRONMENT: float = -0.5
 var TEMP_TRANSFER_BOOSTING: float = 0.3
 var TEMP_TRANSFER_STATIC_FACTOR: float = -0.1 / 400 # X°C by each Y static
-var MAX_HP_DAMAGE_BY_HEAT: int = -50
+var MAX_HP_DAMAGE_BY_HEAT: int = -10
 
 var current_temp: float = 9.0
 var current_heat_transfer: float = 0.0
