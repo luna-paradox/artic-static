@@ -122,6 +122,9 @@ func _process(delta: float) -> void:
 	if is_heater_on:
 		var delta_energy = -HEATER_ENERGY_COST * heater_power * delta
 		update_energy(delta_energy)
+		
+		if current_energy <= 0:
+			update_heater_state(false)
 	
 	# CRUSH BY DEPTH
 	if current_depth > CRUSH_DEPTH and crusher_timer.is_stopped():
@@ -130,9 +133,6 @@ func _process(delta: float) -> void:
 	crush_by_depth_audio(delta)
 	
 	# TURBO BOOST 
-	if current_energy <= 0 and player.is_boosting:
-		player.disable_turbo_boost()
-	
 	if player.is_boosting:
 		var speed = player.velocity.length()
 		var speed_index = speed / player.MAX_SPEED
@@ -140,7 +140,9 @@ func _process(delta: float) -> void:
 		var speed_modifier = 0.7 * atan(rad_to_deg(7 * speed_index))
 		
 		update_energy(-delta * TURBO_BOOST_ENERGY_RATE * speed_modifier)
-	
+		
+		if current_energy <= 0:
+			player.disable_turbo_boost()
 	
 	#INTERACT WITH STATIC NODES
 	if Input.is_action_pressed("interact") and static_nodes_in_range.size() > 0:
