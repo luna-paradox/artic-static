@@ -500,23 +500,36 @@ enum SONAR_FREQ { STATIC_NODE, TEST_0, TEST_1 }
 @onready var sonar_frequencies = [
 	{
 		"id": SONAR_FREQ.STATIC_NODE,
+		"name": "Static Node"
 	},
 	{
 		"id": SONAR_FREQ.TEST_0,
 		"target_node": $sonar_freq_targets/freq_test_0,
+		"name": "Test Freq. 0"
 	},
 	{
 		"id": SONAR_FREQ.TEST_1,
 		"target_node": $sonar_freq_targets/freq_test_1,
+		"name": "Test Freq. 1"
 	},
 ]
 var current_sonar_freq_idx: int = 0
 
 func sonar(): 
-	if !player.is_sonar_enabled:
-		sonar_sound.play()
-		var nearest_static_node = get_nearest_static_node()
-		player.activate_sonar(nearest_static_node)
+	if player.is_sonar_enabled:
+		return
+	
+	sonar_sound.play()
+	
+	var target_node: Node2D
+	var current_freq: Dictionary = get_current_sonar_freq()
+	
+	if current_freq.id == SONAR_FREQ.STATIC_NODE:
+		target_node = get_nearest_static_node()
+	else:
+		target_node = current_freq.target_node
+	
+	player.activate_sonar(target_node)
 
 # keep station_movement as 1 or -1 only pls
 func update_sonar_freq(station_movement: int) -> void:
