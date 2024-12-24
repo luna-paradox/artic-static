@@ -34,6 +34,7 @@ class_name MainController
 @onready var secret_success_sound = $global_audio/secret_success_sound
 @onready var sonar_sound = $global_audio/sonar_sound
 @onready var heater_sound = $global_audio/heater_sound
+@onready var change_sonar_freq_sound = $global_audio/change_sonar_freq_sound
 # PROGRESS
 @onready var third_eye = $ui_exploration/top_right/third_eye
 
@@ -539,13 +540,16 @@ func sonar():
 
 # keep station_movement as 1 or -1 only pls
 func update_sonar_freq(station_movement: int) -> void:
-	
+	var old_station_idx = current_sonar_freq_idx
 	current_sonar_freq_idx += station_movement
 	
 	if current_sonar_freq_idx > available_sonar_freq.size() - 1:
 		current_sonar_freq_idx = 0
 	elif current_sonar_freq_idx < 0:
 		current_sonar_freq_idx = available_sonar_freq.size() - 1
+	
+	if old_station_idx != current_sonar_freq_idx:
+		change_sonar_freq_sound.play()
 
 func get_current_sonar_freq() -> Dictionary:
 	var res = available_sonar_freq[current_sonar_freq_idx]

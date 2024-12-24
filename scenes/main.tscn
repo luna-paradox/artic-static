@@ -1,4 +1,4 @@
-[gd_scene load_steps=2179 format=3 uid="uid://chovb3krt6q56"]
+[gd_scene load_steps=2180 format=3 uid="uid://chovb3krt6q56"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_nuh7j"]
 [ext_resource type="AudioStream" uid="uid://cjjlq52c5q6oh" path="res://assets/audio/large-underwater-explosion-190270-TRIM.ogg" id="2_shk0a"]
@@ -19,6 +19,7 @@
 [ext_resource type="AudioStream" uid="uid://c5egqtwutnlih" path="res://assets/audio/heater-53820-LOOP.ogg" id="9_lmh1w"]
 [ext_resource type="PackedScene" uid="uid://b7b5r00rfcajv" path="res://scenes/static_node.tscn" id="10_dq6to"]
 [ext_resource type="Script" path="res://addons/rmsmartshape/shapes/shape.gd" id="10_guwg0"]
+[ext_resource type="AudioStream" uid="uid://ckdkiwqn4ye13" path="res://assets/audio/noiseloop-108284-CUT.ogg" id="10_mfcmd"]
 [ext_resource type="Texture2D" uid="uid://cgir3nu3qevre" path="res://assets/visual/SPR_base_0.3.png" id="12_gkqo8"]
 [ext_resource type="Texture2D" uid="uid://c01mo6h7omf0c" path="res://assets/visual/SPR_question_mark_icon.png" id="12_q8n8v"]
 [ext_resource type="Shader" path="res://scenes/tv_noise.gdshader" id="13_02jgh"]
@@ -14897,6 +14898,9 @@ stream = ExtResource("8_45rvg")
 [node name="heater_sound" type="AudioStreamPlayer" parent="global_audio"]
 stream = ExtResource("9_lmh1w")
 parameters/looping = true
+
+[node name="change_sonar_freq_sound" type="AudioStreamPlayer" parent="global_audio"]
+stream = ExtResource("10_mfcmd")
 
 [node name="player_start_pos" type="Node2D" parent="."]
 position = Vector2(0, -720)
