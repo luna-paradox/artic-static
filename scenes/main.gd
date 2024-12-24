@@ -34,6 +34,7 @@ class_name MainController
 @onready var secret_success_sound = $global_audio/secret_success_sound
 @onready var sonar_sound = $global_audio/sonar_sound
 @onready var heater_sound = $global_audio/heater_sound
+@onready var change_sonar_freq_sound = $global_audio/change_sonar_freq_sound
 # PROGRESS
 @onready var third_eye = $ui_exploration/top_right/third_eye
 
@@ -173,10 +174,10 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	if event.is_action_pressed("1_debug"):
-		progress(third_eye.mode + 1)
+		unlock_sonar_freq(SONAR_FREQ.TEST_0)
 		return
 	if event.is_action_pressed("2_debug"):
-		update_static(500)
+		unlock_sonar_freq(SONAR_FREQ.TEST_1)
 		return
 	
 	# WHILE INSTRUCTIONS ARE VISIBLE
@@ -495,7 +496,74 @@ func crush_by_depth_audio(delta: float) -> void:
 		getting_crushed_sound.stop()
 
 
-# ---- SONNAR ----
+# ---- SONAR ----
+enum SONAR_FREQ { STATIC_NODE, TEST_0, TEST_1 }
+@onready var sonar_frequencies = {
+	SONAR_FREQ.STATIC_NODE: {
+		"id": SONAR_FREQ.STATIC_NODE,
+		"order": 0,
+		"name": "Static Node"
+	},
+	SONAR_FREQ.TEST_0: {
+		"id": SONAR_FREQ.TEST_0,
+		"order": 1,
+		"target_node": $sonar_freq_targets/freq_test_0,
+		"name": "Test Freq. 0"
+	},
+	SONAR_FREQ.TEST_1: {
+		"id": SONAR_FREQ.TEST_1,
+		"order": 2,
+		"target_node": $sonar_freq_targets/freq_test_1,
+		"name": "Test Freq. 1"
+	},
+}
+@onready var available_sonar_freq = [
+	sonar_frequencies[0],
+]
+var current_sonar_freq_idx: int = 0
+
+func sonar(): 
+	if player.is_sonar_enabled:
+		return
+	
+	sonar_sound.play()
+	
+	var target_node: Node2D
+	var current_freq: Dictionary = get_current_sonar_freq()
+	
+	if current_freq.id == SONAR_FREQ.STATIC_NODE:
+		target_node = get_nearest_static_node()
+	else:
+		target_node = current_freq.target_node
+	
+	player.activate_sonar(target_node)
+
+# keep station_movement as 1 or -1 only pls
+func update_sonar_freq(station_movement: int) -> void:
+	var old_station_idx = current_sonar_freq_idx
+	current_sonar_freq_idx += station_movement
+	
+	if current_sonar_freq_idx > available_sonar_freq.size() - 1:
+		current_sonar_freq_idx = 0
+	elif current_sonar_freq_idx < 0:
+		current_sonar_freq_idx = available_sonar_freq.size() - 1
+	
+	if old_station_idx != current_sonar_freq_idx:
+		change_sonar_freq_sound.play()
+
+func get_current_sonar_freq() -> Dictionary:
+	var res = available_sonar_freq[current_sonar_freq_idx]
+	return res
+
+func unlock_sonar_freq(freq_id: SONAR_FREQ) -> void:
+	var freq = sonar_frequencies[freq_id]
+	if available_sonar_freq.any(func (val): return val == freq):
+		return
+	
+	available_sonar_freq.append(freq)
+	
+	available_sonar_freq.sort_custom(func(a, b): return a.order < b.order)
+
 func get_nearest_static_node() -> Node2D:
 	var nearest_node: Node2D = null
 	var shorteest_distance: float = 0.0
@@ -513,12 +581,6 @@ func get_nearest_static_node() -> Node2D:
 			nearest_node = node
 	
 	return nearest_node
-
-func sonar(): 
-	if !player.is_sonar_enabled:
-		sonar_sound.play()
-		var nearest_static_node = get_nearest_static_node()
-		player.activate_sonar(nearest_static_node)
 
 
 # ---- TEMPERATURE ----
