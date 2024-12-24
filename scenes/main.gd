@@ -495,7 +495,35 @@ func crush_by_depth_audio(delta: float) -> void:
 		getting_crushed_sound.stop()
 
 
-# ---- SONNAR ----
+# ---- SONAR ----
+enum SONAR_FREQ { STATIC_NODE, TEST_0, TEST_1 }
+var sonar_freq_order = [
+	SONAR_FREQ.STATIC_NODE, 
+	SONAR_FREQ.TEST_0, 
+	SONAR_FREQ.TEST_1
+]
+var current_sonar_freq_idx: int = 0
+
+func sonar(): 
+	if !player.is_sonar_enabled:
+		sonar_sound.play()
+		var nearest_static_node = get_nearest_static_node()
+		player.activate_sonar(nearest_static_node)
+
+# keep station_movement as 1 or -1 only pls
+func update_sonar_freq(station_movement: int) -> void:
+	
+	current_sonar_freq_idx += station_movement
+	
+	if current_sonar_freq_idx > sonar_freq_order.size() - 1:
+		current_sonar_freq_idx = 0
+	elif current_sonar_freq_idx < 0:
+		current_sonar_freq_idx = sonar_freq_order.size() - 1
+
+func get_current_sonar_freq() -> SONAR_FREQ:
+	var res = sonar_freq_order[current_sonar_freq_idx]
+	return res
+
 func get_nearest_static_node() -> Node2D:
 	var nearest_node: Node2D = null
 	var shorteest_distance: float = 0.0
@@ -513,12 +541,6 @@ func get_nearest_static_node() -> Node2D:
 			nearest_node = node
 	
 	return nearest_node
-
-func sonar(): 
-	if !player.is_sonar_enabled:
-		sonar_sound.play()
-		var nearest_static_node = get_nearest_static_node()
-		player.activate_sonar(nearest_static_node)
 
 
 # ---- TEMPERATURE ----

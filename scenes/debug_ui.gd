@@ -7,6 +7,7 @@ extends CanvasLayer
 @onready var temp_label = $container/temp
 @onready var heater_label = $container/heater_label
 @onready var heat_transfer_label = $container/heat_transfer_label
+@onready var freq_label = $container/freq_controls/label_cont/label
 
 @export var DELTA_HP: int = 20
 @export var DELTA_ENERGY: int = 200
@@ -26,6 +27,10 @@ func _process(_delta: float) -> void:
 		
 		heat_transfer_label.text = str(main_controller.current_heat_transfer)
 		$container/heater_slider.value = main_controller.heater_power
+		
+		var current_freq = main_controller.get_current_sonar_freq()
+		var freq_string = main_controller.SONAR_FREQ.keys()[current_freq]
+		freq_label.text = freq_string
 		
 		update_energy()
 		update_temperature()
@@ -107,3 +112,11 @@ func _on_less_temp_pressed() -> void:
 # ---- HEATER ----
 func _on_heater_slider_value_changed(value: float) -> void:
 	main_controller.update_heater_power(value)
+
+
+# ---- SONAR FREQ ----
+func _on_next_freq_pressed() -> void:
+	main_controller.update_sonar_freq(1)
+
+func _on_prev_freq_pressed() -> void:
+	main_controller.update_sonar_freq(-1)

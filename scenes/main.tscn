@@ -16820,6 +16820,8 @@ text = ">"
 [connection signal="pressed" from="DEBUG_UI/container/more_temp" to="DEBUG_UI" method="_on_more_temp_pressed"]
 [connection signal="pressed" from="DEBUG_UI/container/less_temp" to="DEBUG_UI" method="_on_less_temp_pressed"]
 [connection signal="value_changed" from="DEBUG_UI/container/heater_slider" to="DEBUG_UI" method="_on_heater_slider_value_changed"]
+[connection signal="pressed" from="DEBUG_UI/container/freq_controls/prev_freq" to="DEBUG_UI" method="_on_prev_freq_pressed"]
+[connection signal="pressed" from="DEBUG_UI/container/freq_controls/next_freq" to="DEBUG_UI" method="_on_next_freq_pressed"]
 
 [editable path="ui_exploration/top_left/hp_bar"]
 [editable path="ui_exploration/top_left/energy_bar"]
