@@ -1,4 +1,4 @@
-[gd_scene load_steps=2178 format=3 uid="uid://chovb3krt6q56"]
+[gd_scene load_steps=2179 format=3 uid="uid://chovb3krt6q56"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_nuh7j"]
 [ext_resource type="AudioStream" uid="uid://cjjlq52c5q6oh" path="res://assets/audio/large-underwater-explosion-190270-TRIM.ogg" id="2_shk0a"]
@@ -43,6 +43,7 @@
 [ext_resource type="Script" path="res://scenes/virtual_player_pos.gd" id="26_xp587"]
 [ext_resource type="FontFile" uid="uid://5ml08g78pmw" path="res://assets/fonts/CourierPrime-Bold.ttf" id="27_rfndt"]
 [ext_resource type="Script" path="res://scenes/depth_max.gd" id="29_we0yf"]
+[ext_resource type="Texture2D" uid="uid://b56ef2hbdv6dg" path="res://assets/visual/SPR_target_0.0.png" id="30_jeqb5"]
 [ext_resource type="Script" path="res://scenes/depth_upgrade_ui.gd" id="31_wdr5w"]
 [ext_resource type="Texture2D" uid="uid://0an0xujoc3bm" path="res://assets/visual/SPR_sonar_0.0.png" id="32_4qck4"]
 [ext_resource type="Script" path="res://scenes/third_eye_ui.gd" id="35_312e4"]
@@ -15662,9 +15663,18 @@ position = Vector2(7255, 28824)
 
 [node name="freq_test_0" type="Node2D" parent="sonar_freq_targets"]
 position = Vector2(375.002, -507.082)
+metadata/_edit_group_ = true
+
+[node name="target_spr" type="Sprite2D" parent="sonar_freq_targets/freq_test_0"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("30_jeqb5")
 
 [node name="freq_test_1" type="Node2D" parent="sonar_freq_targets"]
 position = Vector2(-440.794, -693.788)
+
+[node name="target_spr" type="Sprite2D" parent="sonar_freq_targets/freq_test_1"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("30_jeqb5")
 
 [node name="camera" type="Camera2D" parent="."]
 position = Vector2(576, 324)
