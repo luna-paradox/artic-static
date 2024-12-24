@@ -497,10 +497,18 @@ func crush_by_depth_audio(delta: float) -> void:
 
 # ---- SONAR ----
 enum SONAR_FREQ { STATIC_NODE, TEST_0, TEST_1 }
-var sonar_freq_order = [
-	SONAR_FREQ.STATIC_NODE, 
-	SONAR_FREQ.TEST_0, 
-	SONAR_FREQ.TEST_1
+@onready var sonar_frequencies = [
+	{
+		"id": SONAR_FREQ.STATIC_NODE,
+	},
+	{
+		"id": SONAR_FREQ.TEST_0,
+		"target_node": $sonar_freq_targets/freq_test_0,
+	},
+	{
+		"id": SONAR_FREQ.TEST_1,
+		"target_node": $sonar_freq_targets/freq_test_1,
+	},
 ]
 var current_sonar_freq_idx: int = 0
 
@@ -515,13 +523,13 @@ func update_sonar_freq(station_movement: int) -> void:
 	
 	current_sonar_freq_idx += station_movement
 	
-	if current_sonar_freq_idx > sonar_freq_order.size() - 1:
+	if current_sonar_freq_idx > sonar_frequencies.size() - 1:
 		current_sonar_freq_idx = 0
 	elif current_sonar_freq_idx < 0:
-		current_sonar_freq_idx = sonar_freq_order.size() - 1
+		current_sonar_freq_idx = sonar_frequencies.size() - 1
 
-func get_current_sonar_freq() -> SONAR_FREQ:
-	var res = sonar_freq_order[current_sonar_freq_idx]
+func get_current_sonar_freq() -> Dictionary:
+	var res = sonar_frequencies[current_sonar_freq_idx]
 	return res
 
 func get_nearest_static_node() -> Node2D:

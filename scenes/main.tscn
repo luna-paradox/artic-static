@@ -15658,6 +15658,14 @@ shape = SubResource("RectangleShape2D_dlmoy")
 [node name="eye_point_6" type="Node2D" parent="progress"]
 position = Vector2(7255, 28824)
 
+[node name="sonar_freq_targets" type="Node2D" parent="."]
+
+[node name="freq_test_0" type="Node2D" parent="sonar_freq_targets"]
+position = Vector2(375.002, -507.082)
+
+[node name="freq_test_1" type="Node2D" parent="sonar_freq_targets"]
+position = Vector2(-440.794, -693.788)
+
 [node name="camera" type="Camera2D" parent="."]
 position = Vector2(576, 324)
 zoom = Vector2(0.45, 0.45)
@@ -15685,7 +15693,7 @@ material = SubResource("CanvasItemMaterial_sla7e")
 texture = ExtResource("32_4qck4")
 
 [node name="player" type="CharacterBody2D" parent="."]
-position = Vector2(1610.39, 2680.07)
+position = Vector2(-163.343, -499.035)
 motion_mode = 1
 script = ExtResource("3_fuboh")
 metadata/_edit_group_ = true

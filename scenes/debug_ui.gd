@@ -29,11 +29,12 @@ func _process(_delta: float) -> void:
 		$container/heater_slider.value = main_controller.heater_power
 		
 		var current_freq = main_controller.get_current_sonar_freq()
-		var freq_string = main_controller.SONAR_FREQ.keys()[current_freq]
+		var freq_string = main_controller.SONAR_FREQ.keys()[current_freq.id]
 		freq_label.text = freq_string
 		
 		update_energy()
 		update_temperature()
+
 
 # ---- HP ----
 func _on_more_hp_btn_pressed() -> void:
