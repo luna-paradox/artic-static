@@ -48,19 +48,23 @@ func init(new_acceleration: int, new_deceleration: int, new_max_peed: int):
 @export var DECELERATION: int
 @export var MAX_SPEED: int
 
+var current_influence = Vector2.ZERO
+
 func move_vessel(delta: float) -> KinematicCollision2D:
 	# GET INPUT
 	var direction = Input.get_vector("left", "right", "top", "bottom")
+	var practical_current_influence = current_influence
 	
 	# SEA CURRENT
-	var current_influence = Vector2.UP * 0
 	if is_boosting:
-		current_influence = Vector2.ZERO
+		practical_current_influence = Vector2.ZERO
 	
 	# MOVE
-	if direction != Vector2.ZERO or current_influence != Vector2.ZERO:
+	if direction != Vector2.ZERO or practical_current_influence != Vector2.ZERO:
 		var final_acceleration = ACCELERATION
 		var final_max_speed = MAX_SPEED
+		
+		# COLD MAKE THE SUB SLOWER
 		if main_controller.current_temp < 0:
 			var temp_index = main_controller.current_temp / -10
 			
@@ -68,7 +72,7 @@ func move_vessel(delta: float) -> KinematicCollision2D:
 			final_max_speed *= 1 - 0.5 * temp_index
 		
 		# APPLY ACCELERATION
-		velocity = velocity.move_toward(direction * final_max_speed + current_influence, final_acceleration * delta)
+		velocity = velocity.move_toward(direction * final_max_speed + practical_current_influence, final_acceleration * delta)
 	else:
 		# WORK LIKE FRICTION
 		velocity = velocity.move_toward(Vector2.ZERO, DECELERATION * delta)
@@ -254,3 +258,27 @@ func _on_cold_area_exited(area: Area2D) -> void:
 	
 	if main_controller.cold_areas_heat_transfer < 0:
 		main_controller.cold_areas_heat_transfer = 0
+
+
+# ---- AREA OF CURRENT DETECTION ----
+
+func _on_area_of_current_detector_area_entered(area: Area2D) -> void:
+	var area_of_current = area.get_parent()
+	if !"current_strenght" in area_of_current:
+		return
+	if !"direction" in area_of_current:
+		return
+	
+	var new_current = area_of_current.direction * area_of_current.current_strenght
+	current_influence += new_current
+
+
+func _on_area_of_current_detector_area_exited(area: Area2D) -> void:
+	var area_of_current = area.get_parent()
+	if !"current_strenght" in area_of_current:
+		return
+	if !"direction" in area_of_current:
+		return
+	
+	var new_current = area_of_current.direction * area_of_current.current_strenght
+	current_influence -= new_current

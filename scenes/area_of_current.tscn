@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://141dpp8eac0w"]
+
+[ext_resource type="Script" path="res://scenes/area_of_current.gd" id="1_mq472"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4w6d2"]
+size = Vector2(829, 664)
+
+[node name="area_of_current" type="Node2D"]
+position = Vector2(-387, 1687)
+script = ExtResource("1_mq472")
+current_strenght = 500
+metadata/_edit_group_ = true
+
+[node name="area_2d" type="Area2D" parent="."]
+collision_layer = 64
+collision_mask = 64
+
+[node name="collider" type="CollisionShape2D" parent="area_2d"]
+shape = SubResource("RectangleShape2D_4w6d2")
