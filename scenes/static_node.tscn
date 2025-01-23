@@ -13,8 +13,8 @@ shader = ExtResource("2_yen7y")
 shader_parameter/amount = 40.0
 
 [sub_resource type="Gradient" id="Gradient_55gme"]
-offsets = PackedFloat32Array(0, 0.0858209, 0.100746, 0.216418, 0.227612, 0.350746, 0.376866, 0.518657, 0.537313, 0.682836, 0.686567, 0.701493, 0.824627, 0.843284, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0.816875, 0.816875, 0.816875, 1, 0.745218, 0.745218, 0.745218, 1, 0.538207, 0.538207, 0.538207, 1, 0.501031, 0.501031, 0.501031, 1, 0.393, 0.393, 0.393, 1, 0.36059, 0.36059, 0.36059, 1, 0.220149, 0.220149, 0.220149, 1, 0.350746, 0.350746, 0.350746, 1, 0.216111, 0.216111, 0.216111, 1, 0.280031, 0.280031, 0.280031, 1, 0.224441, 0.224441, 0.224441, 1, 0.0934363, 0.0934363, 0.0934363, 1, 0.142379, 0.142379, 0.142379, 1, 0, 0, 0, 1)
+offsets = PackedFloat32Array(0, 0.126984, 0.134921, 0.27381, 0.285714, 0.436508, 0.448413, 0.607143, 0.623016, 0.785714, 0.797619, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.873016, 1, 1, 1, 0.833333, 1, 1, 1, 0.735294, 1, 1, 1, 0.704607, 1, 1, 1, 0.555556, 1, 1, 1, 0.488095, 1, 1, 1, 0.355182, 1, 1, 1, 0.327312, 1, 1, 1, 0.198413, 1, 1, 1, 0.166667, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_xkply"]
 gradient = SubResource("Gradient_55gme")
@@ -23,7 +23,7 @@ height = 100
 use_hdr = true
 fill = 1
 fill_from = Vector2(0.504587, 0.527523)
-fill_to = Vector2(0.209402, 0.769231)
+fill_to = Vector2(0.183761, 0.811966)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ntfet"]
 size = Vector2(36, 40)
@@ -45,6 +45,7 @@ position = Vector2(-1.89494, 2.32606)
 scale = Vector2(5.39063, 4.90625)
 color = Color(0.828125, 0.828125, 0.828125, 1)
 energy = 5.0
+blend_mode = 2
 shadow_enabled = true
 shadow_item_cull_mask = 2
 texture = SubResource("GradientTexture2D_xkply")
