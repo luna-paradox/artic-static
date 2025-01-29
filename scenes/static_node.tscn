@@ -29,6 +29,7 @@ fill_to = Vector2(0.183761, 0.811966)
 size = Vector2(36, 40)
 
 [node name="ooze_node" type="Node2D"]
+z_index = 2
 script = ExtResource("1_jm4wq")
 metadata/_edit_group_ = true
 

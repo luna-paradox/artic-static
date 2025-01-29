@@ -48,19 +48,25 @@ func init(new_acceleration: int, new_deceleration: int, new_max_peed: int):
 @export var DECELERATION: int
 @export var MAX_SPEED: int
 
+var current_influence = Vector2.ZERO
+
 func move_vessel(delta: float) -> KinematicCollision2D:
 	# GET INPUT
 	var direction = Input.get_vector("left", "right", "top", "bottom")
+	var practical_current_influence = current_influence
 	
-	# SEA CURRENT
-	var current_influence = Vector2.UP * 0
-	if is_boosting:
-		current_influence = Vector2.ZERO
 	
 	# MOVE
-	if direction != Vector2.ZERO or current_influence != Vector2.ZERO:
+	if direction != Vector2.ZERO or practical_current_influence != Vector2.ZERO:
 		var final_acceleration = ACCELERATION
 		var final_max_speed = MAX_SPEED
+		
+		# BOOSTING EFFECT
+		if is_boosting and direction != Vector2.ZERO:
+			final_acceleration *= TURBO_ACCELERATION
+			final_max_speed *= TURBO_MAX_SPEED
+		
+		# COLD MAKE THE SUB SLOWER
 		if main_controller.current_temp < 0:
 			var temp_index = main_controller.current_temp / -10
 			
@@ -68,10 +74,19 @@ func move_vessel(delta: float) -> KinematicCollision2D:
 			final_max_speed *= 1 - 0.5 * temp_index
 		
 		# APPLY ACCELERATION
-		velocity = velocity.move_toward(direction * final_max_speed + current_influence, final_acceleration * delta)
+		var to_pos = direction * final_max_speed + practical_current_influence
+		var delta_pos = final_acceleration * delta
+		velocity = velocity.move_toward(to_pos, delta_pos)
+		
 	else:
+		var final_deceleration = DECELERATION * delta
+		
+		# BOOSTING EFFECT
+		if is_boosting:
+			final_deceleration *= TURBO_DECELERATION
+		
 		# WORK LIKE FRICTION
-		velocity = velocity.move_toward(Vector2.ZERO, DECELERATION * delta)
+		velocity = velocity.move_toward(Vector2.ZERO, final_deceleration)
 	
 	
 	# SFX: CONTROL MOTOR AUDIO
@@ -137,33 +152,17 @@ func process_sonar() -> void:
 @export var TURBO_MAX_SPEED: int = 3
 var is_boosting: bool = false
 
-var pre_boost_acceleration: int
-var pre_boost_deceleration: int
-var pre_boost_max_speed: int
-
 func turbo_boost() -> void:
 	if is_boosting:
 		return
 	
 	is_boosting = true
-	
-	pre_boost_acceleration = ACCELERATION
-	pre_boost_deceleration = DECELERATION
-	pre_boost_max_speed = MAX_SPEED
-
-	ACCELERATION *= TURBO_ACCELERATION
-	DECELERATION *= TURBO_DECELERATION
-	MAX_SPEED *= TURBO_MAX_SPEED
 
 func disable_turbo_boost() -> void:
 	if !is_boosting:
 		return
 	
 	is_boosting = false
-	
-	ACCELERATION = pre_boost_acceleration
-	DECELERATION = pre_boost_deceleration
-	MAX_SPEED = pre_boost_max_speed
 
 
 # ---- PAUSE ----
@@ -254,3 +253,27 @@ func _on_cold_area_exited(area: Area2D) -> void:
 	
 	if main_controller.cold_areas_heat_transfer < 0:
 		main_controller.cold_areas_heat_transfer = 0
+
+
+# ---- AREA OF CURRENT DETECTION ----
+
+func _on_area_of_current_detector_area_entered(area: Area2D) -> void:
+	var area_of_current = area.get_parent()
+	if !"current_strenght" in area_of_current:
+		return
+	if !"direction" in area_of_current:
+		return
+	
+	var new_current = area_of_current.direction * area_of_current.current_strenght
+	current_influence += new_current
+
+
+func _on_area_of_current_detector_area_exited(area: Area2D) -> void:
+	var area_of_current = area.get_parent()
+	if !"current_strenght" in area_of_current:
+		return
+	if !"direction" in area_of_current:
+		return
+	
+	var new_current = area_of_current.direction * area_of_current.current_strenght
+	current_influence -= new_current

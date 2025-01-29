@@ -8,6 +8,7 @@ extends CanvasLayer
 @onready var heater_label = $container/heater_label
 @onready var heat_transfer_label = $container/heat_transfer_label
 @onready var freq_label = $container/freq_controls/label_cont/label
+@onready var area_of_current_label = $container/area_of_current_label
 
 @export var DELTA_HP: int = 20
 @export var DELTA_ENERGY: int = 200
@@ -33,6 +34,8 @@ func _process(_delta: float) -> void:
 		
 		update_energy()
 		update_temperature()
+		
+		area_of_current_label.text = str(main_controller.player.current_influence)
 
 
 # ---- HP ----
