@@ -25,6 +25,7 @@ class_name MainController
 @onready var dock_enable_sound = $global_audio/dock_enable_sound
 @onready var dock_menu_static_counter_label = $ui_dock_menu/container/static_counter/label
 @onready var upgrade_crush_depth_ui = $ui_dock_menu/container/depth_upgrade
+@onready var upgrade_hp_ui = $ui_dock_menu/container/HP_upgrade
 @onready var shop_third_eye_ui = $ui_dock_menu/container/third_eye_ui
 # AUDIO
 @onready var sub_explossion = $global_audio/sub_explossion
@@ -62,6 +63,8 @@ var current_depth = 5550
 # ---- STORE ----
 # Cost in Static
 @export var CRUSH_DEPTH_UPGRADE = 1000
+@export var HP_UPGRADE_COST = 1000
+@export var ENERGY_UPGRADE_COST = 1000
 
 
 # ---- PROGRESS ----
@@ -106,6 +109,8 @@ func _ready() -> void:
 	
 	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
 	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
+	upgrade_hp_ui.update_value(MAX_HP)
+	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
 	
 	hp_bar.init(MAX_HP)
 	static_bar.init(MAX_PLAYER_STATIC, player_current_static)
@@ -447,6 +452,9 @@ func start_dock_menu() -> void:
 	var can_buy_depth = CRUSH_DEPTH_UPGRADE >= available_static
 	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
 	
+	var can_buy_hp = HP_UPGRADE_COST >= available_static
+	upgrade_hp_ui.update_upgrade_btn_disabled(can_buy_hp)
+	
 	# SHOW MENU
 	dock_menu.show()
 
@@ -454,7 +462,7 @@ func close_dock_menu() -> void:
 	dock_menu.hide()
 	update_pause(false)
 
-func _on_upgrade_depth_button_pressed() -> void:
+func _on_upgrade_DEPTH_button_pressed() -> void:
 	if CRUSH_DEPTH_UPGRADE > available_static:
 		return
 	
@@ -469,6 +477,51 @@ func _on_upgrade_depth_button_pressed() -> void:
 	var can_buy_depth = CRUSH_DEPTH_UPGRADE >= available_static
 	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
 
+func _on_upgrade_HP_button_pressed() -> void:
+	if HP_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-HP_UPGRADE_COST)
+	MAX_HP += 50
+	HP_UPGRADE_COST *= 1.05
+	
+	upgrade_hp_ui.update_value(MAX_HP)
+	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
+	
+	hp_bar.init(MAX_HP)
+	update_hp(MAX_HP)
+	
+	var can_buy_depth = HP_UPGRADE_COST >= available_static
+	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
+
+func _on_upgrade_ENERGY_button_pressed() -> void:
+	if HP_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-HP_UPGRADE_COST)
+	MAX_HP += 50
+	HP_UPGRADE_COST *= 1.05
+	
+	upgrade_hp_ui.update_value(MAX_HP)
+	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
+	
+	hp_bar.init(MAX_HP)
+	update_hp(MAX_HP)
+	
+	var can_buy_depth = HP_UPGRADE_COST >= available_static
+	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
+	
+func _on_upgrade_MAX_SPEED_button_pressed() -> void:
+	pass
+
+func _on_upgrade_ACCELERATION_button_pressed() -> void:
+	pass
+
+func _on_upgrade_DECELERATION_button_pressed() -> void:
+	pass
+
+func _on_upgrade_MAX_PLAYER_STATIC_button_pressed() -> void:
+	pass
 
 # ---- CRUSHING ----
 var current_crashing_volume = 0
