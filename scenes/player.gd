@@ -55,14 +55,16 @@ func move_vessel(delta: float) -> KinematicCollision2D:
 	var direction = Input.get_vector("left", "right", "top", "bottom")
 	var practical_current_influence = current_influence
 	
-	# SEA CURRENT
-	if is_boosting:
-		practical_current_influence = Vector2.ZERO
 	
 	# MOVE
 	if direction != Vector2.ZERO or practical_current_influence != Vector2.ZERO:
 		var final_acceleration = ACCELERATION
 		var final_max_speed = MAX_SPEED
+		
+		# BOOSTING EFFECT
+		if is_boosting and direction != Vector2.ZERO:
+			final_acceleration *= TURBO_ACCELERATION
+			final_max_speed *= TURBO_MAX_SPEED
 		
 		# COLD MAKE THE SUB SLOWER
 		if main_controller.current_temp < 0:
@@ -72,10 +74,19 @@ func move_vessel(delta: float) -> KinematicCollision2D:
 			final_max_speed *= 1 - 0.5 * temp_index
 		
 		# APPLY ACCELERATION
-		velocity = velocity.move_toward(direction * final_max_speed + practical_current_influence, final_acceleration * delta)
+		var to_pos = direction * final_max_speed + practical_current_influence
+		var delta_pos = final_acceleration * delta
+		velocity = velocity.move_toward(to_pos, delta_pos)
+		
 	else:
+		var final_deceleration = DECELERATION * delta
+		
+		# BOOSTING EFFECT
+		if is_boosting:
+			final_deceleration *= TURBO_DECELERATION
+		
 		# WORK LIKE FRICTION
-		velocity = velocity.move_toward(Vector2.ZERO, DECELERATION * delta)
+		velocity = velocity.move_toward(Vector2.ZERO, final_deceleration)
 	
 	
 	# SFX: CONTROL MOTOR AUDIO
@@ -141,33 +152,17 @@ func process_sonar() -> void:
 @export var TURBO_MAX_SPEED: int = 3
 var is_boosting: bool = false
 
-var pre_boost_acceleration: int
-var pre_boost_deceleration: int
-var pre_boost_max_speed: int
-
 func turbo_boost() -> void:
 	if is_boosting:
 		return
 	
 	is_boosting = true
-	
-	pre_boost_acceleration = ACCELERATION
-	pre_boost_deceleration = DECELERATION
-	pre_boost_max_speed = MAX_SPEED
-
-	ACCELERATION *= TURBO_ACCELERATION
-	DECELERATION *= TURBO_DECELERATION
-	MAX_SPEED *= TURBO_MAX_SPEED
 
 func disable_turbo_boost() -> void:
 	if !is_boosting:
 		return
 	
 	is_boosting = false
-	
-	ACCELERATION = pre_boost_acceleration
-	DECELERATION = pre_boost_deceleration
-	MAX_SPEED = pre_boost_max_speed
 
 
 # ---- PAUSE ----
