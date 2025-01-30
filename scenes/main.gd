@@ -24,8 +24,16 @@ class_name MainController
 @onready var dock_menu = $ui_dock_menu
 @onready var dock_enable_sound = $global_audio/dock_enable_sound
 @onready var dock_menu_static_counter_label = $ui_dock_menu/container/static_counter/label
+
 @onready var upgrade_crush_depth_ui = $ui_dock_menu/container/depth_upgrade
 @onready var upgrade_hp_ui = $ui_dock_menu/container/HP_upgrade
+@onready var upgrade_energy_ui = $ui_dock_menu/container/energy_upgrade
+@onready var upgrade_heat_efficiency_ui = $ui_dock_menu/container/heat_efficiency_upgrade
+@onready var upgrade_speed_ui = $ui_dock_menu/container/speed_upgrade
+@onready var upgrade_acceleration_ui = $ui_dock_menu/container/acceleration_upgrade
+@onready var upgrade_deceleration_ui = $ui_dock_menu/container/deceleration_upgrade
+@onready var upgrade_static_tank_ui = $ui_dock_menu/container/static_tank_upgrade
+
 @onready var shop_third_eye_ui = $ui_dock_menu/container/third_eye_ui
 # AUDIO
 @onready var sub_explossion = $global_audio/sub_explossion
@@ -65,6 +73,12 @@ var current_depth = 5550
 @export var CRUSH_DEPTH_UPGRADE = 1000
 @export var HP_UPGRADE_COST = 1000
 @export var ENERGY_UPGRADE_COST = 1000
+@export var HEAT_EFFICIENCY_UPGRADE_COST = 1000
+
+@export var SPEED_UPGRADE_COST = 1000
+@export var ACCELERATION_UPGRADE_COST = 1000
+@export var DECELERATION_UPGRADE_COST = 1000
+@export var STATIC_TANK_UPGRADE_COST = 1000
 
 
 # ---- PROGRESS ----
@@ -107,10 +121,29 @@ func _ready() -> void:
 	heat_timer.timeout.connect(damage_by_heat)
 	add_child(heat_timer)
 	
+	# CRUSH DEPTH
 	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
 	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
+	# HP
 	upgrade_hp_ui.update_value(MAX_HP)
 	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
+	# ENERGY
+	upgrade_energy_ui.update_value(MAX_ENERGY)
+	upgrade_energy_ui.update_cost(ENERGY_UPGRADE_COST)
+	# HEAT EFFICIENCY
+	#TODO HEAT EFFICIENCY UPGRADE SYSTEM
+	# SPEED
+	upgrade_speed_ui.update_value(MAX_SPEED)
+	upgrade_speed_ui.update_cost(SPEED_UPGRADE_COST)
+	# ACCELERATION
+	upgrade_acceleration_ui.update_value(ACCELERATION)
+	upgrade_acceleration_ui.update_cost(ACCELERATION_UPGRADE_COST)
+	# DECELERATION
+	upgrade_deceleration_ui.update_value(DECELERATION)
+	upgrade_deceleration_ui.update_cost(DECELERATION_UPGRADE_COST)
+	# STATIC TANK
+	upgrade_static_tank_ui.update_value(MAX_PLAYER_STATIC)
+	upgrade_static_tank_ui.update_cost(STATIC_TANK_UPGRADE_COST)
 	
 	hp_bar.init(MAX_HP)
 	static_bar.init(MAX_PLAYER_STATIC, player_current_static)
@@ -444,16 +477,13 @@ func start_dock_menu() -> void:
 	#if !dock_enable_sound.playing:
 	dock_enable_sound.play()
 	
-	if !have_third_eye and static_historic > STATIC_HISTORIC_FOR_THIRD_EYE:
-		shop_third_eye_ui.show()
-	else:
-		shop_third_eye_ui.hide()
+	#TODO START PROGRESS
+	#if !have_third_eye and static_historic > STATIC_HISTORIC_FOR_THIRD_EYE:
+		#shop_third_eye_ui.show()
+	#else:
+		#shop_third_eye_ui.hide()
 	
-	var can_buy_depth = CRUSH_DEPTH_UPGRADE >= available_static
-	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
-	
-	var can_buy_hp = HP_UPGRADE_COST >= available_static
-	upgrade_hp_ui.update_upgrade_btn_disabled(can_buy_hp)
+	update_upgrade_buttons()
 	
 	# SHOW MENU
 	dock_menu.show()
@@ -461,6 +491,17 @@ func start_dock_menu() -> void:
 func close_dock_menu() -> void:
 	dock_menu.hide()
 	update_pause(false)
+
+func update_upgrade_buttons() -> void:
+	upgrade_crush_depth_ui.update_upgrade_btn_disabled(CRUSH_DEPTH_UPGRADE >= available_static)
+	upgrade_hp_ui.update_upgrade_btn_disabled(HP_UPGRADE_COST >= available_static)
+	upgrade_energy_ui.update_upgrade_btn_disabled(ENERGY_UPGRADE_COST >= available_static)
+	#TODO HEAT EFFICIENCY SYSTEM
+	upgrade_speed_ui.update_upgrade_btn_disabled(SPEED_UPGRADE_COST >= available_static)
+	upgrade_acceleration_ui.update_upgrade_btn_disabled(ACCELERATION_UPGRADE_COST >= available_static)
+	upgrade_deceleration_ui.update_upgrade_btn_disabled(DECELERATION_UPGRADE_COST >= available_static)
+	upgrade_static_tank_ui.update_upgrade_btn_disabled(STATIC_TANK_UPGRADE_COST >= available_static)
+	
 
 func _on_upgrade_DEPTH_button_pressed() -> void:
 	if CRUSH_DEPTH_UPGRADE > available_static:
@@ -474,8 +515,7 @@ func _on_upgrade_DEPTH_button_pressed() -> void:
 	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
 	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
 	
-	var can_buy_depth = CRUSH_DEPTH_UPGRADE >= available_static
-	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
+	update_upgrade_buttons()
 
 func _on_upgrade_HP_button_pressed() -> void:
 	if HP_UPGRADE_COST > available_static:
@@ -491,37 +531,76 @@ func _on_upgrade_HP_button_pressed() -> void:
 	hp_bar.init(MAX_HP)
 	update_hp(MAX_HP)
 	
-	var can_buy_depth = HP_UPGRADE_COST >= available_static
-	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
+	update_upgrade_buttons()
 
 func _on_upgrade_ENERGY_button_pressed() -> void:
-	if HP_UPGRADE_COST > available_static:
+	if ENERGY_UPGRADE_COST > available_static:
 		return
 	
-	update_available_static(-HP_UPGRADE_COST)
-	MAX_HP += 50
-	HP_UPGRADE_COST *= 1.05
+	update_available_static(-ENERGY_UPGRADE_COST)
+	MAX_ENERGY += 50
+	ENERGY_UPGRADE_COST *= 1.05
 	
-	upgrade_hp_ui.update_value(MAX_HP)
-	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
+	upgrade_energy_ui.update_value(MAX_ENERGY)
+	upgrade_energy_ui.update_cost(ENERGY_UPGRADE_COST)
 	
-	hp_bar.init(MAX_HP)
-	update_hp(MAX_HP)
+	energy_bar.init(MAX_ENERGY)
+	update_energy(MAX_ENERGY)
 	
-	var can_buy_depth = HP_UPGRADE_COST >= available_static
-	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
-	
+	update_upgrade_buttons()
+
 func _on_upgrade_MAX_SPEED_button_pressed() -> void:
-	pass
+	if SPEED_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-SPEED_UPGRADE_COST)
+	MAX_SPEED += 50
+	SPEED_UPGRADE_COST *= 1.05
+	
+	upgrade_speed_ui.update_value(MAX_SPEED)
+	upgrade_speed_ui.update_cost(SPEED_UPGRADE_COST)
+	
+	update_upgrade_buttons()
 
 func _on_upgrade_ACCELERATION_button_pressed() -> void:
-	pass
+	if ACCELERATION_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-ACCELERATION_UPGRADE_COST)
+	ACCELERATION += 10
+	ACCELERATION_UPGRADE_COST *= 1.05
+	
+	upgrade_acceleration_ui.update_value(ACCELERATION)
+	upgrade_acceleration_ui.update_cost(ACCELERATION_UPGRADE_COST)
+	
+	update_upgrade_buttons()
 
 func _on_upgrade_DECELERATION_button_pressed() -> void:
-	pass
+	if DECELERATION_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-DECELERATION_UPGRADE_COST)
+	DECELERATION += 10
+	DECELERATION_UPGRADE_COST *= 1.05
+	
+	upgrade_deceleration_ui.update_value(DECELERATION)
+	upgrade_deceleration_ui.update_cost(DECELERATION_UPGRADE_COST)
+	
+	update_upgrade_buttons()
 
 func _on_upgrade_MAX_PLAYER_STATIC_button_pressed() -> void:
-	pass
+	if STATIC_TANK_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-STATIC_TANK_UPGRADE_COST)
+	MAX_PLAYER_STATIC += 500
+	STATIC_TANK_UPGRADE_COST *= 1.5
+	
+	upgrade_static_tank_ui.update_value(MAX_PLAYER_STATIC)
+	upgrade_static_tank_ui.update_cost(STATIC_TANK_UPGRADE_COST)
+	
+	update_upgrade_buttons()
+
 
 # ---- CRUSHING ----
 var current_crashing_volume = 0
