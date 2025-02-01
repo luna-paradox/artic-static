@@ -60,6 +60,57 @@
 [ext_resource type="Script" path="res://scenes/debug_ui.gd" id="52_uh1u6"]
 [ext_resource type="Script" path="res://scenes/ui_stat_upgrade.gd" id="55_qaab5"]
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_bj2y8"]
+light_mode = 1
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_8idtt"]
+light_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_tq14o"]
+resource_local_to_scene = true
+offsets = PackedFloat32Array(0, 0.218254, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.552941, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_uqq1b"]
+resource_local_to_scene = true
+gradient = SubResource("Gradient_tq14o")
+width = 400
+height = 400
+use_hdr = true
+fill = 1
+fill_from = Vector2(0.504587, 0.527523)
+fill_to = Vector2(0.209402, 0.769231)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_ia5eq"]
+polygon = PackedVector2Array(98, -38, 69.0288, -17.8004, 69.0317, -5.80042, 90, 7, 57, -7, 57, -16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vdje7"]
+size = Vector2(31.4099, 6.78442)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_6tjjh"]
+light_mode = 1
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3vd2s"]
+size = Vector2(23, 30)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_estw5"]
+size = Vector2(14.8198, 42.6078)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8w7ll"]
+size = Vector2(116, 32)
+
+[sub_resource type="Gradient" id="Gradient_0qtou"]
+offsets = PackedFloat32Array(0, 0.238095, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.575397, 0.575397, 0.575397, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_7gql4"]
+gradient = SubResource("Gradient_0qtou")
+width = 55
+height = 55
+fill = 1
+fill_from = Vector2(0.504274, 0.495726)
+fill_to = Vector2(0.209402, 0.807692)
+
 [sub_resource type="Resource" id="Resource_3b012"]
 script = ExtResource("4_0o5lc")
 texture_idx = 0
@@ -14842,57 +14893,6 @@ blend_mode = 3
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_sla7e"]
 light_mode = 1
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_bj2y8"]
-light_mode = 1
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_8idtt"]
-light_mode = 1
-
-[sub_resource type="Gradient" id="Gradient_tq14o"]
-resource_local_to_scene = true
-offsets = PackedFloat32Array(0, 0.218254, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.552941, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_uqq1b"]
-resource_local_to_scene = true
-gradient = SubResource("Gradient_tq14o")
-width = 400
-height = 400
-use_hdr = true
-fill = 1
-fill_from = Vector2(0.504587, 0.527523)
-fill_to = Vector2(0.209402, 0.769231)
-
-[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_ia5eq"]
-polygon = PackedVector2Array(98, -38, 69.0288, -17.8004, 69.0317, -5.80042, 90, 7, 57, -7, 57, -16)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_vdje7"]
-size = Vector2(31.4099, 6.78442)
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_6tjjh"]
-light_mode = 1
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3vd2s"]
-size = Vector2(23, 30)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_estw5"]
-size = Vector2(14.8198, 42.6078)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_8w7ll"]
-size = Vector2(116, 32)
-
-[sub_resource type="Gradient" id="Gradient_0qtou"]
-offsets = PackedFloat32Array(0, 0.238095, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0.575397, 0.575397, 0.575397, 1, 0, 0, 0, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_7gql4"]
-gradient = SubResource("Gradient_0qtou")
-width = 55
-height = 55
-fill = 1
-fill_from = Vector2(0.504274, 0.495726)
-fill_to = Vector2(0.209402, 0.807692)
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6atqe"]
 shader = ExtResource("13_02jgh")
 shader_parameter/amount = 40.0
@@ -14960,6 +14960,167 @@ parameters/looping = true
 
 [node name="change_sonar_freq_sound" type="AudioStreamPlayer" parent="global_audio"]
 stream = ExtResource("10_mfcmd")
+
+[node name="player" type="CharacterBody2D" parent="."]
+position = Vector2(-2494, 1748)
+motion_mode = 1
+script = ExtResource("3_fuboh")
+metadata/_edit_group_ = true
+
+[node name="audio" type="Node" parent="player"]
+
+[node name="motor_sound" type="AudioStreamPlayer" parent="player/audio"]
+stream = ExtResource("13_t1jpn")
+parameters/looping = true
+
+[node name="damage_sound" type="AudioStreamPlayer" parent="player/audio"]
+stream = ExtResource("14_2eb2l")
+
+[node name="turbo_sound" type="AudioStreamPlayer" parent="player/audio"]
+stream = ExtResource("13_t1jpn")
+pitch_scale = 1.3
+parameters/looping = true
+
+[node name="sprite" type="Sprite2D" parent="player"]
+material = SubResource("CanvasItemMaterial_bj2y8")
+texture = ExtResource("22_o4k7e")
+
+[node name="light_origin" type="Node2D" parent="player"]
+
+[node name="light_container" type="Node2D" parent="player"]
+position = Vector2(73, -12)
+script = ExtResource("23_yan1n")
+
+[node name="lamp_sprinte" type="Sprite2D" parent="player/light_container"]
+material = SubResource("CanvasItemMaterial_8idtt")
+position = Vector2(0.996947, -1.00304)
+rotation = -0.0030483
+texture = ExtResource("23_p3ho4")
+
+[node name="light" type="PointLight2D" parent="player/light_container"]
+position = Vector2(-1.00024, 0.00280762)
+scale = Vector2(5.39063, 4.90625)
+energy = 3.0
+blend_mode = 2
+shadow_enabled = true
+shadow_filter = 2
+shadow_filter_smooth = 3.0
+texture = SubResource("GradientTexture2D_uqq1b")
+
+[node name="light_occluder" type="LightOccluder2D" parent="player/light_container"]
+position = Vector2(-69.9661, 11.2133)
+rotation = -0.00280387
+occluder = SubResource("OccluderPolygon2D_ia5eq")
+
+[node name="light_area_2d" type="Area2D" parent="player/light_container"]
+collision_layer = 4
+collision_mask = 4
+
+[node name="collider" type="CollisionShape2D" parent="player/light_container/light_area_2d"]
+position = Vector2(-5.29504, 0)
+shape = SubResource("RectangleShape2D_vdje7")
+
+[node name="alert_0" type="Sprite2D" parent="player"]
+visible = false
+material = SubResource("CanvasItemMaterial_6tjjh")
+position = Vector2(42, -67)
+texture = ExtResource("12_q8n8v")
+
+[node name="collider" type="CollisionPolygon2D" parent="player"]
+visible = false
+position = Vector2(-0.5, 0)
+polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
+
+[node name="areas_2d" type="Node2D" parent="player"]
+
+[node name="interaction_area_2d" type="Area2D" parent="player/areas_2d"]
+visible = false
+position = Vector2(97, 23)
+collision_layer = 2
+collision_mask = 2
+
+[node name="collider" type="CollisionShape2D" parent="player/areas_2d/interaction_area_2d"]
+shape = SubResource("RectangleShape2D_3vd2s")
+
+[node name="interaction_area_2d_others" type="Area2D" parent="player/areas_2d"]
+visible = false
+position = Vector2(97, 23)
+collision_layer = 32
+collision_mask = 32
+
+[node name="collider" type="CollisionShape2D" parent="player/areas_2d/interaction_area_2d_others"]
+shape = SubResource("RectangleShape2D_3vd2s")
+
+[node name="player_cage_interaction_area_2d" type="Area2D" parent="player/areas_2d"]
+visible = false
+collision_layer = 8
+collision_mask = 8
+
+[node name="collider" type="CollisionShape2D" parent="player/areas_2d/player_cage_interaction_area_2d"]
+position = Vector2(2.59009, 6.30389)
+shape = SubResource("RectangleShape2D_estw5")
+
+[node name="player_area_2D" type="Area2D" parent="player/areas_2d"]
+visible = false
+collision_layer = 532
+collision_mask = 532
+
+[node name="collider" type="CollisionPolygon2D" parent="player/areas_2d/player_area_2D"]
+position = Vector2(-0.5, 0)
+polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
+
+[node name="cold_area_detector" type="Area2D" parent="player/areas_2d"]
+visible = false
+collision_layer = 32
+collision_mask = 32
+monitorable = false
+
+[node name="collider" type="CollisionPolygon2D" parent="player/areas_2d/cold_area_detector"]
+position = Vector2(-0.5, 0)
+polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
+
+[node name="area_of_current_detector" type="Area2D" parent="player/areas_2d"]
+collision_layer = 64
+collision_mask = 64
+monitorable = false
+
+[node name="collider" type="CollisionShape2D" parent="player/areas_2d/area_of_current_detector"]
+position = Vector2(-6, 6)
+shape = SubResource("RectangleShape2D_8w7ll")
+
+[node name="diegetic_ui" type="Node2D" parent="player"]
+script = ExtResource("39_yt8q6")
+
+[node name="heater_light" type="Node2D" parent="player/diegetic_ui"]
+position = Vector2(-21, -30)
+
+[node name="light" type="PointLight2D" parent="player/diegetic_ui/heater_light"]
+position = Vector2(0, -6)
+color = Color(1, 0, 0, 1)
+energy = 16.0
+range_item_cull_mask = 32
+texture = SubResource("GradientTexture2D_7gql4")
+
+[node name="fake_light_source" type="Polygon2D" parent="player/diegetic_ui/heater_light"]
+light_mask = 32
+color = Color(1, 1, 1, 0.705882)
+polygon = PackedVector2Array(-4, -6, -2, -5, 2, -5, 4, -6, 4, -8, 1, -10, -1, -10, -4, -8)
+
+[node name="turbo_light" type="Node2D" parent="player/diegetic_ui"]
+position = Vector2(13, -31)
+
+[node name="light" type="PointLight2D" parent="player/diegetic_ui/turbo_light"]
+position = Vector2(0, -7)
+color = Color(0.96875, 1, 0, 1)
+energy = 16.0
+range_item_cull_mask = 32
+texture = SubResource("GradientTexture2D_7gql4")
+
+[node name="fake_light_source" type="Polygon2D" parent="player/diegetic_ui/turbo_light"]
+light_mask = 32
+position = Vector2(0, -1)
+color = Color(1, 1, 1, 0.705882)
+polygon = PackedVector2Array(-4, -6, -2, -5, 2, -5, 4, -6, 4, -8, 1, -10, -1, -10, -4, -8)
 
 [node name="room" type="Node2D" parent="."]
 
@@ -15090,6 +15251,11 @@ position = Vector2(-876, 479)
 rotation = -2.80766
 scale = Vector2(1, -1)
 
+[node name="static_node_9" parent="room/A0_left_0/static_nodes" instance=ExtResource("10_dq6to")]
+position = Vector2(-137, 1221)
+rotation = -2.97352
+scale = Vector2(1, -1)
+
 [node name="static_node_2" parent="room/A0_left_0/static_nodes" instance=ExtResource("10_dq6to")]
 position = Vector2(-689, 3148)
 rotation = 2.8702
@@ -15136,6 +15302,7 @@ scale = Vector2(3.84686, 3.39999)
 
 [node name="area_of_current" parent="room/A0_left_0" instance=ExtResource("44_1301b")]
 position = Vector2(371, 1064)
+current_strenght = 100
 direction = Vector2(-1, 0)
 
 [node name="area_of_current2" parent="room/A0_left_0" instance=ExtResource("44_1301b")]
@@ -15143,8 +15310,8 @@ position = Vector2(358, 1733)
 scale = Vector2(0.5, 0.5)
 direction = Vector2(-1, 0)
 
-[node name="GPUParticles2D" parent="room/A0_left_0/area_of_current2" index="1"]
-amount = 20
+[node name="particles" parent="room/A0_left_0/area_of_current2" index="1"]
+lifetime = 0.5
 
 [node name="A0_left_1" type="Node2D" parent="room"]
 
@@ -15810,167 +15977,6 @@ visible = false
 [node name="sprite" type="Sprite2D" parent="virtual_player_pos/sonar"]
 material = SubResource("CanvasItemMaterial_sla7e")
 texture = ExtResource("32_4qck4")
-
-[node name="player" type="CharacterBody2D" parent="."]
-position = Vector2(-744, 2414)
-motion_mode = 1
-script = ExtResource("3_fuboh")
-metadata/_edit_group_ = true
-
-[node name="audio" type="Node" parent="player"]
-
-[node name="motor_sound" type="AudioStreamPlayer" parent="player/audio"]
-stream = ExtResource("13_t1jpn")
-parameters/looping = true
-
-[node name="damage_sound" type="AudioStreamPlayer" parent="player/audio"]
-stream = ExtResource("14_2eb2l")
-
-[node name="turbo_sound" type="AudioStreamPlayer" parent="player/audio"]
-stream = ExtResource("13_t1jpn")
-pitch_scale = 1.3
-parameters/looping = true
-
-[node name="sprite" type="Sprite2D" parent="player"]
-material = SubResource("CanvasItemMaterial_bj2y8")
-texture = ExtResource("22_o4k7e")
-
-[node name="light_origin" type="Node2D" parent="player"]
-
-[node name="light_container" type="Node2D" parent="player"]
-position = Vector2(73, -12)
-script = ExtResource("23_yan1n")
-
-[node name="lamp_sprinte" type="Sprite2D" parent="player/light_container"]
-material = SubResource("CanvasItemMaterial_8idtt")
-position = Vector2(0.996947, -1.00304)
-rotation = -0.0030483
-texture = ExtResource("23_p3ho4")
-
-[node name="light" type="PointLight2D" parent="player/light_container"]
-position = Vector2(-1.00024, 0.00280762)
-scale = Vector2(5.39063, 4.90625)
-energy = 3.0
-blend_mode = 2
-shadow_enabled = true
-shadow_filter = 2
-shadow_filter_smooth = 3.0
-texture = SubResource("GradientTexture2D_uqq1b")
-
-[node name="light_occluder" type="LightOccluder2D" parent="player/light_container"]
-position = Vector2(-69.9661, 11.2133)
-rotation = -0.00280387
-occluder = SubResource("OccluderPolygon2D_ia5eq")
-
-[node name="light_area_2d" type="Area2D" parent="player/light_container"]
-collision_layer = 4
-collision_mask = 4
-
-[node name="collider" type="CollisionShape2D" parent="player/light_container/light_area_2d"]
-position = Vector2(-5.29504, 0)
-shape = SubResource("RectangleShape2D_vdje7")
-
-[node name="alert_0" type="Sprite2D" parent="player"]
-visible = false
-material = SubResource("CanvasItemMaterial_6tjjh")
-position = Vector2(42, -67)
-texture = ExtResource("12_q8n8v")
-
-[node name="collider" type="CollisionPolygon2D" parent="player"]
-visible = false
-position = Vector2(-0.5, 0)
-polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
-
-[node name="areas_2d" type="Node2D" parent="player"]
-
-[node name="interaction_area_2d" type="Area2D" parent="player/areas_2d"]
-visible = false
-position = Vector2(97, 23)
-collision_layer = 2
-collision_mask = 2
-
-[node name="collider" type="CollisionShape2D" parent="player/areas_2d/interaction_area_2d"]
-shape = SubResource("RectangleShape2D_3vd2s")
-
-[node name="interaction_area_2d_others" type="Area2D" parent="player/areas_2d"]
-visible = false
-position = Vector2(97, 23)
-collision_layer = 32
-collision_mask = 32
-
-[node name="collider" type="CollisionShape2D" parent="player/areas_2d/interaction_area_2d_others"]
-shape = SubResource("RectangleShape2D_3vd2s")
-
-[node name="player_cage_interaction_area_2d" type="Area2D" parent="player/areas_2d"]
-visible = false
-collision_layer = 8
-collision_mask = 8
-
-[node name="collider" type="CollisionShape2D" parent="player/areas_2d/player_cage_interaction_area_2d"]
-position = Vector2(2.59009, 6.30389)
-shape = SubResource("RectangleShape2D_estw5")
-
-[node name="player_area_2D" type="Area2D" parent="player/areas_2d"]
-visible = false
-collision_layer = 532
-collision_mask = 532
-
-[node name="collider" type="CollisionPolygon2D" parent="player/areas_2d/player_area_2D"]
-position = Vector2(-0.5, 0)
-polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
-
-[node name="cold_area_detector" type="Area2D" parent="player/areas_2d"]
-visible = false
-collision_layer = 32
-collision_mask = 32
-monitorable = false
-
-[node name="collider" type="CollisionPolygon2D" parent="player/areas_2d/cold_area_detector"]
-position = Vector2(-0.5, 0)
-polygon = PackedVector2Array(-83.9099, 1.60779, -82.9099, 19.6078, -71.9099, 30.6078, -56.9099, 39.6078, -34.9099, 44.6078, 23.5, 44, 39.0901, 39.6078, 54.0901, 21.6078, 63.0901, 8.60779, 85.5, -1, 89.0901, -12.3922, 86.0901, -22.3922, 82.0901, -28.3922, 75.0901, -42.3922, 39.0901, -41.3922, 35.0901, -29.3922, -44.9099, -28.3922, -56.9099, -20.3922, -70.9099, -37.3922, -88.9099, -37.3922, -89.9099, -33.3922, -76.9099, -6.39221)
-
-[node name="area_of_current_detector" type="Area2D" parent="player/areas_2d"]
-collision_layer = 64
-collision_mask = 64
-monitorable = false
-
-[node name="collider" type="CollisionShape2D" parent="player/areas_2d/area_of_current_detector"]
-position = Vector2(-6, 6)
-shape = SubResource("RectangleShape2D_8w7ll")
-
-[node name="diegetic_ui" type="Node2D" parent="player"]
-script = ExtResource("39_yt8q6")
-
-[node name="heater_light" type="Node2D" parent="player/diegetic_ui"]
-position = Vector2(-21, -30)
-
-[node name="light" type="PointLight2D" parent="player/diegetic_ui/heater_light"]
-position = Vector2(0, -6)
-color = Color(1, 0, 0, 1)
-energy = 16.0
-range_item_cull_mask = 32
-texture = SubResource("GradientTexture2D_7gql4")
-
-[node name="fake_light_source" type="Polygon2D" parent="player/diegetic_ui/heater_light"]
-light_mask = 32
-color = Color(1, 1, 1, 0.705882)
-polygon = PackedVector2Array(-4, -6, -2, -5, 2, -5, 4, -6, 4, -8, 1, -10, -1, -10, -4, -8)
-
-[node name="turbo_light" type="Node2D" parent="player/diegetic_ui"]
-position = Vector2(13, -31)
-
-[node name="light" type="PointLight2D" parent="player/diegetic_ui/turbo_light"]
-position = Vector2(0, -7)
-color = Color(0.96875, 1, 0, 1)
-energy = 16.0
-range_item_cull_mask = 32
-texture = SubResource("GradientTexture2D_7gql4")
-
-[node name="fake_light_source" type="Polygon2D" parent="player/diegetic_ui/turbo_light"]
-light_mask = 32
-position = Vector2(0, -1)
-color = Color(1, 1, 1, 0.705882)
-polygon = PackedVector2Array(-4, -6, -2, -5, 2, -5, 4, -6, 4, -8, 1, -10, -1, -10, -4, -8)
 
 [node name="global_mod" type="CanvasModulate" parent="."]
 visible = false
@@ -17313,14 +17319,6 @@ text = "-"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[connection signal="area_entered" from="room/A3/final_sphere/final_sphere_area_2d" to="." method="_on_final_sphere_area_2d_area_entered"]
-[connection signal="area_entered" from="room/BASE/cage_front/cage_area_2d" to="." method="_on_cage_area_2d_area_entered"]
-[connection signal="area_exited" from="room/BASE/cage_front/cage_area_2d" to="." method="_on_cage_area_2d_area_exited"]
-[connection signal="area_entered" from="room/BASE/cage_front/cage_interaction_area_2d" to="." method="_on_cage_interaction_area_2d_area_entered"]
-[connection signal="area_exited" from="room/BASE/cage_front/cage_interaction_area_2d" to="." method="_on_cage_interaction_area_2d_area_exited"]
-[connection signal="area_entered" from="progress/point_1_area_2d" to="." method="_on_point_1_area_2d_area_entered"]
-[connection signal="area_entered" from="progress/point_3_area_2d" to="." method="_on_point_3_area_2d_area_entered"]
-[connection signal="area_entered" from="progress/point_5_area_2d" to="." method="_on_point_5_area_2d_area_entered"]
 [connection signal="area_entered" from="player/areas_2d/interaction_area_2d" to="." method="_on_player_interaction_area_entered"]
 [connection signal="area_exited" from="player/areas_2d/interaction_area_2d" to="." method="_on_player_interaction_area_exited"]
 [connection signal="area_entered" from="player/areas_2d/interaction_area_2d_others" to="." method="_on_interaction_area_2d_others_area_entered"]
@@ -17329,6 +17327,14 @@ vertical_alignment = 1
 [connection signal="area_exited" from="player/areas_2d/cold_area_detector" to="player" method="_on_cold_area_exited"]
 [connection signal="area_entered" from="player/areas_2d/area_of_current_detector" to="player" method="_on_area_of_current_detector_area_entered"]
 [connection signal="area_exited" from="player/areas_2d/area_of_current_detector" to="player" method="_on_area_of_current_detector_area_exited"]
+[connection signal="area_entered" from="room/A3/final_sphere/final_sphere_area_2d" to="." method="_on_final_sphere_area_2d_area_entered"]
+[connection signal="area_entered" from="room/BASE/cage_front/cage_area_2d" to="." method="_on_cage_area_2d_area_entered"]
+[connection signal="area_exited" from="room/BASE/cage_front/cage_area_2d" to="." method="_on_cage_area_2d_area_exited"]
+[connection signal="area_entered" from="room/BASE/cage_front/cage_interaction_area_2d" to="." method="_on_cage_interaction_area_2d_area_entered"]
+[connection signal="area_exited" from="room/BASE/cage_front/cage_interaction_area_2d" to="." method="_on_cage_interaction_area_2d_area_exited"]
+[connection signal="area_entered" from="progress/point_1_area_2d" to="." method="_on_point_1_area_2d_area_entered"]
+[connection signal="area_entered" from="progress/point_3_area_2d" to="." method="_on_point_3_area_2d_area_entered"]
+[connection signal="area_entered" from="progress/point_5_area_2d" to="." method="_on_point_5_area_2d_area_entered"]
 [connection signal="pressed" from="ui_exploration/bottom_left/open_instructions_btn" to="." method="_on_open_instructions_btn_pressed"]
 [connection signal="pressed" from="ui_dock_menu/container/close_btn" to="." method="_on_ui_dock_menu_close_btn_pressed"]
 [connection signal="pressed" from="ui_dock_menu/container/depth_upgrade/upgrade_depth_button" to="." method="_on_upgrade_DEPTH_button_pressed"]
