@@ -1,4 +1,4 @@
-char, aux_0, aux_0, aux_1, dialog
+char, aux_0, aux_1, aux_2, dialog
 E, , , , "Prepare for diving in 15 minutes"
 C, , , , "So what did you had for lunch?"
 E, , , , "None of your business, diver"
@@ -6,5 +6,6 @@ C, , , , "So cold..."
 E, , , , "... I had pasta, it was ok"
 E, , , , "Anyways, maintenance is already working on the sub so be quick"
 C, , , , "Ligthen up boss, this place is already dark enough"
-E, , , , "This is serious and dangerous work and you know it. Now move"
+E, , , , "This is serious and dangerous work and you know it"
+E, , , , "Now move"
 C, , , , "Sure, boss"
