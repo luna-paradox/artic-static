@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 @onready var main_dialog_box = $container/external_container/main_container/dialog_box_mcont/main_dialog_box
+@onready var portrait_texture = $container/portrait_cont/image_cont/portrait_texture
 
 # Array with all the dialog lines loaded
 var all_dialog = []
@@ -41,6 +42,7 @@ func load_dialog(route: String) -> void:
 	
 	for line in data.records:
 		var speaker_id = line[line.keys()[0]]
+		var emotion = line[line.keys()[1]]
 		var text = line[line.keys()[4]]
 		
 		var chat_name = '[b]' + get_chat_name(speaker_id) + '[/b]'
@@ -50,6 +52,7 @@ func load_dialog(route: String) -> void:
 			"speaker_id": speaker_id,
 			"chat_name_string": chat_name,
 			"new_dialog_string": text,
+			"emotion": emotion,
 		})
 	
 	update_state(states.WAITING)
@@ -72,8 +75,16 @@ func load_next_line() -> void:
 	
 	var current_line = all_dialog[current_dialog_index]
 	
+	# UPDATE AVATAR
+	var route = 'res://assets/portraits/SPR_portrait_'
+	route = route + current_line.speaker_id + "_" + current_line.emotion + ".png"
+	
+	portrait_texture.texture = load(route)
+	
+	# PRINT FULL NAME
 	main_dialog_box.text = main_dialog_box.text + current_line.chat_name_string
 	
+	# PRINT DIALOG GRADUALLY
 	for character in current_line.new_dialog_string:
 		main_dialog_box.text = main_dialog_box.text + color_wrap_text(character, current_line.speaker_id)
 		
@@ -85,6 +96,7 @@ func load_next_line() -> void:
 		
 		await get_tree().create_timer(wait_time).timeout
 	
+	# ADD A LINBE BREAK
 	main_dialog_box.text = main_dialog_box.text + '\n'
 	
 	current_dialog_index += 1
