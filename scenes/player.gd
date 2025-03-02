@@ -103,6 +103,8 @@ func crash_vessel(collision: KinematicCollision2D) -> void:
 	
 	#BOUNCE
 	velocity = velocity.bounce(collision.get_normal()) / 3
+	if velocity.length() < 20:
+		return
 	
 	#DAMAGE
 	#print(str(velocity.length()))
@@ -266,7 +268,6 @@ func _on_area_of_current_detector_area_entered(area: Area2D) -> void:
 	
 	var new_current = area_of_current.direction * area_of_current.current_strenght
 	current_influence += new_current
-
 
 func _on_area_of_current_detector_area_exited(area: Area2D) -> void:
 	var area_of_current = area.get_parent()
