@@ -6,6 +6,10 @@ extends Node2D
 @export var current_strenght = 1
 @export var direction = Vector2.UP
 
+@export var enable_auto_gravity = true
+@export var enable_auto_particle_amount = true
+@export var enable_auto_particle_lifetime = true
+
 func _ready() -> void:
 	particles.process_material = particles.process_material.duplicate()
 	
@@ -20,6 +24,9 @@ func _input(event: InputEvent) -> void:
 
 
 func update_gravity() -> void:
+	if !enable_auto_gravity:
+		return
+	
 	# CONFIGURE SPEED
 	var particle_speed = current_strenght * 3
 	var particle_direction_2d = direction.normalized() * particle_speed
@@ -29,6 +36,9 @@ func update_gravity() -> void:
 	particles.process_material.gravity = particle_direction_3d
 
 func update_particle_amount() -> void:
+	if !enable_auto_particle_amount:
+		return
+	
 	var shape: RectangleShape2D = collider.shape
 	var area = shape.size.x * shape.size.y * scale.x * scale.y
 	
@@ -40,6 +50,9 @@ func update_particle_amount() -> void:
 	particles.amount = new_amount
 
 func update_particle_lifetime() -> void:
+	if !enable_auto_particle_lifetime:
+		return
+	
 	# current_strenght = 100 -> lifetime 1.2
 	# current_strenght = 500 -> lifetime 0.7
 	# lifetime = (-current_strenght / 800) + 1.075
