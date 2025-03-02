@@ -55,6 +55,9 @@ class_name MainController
 @onready var area_3_door = $room/A3_wall_to_hide
 @onready var follow_the_eye_ui = $follow_the_eye_ui
 
+# ---- DEBUG OPTIONS ----
+@export var _DISABLE_HEAT_DAMAGE = false
+
 # ---- MOVEMENT STATS ----
 @export var ACCELERATION: int = 200
 @export var DECELERATION: int = 100
@@ -65,7 +68,8 @@ class_name MainController
 @export var TURBO_BOOST_ENERGY_RATE = 100
 
 # ---- DEPTH ----
-@export var CRUSH_DEPTH = 5800
+#@export var CRUSH_DEPTH = 5800
+@export var CRUSH_DEPTH = 7000
 var current_depth = 5550
 
 # ---- STORE ----
@@ -759,8 +763,11 @@ func control_temp(delta: float) -> void:
 	update_temp(heat_transfer)
 
 func damage_by_heat() -> void:
+	if _DISABLE_HEAT_DAMAGE:
+		return
+	
 	var heat_index = 0
-	if current_temp > 30:
+	if current_temp > 40:
 		heat_index = (current_temp - 30) / 30
 	elif current_temp < 0:
 		heat_index = current_temp * (-1) / 10
@@ -774,8 +781,8 @@ func damage_by_heat() -> void:
 
 # ---- HEATER ----
 var is_heater_on = false
-var HEATER_ENERGY_COST = 10
-var TEMP_TRANSFER_HEATER_MAX: float = 1.0
+var HEATER_ENERGY_COST = 30
+var TEMP_TRANSFER_HEATER_MAX: float = 3.0
 var heater_power: float = 0.5
 
 func update_heater_state(new_state: bool) -> void:
@@ -803,6 +810,7 @@ func calculate_heater_heat_transfer() -> float:
 	var heat_transfer: float = TEMP_TRANSFER_HEATER_MAX * heater_power
 	
 	return heat_transfer
+
 
 # ---- PROGRESSION ----
 func progress(new_mode: int) -> void:
