@@ -252,9 +252,6 @@ func _on_cold_area_exited(area: Area2D) -> void:
 	
 	var heat_transfer = cold_area.heat_transfer
 	main_controller.cold_areas_heat_transfer -= heat_transfer
-	
-	if main_controller.cold_areas_heat_transfer < 0:
-		main_controller.cold_areas_heat_transfer = 0
 
 
 # ---- AREA OF CURRENT DETECTION ----
@@ -267,6 +264,7 @@ func _on_area_of_current_detector_area_entered(area: Area2D) -> void:
 		return
 	
 	var new_current = area_of_current.direction * area_of_current.current_strenght
+	
 	current_influence += new_current
 
 func _on_area_of_current_detector_area_exited(area: Area2D) -> void:
