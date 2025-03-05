@@ -64,7 +64,7 @@ class_name MainController
 @export var MAX_SPEED: int = 450
 
 # ---- OTHER STATS ----
-@export var STATIC_CONSUMPTION_RATE = 150
+@export var STATIC_CONSUMPTION_RATE = 250
 @export var TURBO_BOOST_ENERGY_RATE = 100
 
 # ---- DEPTH ----
@@ -253,6 +253,13 @@ func _input(event: InputEvent) -> void:
 	
 	if event.is_action_pressed("heater_action"):
 		update_heater_state(!is_heater_on)
+		return
+	
+	if event.is_action_pressed("heater_up_action"):
+		update_heater_power(heater_power + 0.025)
+		return
+	if event.is_action_pressed("heater_down_action"):
+		update_heater_power(heater_power - 0.025)
 		return
 	
 	if event.is_action_pressed("turbo_boost_action") and current_energy > 0:
