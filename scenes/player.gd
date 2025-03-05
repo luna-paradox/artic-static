@@ -37,7 +37,7 @@ func _physics_process(delta):
 	var collision = move_vessel(delta)
 	crash_vessel(collision)
 
-func init(new_acceleration: int, new_deceleration: int, new_max_peed: int):
+func update_movement_stats(new_acceleration: int, new_deceleration: int, new_max_peed: int):
 	ACCELERATION = new_acceleration
 	DECELERATION = new_deceleration
 	MAX_SPEED = new_max_peed

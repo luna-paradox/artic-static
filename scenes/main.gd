@@ -111,7 +111,7 @@ func _ready() -> void:
 	
 	current_hp = MAX_HP
 	player.main_controller = self
-	player.init(ACCELERATION, DECELERATION, MAX_SPEED)
+	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
 	
 	crusher_timer = Timer.new()
 	crusher_timer.wait_time = 0.5
@@ -561,6 +561,8 @@ func _on_upgrade_MAX_SPEED_button_pressed() -> void:
 	MAX_SPEED += 50
 	SPEED_UPGRADE_COST *= 1.05
 	
+	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
+	
 	upgrade_speed_ui.update_value(MAX_SPEED)
 	upgrade_speed_ui.update_cost(SPEED_UPGRADE_COST)
 	
@@ -574,6 +576,8 @@ func _on_upgrade_ACCELERATION_button_pressed() -> void:
 	ACCELERATION += 10
 	ACCELERATION_UPGRADE_COST *= 1.05
 	
+	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
+	
 	upgrade_acceleration_ui.update_value(ACCELERATION)
 	upgrade_acceleration_ui.update_cost(ACCELERATION_UPGRADE_COST)
 	
@@ -586,6 +590,8 @@ func _on_upgrade_DECELERATION_button_pressed() -> void:
 	update_available_static(-DECELERATION_UPGRADE_COST)
 	DECELERATION += 10
 	DECELERATION_UPGRADE_COST *= 1.05
+	
+	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
 	
 	upgrade_deceleration_ui.update_value(DECELERATION)
 	upgrade_deceleration_ui.update_cost(DECELERATION_UPGRADE_COST)
