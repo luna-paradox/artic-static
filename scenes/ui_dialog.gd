@@ -8,20 +8,14 @@ var all_dialog = []
 # Current position in the all_dialog array
 var current_dialog_index = 0
 
-var dialog_db = {
-	"test_dialog_0": {
-		"route": "res://dialogs/test.csv"
-	},
-	"test_dialog_1": {
-		"route": "res://dialogs/test_2.csv"
-	},
-}
+var main_controller: MainController
+
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("1_debug"):
-		print(fast_dialog)
-	elif event.is_action_pressed("2_debug"):
-		load_dialog(dialog_db.test_dialog_0.route)
+	#if event.is_action_pressed("1_debug"):
+		#print(fast_dialog)
+	#elif event.is_action_pressed("2_debug"):
+		#load_dialog(DIALOG_DB.dialog_files.test_dialog_0.route)
 	
 	if event.is_action_pressed("progress_dialog"):
 		if current_state == states.WAITING:
@@ -36,6 +30,8 @@ func _input(event: InputEvent) -> void:
 func load_dialog(route: String) -> void:
 	if current_state != states.INNACTIVE:
 		return
+	
+	main_controller.update_pause(true)
 	
 	reset_dialog_box()
 	var data = load(route)
@@ -121,6 +117,7 @@ func update_state(new_state: states) -> void:
 	
 	if new_state == states.INNACTIVE:
 		self.hide()
+		main_controller.update_pause(false)
 
 
 # ------ UTILITIES --------

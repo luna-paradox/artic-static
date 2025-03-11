@@ -18,6 +18,7 @@ class_name MainController
 @onready var depth_gauge = $ui_exploration/top_center/depth_gauge
 @onready var depth_max_ui = $ui_exploration/top_center/depth_max
 @onready var instructions_ui = $instructions_screen
+@onready var dialog_ui = $ui_dialog
 # UI DOCK MENU
 @onready var alert_docking = $ui_exploration/top_right/dock_alert/docking_icon
 @onready var alert_can_dock = $ui_exploration/top_right/dock_alert/can_dock
@@ -57,6 +58,8 @@ class_name MainController
 
 # ---- DEBUG OPTIONS ----
 @export var _DISABLE_HEAT_DAMAGE = false
+@export var _ENABLE_PROGRESS = true
+@export var _SPAWN_CHARACTER_ON_START_POS = true
 
 # ---- MOVEMENT STATS ----
 @export var ACCELERATION: int = 200
@@ -105,9 +108,6 @@ func _ready() -> void:
 	alert_docking.hide()
 	alert_can_dock.hide()
 	close_dock_menu()
-	area_1.hide()
-	area_2.hide()
-	area_3.hide()
 	
 	current_hp = MAX_HP
 	player.main_controller = self
@@ -124,6 +124,8 @@ func _ready() -> void:
 	heat_timer.one_shot = true
 	heat_timer.timeout.connect(damage_by_heat)
 	add_child(heat_timer)
+	
+	dialog_ui.main_controller = self
 	
 	# CRUSH DEPTH
 	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
@@ -154,9 +156,22 @@ func _ready() -> void:
 	energy_bar.init(MAX_ENERGY)
 	depth_max_ui.update_depth(CRUSH_DEPTH)
 	
-	third_eye.mode = 0
-	restart()
+	await restart()
 	#show_instructions()
+	
+	# PROGRESS CONFIGURATION
+	third_eye.mode = 0
+	
+	unlock_sonar_freq(SONAR_FREQ.CAVE_OF_CURRENT)
+	unlock_sonar_freq(SONAR_FREQ.BASE)
+	if !_ENABLE_PROGRESS:
+		return
+	
+	dialog_ui.load_dialog(DIALOG_DB.dialog_files._00.intro_dialog.route)
+	
+	#area_1.hide()
+	#area_2.hide()
+	#area_3.hide()
 
 func _process(delta: float) -> void:
 	camera.global_position = player.global_position
@@ -256,10 +271,10 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	if event.is_action_pressed("heater_up_action"):
-		update_heater_power(heater_power + 0.025)
+		update_heater_power(heater_power + 0.02)
 		return
 	if event.is_action_pressed("heater_down_action"):
-		update_heater_power(heater_power - 0.025)
+		update_heater_power(heater_power - 0.02)
 		return
 	
 	if event.is_action_pressed("turbo_boost_action") and current_energy > 0:
@@ -380,14 +395,15 @@ func restart():
 	
 	player.velocity = Vector2.ZERO
 	player.disable_turbo_boost()
-	#player.global_position = player_start_pos.global_position
+	if _SPAWN_CHARACTER_ON_START_POS:
+		player.global_position = player_start_pos.global_position
 	
 	update_hp(MAX_HP)
 	update_energy(MAX_ENERGY)
 	update_temp(20 - current_temp)
 	update_static(-MAX_PLAYER_STATIC)
 	
-	update_heater_power(0.5)
+	update_heater_power(0.2)
 	update_heater_state(true)
 	
 	reset_all_static_nodes()
@@ -512,7 +528,7 @@ func update_upgrade_buttons() -> void:
 	upgrade_acceleration_ui.update_upgrade_btn_disabled(ACCELERATION_UPGRADE_COST >= available_static)
 	upgrade_deceleration_ui.update_upgrade_btn_disabled(DECELERATION_UPGRADE_COST >= available_static)
 	upgrade_static_tank_ui.update_upgrade_btn_disabled(STATIC_TANK_UPGRADE_COST >= available_static)
-	
+
 
 func _on_upgrade_DEPTH_button_pressed() -> void:
 	if CRUSH_DEPTH_UPGRADE > available_static:
@@ -646,7 +662,11 @@ func crush_by_depth_audio(delta: float) -> void:
 
 
 # ---- SONAR ----
-enum SONAR_FREQ { STATIC_NODE, TEST_0, TEST_1 }
+enum SONAR_FREQ { 
+	STATIC_NODE, 
+	TEST_0, TEST_1, 
+	BASE, CAVE_OF_CURRENT, CAVE_OF_COLD,
+}
 @onready var sonar_frequencies = {
 	SONAR_FREQ.STATIC_NODE: {
 		"id": SONAR_FREQ.STATIC_NODE,
@@ -665,10 +685,26 @@ enum SONAR_FREQ { STATIC_NODE, TEST_0, TEST_1 }
 		"target_node": $sonar_freq_targets/freq_test_1,
 		"name": "Test Freq. 1"
 	},
+	SONAR_FREQ.BASE: {
+		"id": SONAR_FREQ.BASE,
+		"order": 0,
+		"target_node": $sonar_freq_targets/base,
+		"name": "Base"
+	},
+	SONAR_FREQ.CAVE_OF_CURRENT: {
+		"id": SONAR_FREQ.CAVE_OF_CURRENT,
+		"order": 3,
+		"target_node": $sonar_freq_targets/cave_of_current,
+		"name": "Cave of Current"
+	},
+	SONAR_FREQ.CAVE_OF_COLD: {
+		"id": SONAR_FREQ.CAVE_OF_COLD,
+		"order": 4,
+		"target_node": $sonar_freq_targets/cave_of_cold,
+		"name": "Cave of Cold"
+	},
 }
-@onready var available_sonar_freq = [
-	sonar_frequencies[0],
-]
+@onready var available_sonar_freq = []
 var current_sonar_freq_idx: int = 0
 
 func sonar(): 
@@ -796,7 +832,7 @@ func damage_by_heat() -> void:
 var is_heater_on = false
 var HEATER_ENERGY_COST = 30
 var TEMP_TRANSFER_HEATER_MAX: float = 3.0
-var heater_power: float = 0.5
+var heater_power: float = 0.2
 
 func update_heater_state(new_state: bool) -> void:
 	if is_heater_on == new_state:
