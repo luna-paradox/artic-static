@@ -276,3 +276,22 @@ func _on_area_of_current_detector_area_exited(area: Area2D) -> void:
 	
 	var new_current = area_of_current.direction * area_of_current.current_strenght
 	current_influence -= new_current
+
+
+# ---- EVENT COLLIDERS ----
+
+func _on_event_collider_area_entered(area: Area2D) -> void:
+	if !"event_id" in area:
+		return
+	
+	main_controller.trigger_event(area.event_id)
+	#print("ENTER:" + area.event_id)
+	pass
+
+
+func _on_event_collider_area_exited(area: Area2D) -> void:
+	if !"event_id" in area:
+		return
+	
+	#print("EXIT:" + area.event_id)
+	pass

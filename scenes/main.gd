@@ -45,6 +45,7 @@ class_name MainController
 @onready var sonar_sound = $global_audio/sonar_sound
 @onready var heater_sound = $global_audio/heater_sound
 @onready var change_sonar_freq_sound = $global_audio/change_sonar_freq_sound
+@onready var ritual_success_0_sound = $global_audio/ritual_success_0_sound
 # PROGRESS
 @onready var third_eye = $ui_exploration/top_right/third_eye
 
@@ -160,10 +161,15 @@ func _ready() -> void:
 	#show_instructions()
 	
 	# PROGRESS CONFIGURATION
+	unlock_sonar_freq(SONAR_FREQ.BASE)
+	unlock_sonar_freq(SONAR_FREQ.CAVE_OF_CURRENT)
+	
+	# FOR VIDEO
+	#unlock_sonar_freq(SONAR_FREQ.PIVOT_CAVE)
+	#dialog_ui.load_dialog('res://dialogs/test_2.csv')
+	
 	third_eye.mode = 0
 	
-	unlock_sonar_freq(SONAR_FREQ.CAVE_OF_CURRENT)
-	unlock_sonar_freq(SONAR_FREQ.BASE)
 	if !_ENABLE_PROGRESS:
 		return
 	
@@ -284,15 +290,57 @@ func _input(event: InputEvent) -> void:
 		player.disable_turbo_boost()
 		return
 	
+	# SKILLS
+	if event.is_action_pressed("skill_1"):
+		if player_current_static < 200 or current_hp >= MAX_HP:
+			return
+		update_hp(30)
+		update_static(-200)
+		return
+	if event.is_action_pressed("skill_2"):
+		if player_current_static < 200 or current_energy >= MAX_ENERGY:
+			return
+		update_energy(200)
+		update_static(-200)
+		return
+	
 	# PROGRESS
+	if event.is_action_pressed("interact") and interaction_id != '':
+		if interaction_id == 'STATUE_3' and !event_talk_statue_3_flag:
+			print('INTERACT WITH STATUE 3')
+			
+			event_talk_statue_3_flag = true
+			interaction_id = ''
+			player_alert_0.hide()
+			
+			var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
+			dialog_ui.load_dialog(dialog_id, 'talk_to_statue_3')
+			return
+	
+	
+	
+	
 	if can_interact_with_statue_p2 and event.is_action_pressed("interact") and third_eye.mode == 2:
 		progress(3)
 		return
-	
 	if can_interact_with_statue_p4 and event.is_action_pressed("interact") and third_eye.mode == 4:
 		progress(5)
 		return
 
+func execute_dialog_event(return_event_id: String) -> void:
+	if !return_event_id:
+		return
+	
+	match return_event_id:
+		'talk_to_statue_3':
+			unlock_turbo()
+			return
+		_:
+			return
+
+
+func unlock_turbo():
+	print('UNLOCK TURBO')
 
 # ---- STATS ----
 @export var MAX_HP: float = 200.0
@@ -433,12 +481,30 @@ func reset_all_static_nodes() -> void:
 var static_nodes_in_range: Array[Node2D] = []
 
 func _on_player_interaction_area_entered(area: Area2D) -> void:
-	static_nodes_in_range.append(area.get_parent())
-	player_alert_0.show()
+	if !"node_type" in area:
+		return
+	
+	
+	if area.node_type == 'STATIC_NODE':
+		static_nodes_in_range.append(area.get_parent())
+		player_alert_0.show()
+	elif area.node_type == 'STATUE_3' and !event_talk_statue_3_flag:
+		interaction_id = 'STATUE_3'
+		player_alert_0.show()
+
+var interaction_id: String
 
 func _on_player_interaction_area_exited(area: Area2D) -> void:
-	static_nodes_in_range.erase(area.get_parent())
-	if static_nodes_in_range.size() <= 0:
+	if !"node_type" in area:
+		return
+	
+	if area.node_type == 'STATIC_NODE':
+		static_nodes_in_range.erase(area.get_parent())
+		
+		if static_nodes_in_range.size() <= 0:
+			player_alert_0.hide()
+	elif interaction_id != '':
+		interaction_id = ''
 		player_alert_0.hide()
 
 
@@ -665,7 +731,7 @@ func crush_by_depth_audio(delta: float) -> void:
 enum SONAR_FREQ { 
 	STATIC_NODE, 
 	TEST_0, TEST_1, 
-	BASE, CAVE_OF_CURRENT, CAVE_OF_COLD,
+	BASE, CAVE_OF_CURRENT, CAVE_OF_COLD, PIVOT_CAVE, 
 }
 @onready var sonar_frequencies = {
 	SONAR_FREQ.STATIC_NODE: {
@@ -702,6 +768,12 @@ enum SONAR_FREQ {
 		"order": 4,
 		"target_node": $sonar_freq_targets/cave_of_cold,
 		"name": "Cave of Cold"
+	},
+	SONAR_FREQ.PIVOT_CAVE: {
+		"id": SONAR_FREQ.PIVOT_CAVE,
+		"order": 5,
+		"target_node": $sonar_freq_targets/pivot_cave,
+		"name": "Pivot Cave"
 	},
 }
 @onready var available_sonar_freq = []
@@ -994,3 +1066,24 @@ func get_all_static_nodes(parent: Node) -> Array:
 			matching_nodes += get_all_static_nodes(child)
 	
 	return matching_nodes
+
+
+# ---- EVENT ----
+
+func trigger_event(event_id: String) -> void:
+	match event_id:
+		"find_statue_3":
+			if !event_find_statue_3_flag:
+				event_find_statue_3()
+			return
+		_:
+			printerr("ERROR: INVALID_EVENT_ID")
+			return
+
+var event_find_statue_3_flag = false
+var event_talk_statue_3_flag = false
+
+func event_find_statue_3():
+	event_find_statue_3_flag = true
+	ritual_success_0_sound.play()
+	pass

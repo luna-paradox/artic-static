@@ -1,5 +1,4 @@
 extends Node2D
-
 @onready var interaction_collider = $interaction_area/collider
 @onready var light = $light
 @onready var bg = $bg

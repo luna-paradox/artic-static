@@ -36,6 +36,7 @@ collision_mask = 64
 
 [node name="collider" type="CollisionShape2D" parent="area_2d"]
 shape = SubResource("RectangleShape2D_4w6d2")
+debug_color = Color(0, 0.207843, 0.701961, 0.211765)
 
 [node name="particles" type="GPUParticles2D" parent="."]
 position = Vector2(0, -5)

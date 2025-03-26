@@ -7,6 +7,8 @@ extends CanvasLayer
 var all_dialog = []
 # Current position in the all_dialog array
 var current_dialog_index = 0
+# When the dialog ends, it will try to execute an event with this id in main_controller
+var return_event_id = ""
 
 var main_controller: MainController
 
@@ -27,7 +29,7 @@ func _input(event: InputEvent) -> void:
 
 
 # ------ CONTROLLER FUNCTIONS --------
-func load_dialog(route: String) -> void:
+func load_dialog(route: String, new_return_event_id: String = "") -> void:
 	if current_state != states.INNACTIVE:
 		return
 	
@@ -50,6 +52,8 @@ func load_dialog(route: String) -> void:
 			"new_dialog_string": text,
 			"emotion": emotion,
 		})
+	
+	return_event_id = new_return_event_id
 	
 	update_state(states.WAITING)
 	self.show()
@@ -117,7 +121,11 @@ func update_state(new_state: states) -> void:
 	
 	if new_state == states.INNACTIVE:
 		self.hide()
+		
 		main_controller.update_pause(false)
+		main_controller.execute_dialog_event(return_event_id)
+		
+		return_event_id = ""
 
 
 # ------ UTILITIES --------
@@ -138,5 +146,9 @@ var speaker_metadata = {
 	"C": {
 		"color": "yellow",
 		"chat_name": "Camila",
+	},
+	"ST3": {
+		"color": "white",
+		"chat_name": "Statue",
 	},
 }
