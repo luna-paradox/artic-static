@@ -94,7 +94,8 @@ func load_next_line() -> void:
 		elif character == '.':
 			wait_time = 0.15
 		
-		await get_tree().create_timer(wait_time).timeout
+		if !fast_dialog:
+			await get_tree().create_timer(wait_time).timeout
 	
 	# ADD A LINBE BREAK
 	main_dialog_box.text = main_dialog_box.text + '\n'

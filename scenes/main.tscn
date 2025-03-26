@@ -24424,9 +24424,6 @@ shader_parameter/amount = 40.0
 
 [node name="main" type="Node"]
 script = ExtResource("1_nuh7j")
-_DISABLE_HEAT_DAMAGE = true
-_ENABLE_PROGRESS = false
-_SPAWN_CHARACTER_ON_START_POS = false
 
 [node name="global_audio" type="Node" parent="."]
 

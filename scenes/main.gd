@@ -89,6 +89,10 @@ var current_depth = 5550
 @export var STATIC_TANK_UPGRADE_COST = 1000
 
 
+# ---- PROGRESS UNLOCKS ----
+var TURBO_BOOST_UNLOCKED = true
+
+
 # ---- PROGRESS ----
 var static_historic = 0
 
@@ -172,6 +176,8 @@ func _ready() -> void:
 	
 	if !_ENABLE_PROGRESS:
 		return
+	
+	TURBO_BOOST_UNLOCKED = false
 	
 	dialog_ui.load_dialog(DIALOG_DB.dialog_files._00.intro_dialog.route)
 	
@@ -283,7 +289,7 @@ func _input(event: InputEvent) -> void:
 		update_heater_power(heater_power - 0.02)
 		return
 	
-	if event.is_action_pressed("turbo_boost_action") and current_energy > 0:
+	if event.is_action_pressed("turbo_boost_action") and current_energy > 0 and TURBO_BOOST_UNLOCKED:
 		player.turbo_boost()
 		return
 	elif event.is_action_released("turbo_boost_action"):
@@ -318,8 +324,7 @@ func _input(event: InputEvent) -> void:
 			return
 	
 	
-	
-	
+	# PROGRESS BETA
 	if can_interact_with_statue_p2 and event.is_action_pressed("interact") and third_eye.mode == 2:
 		progress(3)
 		return
@@ -341,6 +346,8 @@ func execute_dialog_event(return_event_id: String) -> void:
 
 func unlock_turbo():
 	print('UNLOCK TURBO')
+	TURBO_BOOST_UNLOCKED = true
+
 
 # ---- STATS ----
 @export var MAX_HP: float = 200.0
