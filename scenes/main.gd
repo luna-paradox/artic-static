@@ -166,7 +166,9 @@ func _ready() -> void:
 	
 	# PROGRESS CONFIGURATION
 	unlock_sonar_freq(SONAR_FREQ.BASE)
+	unlock_sonar_freq(SONAR_FREQ.CAVE_OF_COLD)
 	unlock_sonar_freq(SONAR_FREQ.CAVE_OF_CURRENT)
+	unlock_sonar_freq(SONAR_FREQ.STATUE_1)
 	
 	# FOR VIDEO
 	#unlock_sonar_freq(SONAR_FREQ.PIVOT_CAVE)
@@ -322,6 +324,17 @@ func _input(event: InputEvent) -> void:
 			var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
 			dialog_ui.load_dialog(dialog_id, 'talk_to_statue_3')
 			return
+			
+		if interaction_id == 'STATUE_2' and !event_talk_statue_2_flag:
+			print('INTERACT WITH STATUE 2')
+			
+			event_talk_statue_2_flag = true
+			interaction_id = ''
+			player_alert_0.hide()
+			
+			var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
+			dialog_ui.load_dialog(dialog_id, 'talk_to_statue_2')
+			return
 	
 	
 	# PROGRESS BETA
@@ -338,7 +351,11 @@ func execute_dialog_event(return_event_id: String) -> void:
 	
 	match return_event_id:
 		'talk_to_statue_3':
+			print('EXECUTE DIALOG EVENT: talk_to_statue_3')
 			unlock_turbo()
+			return
+		'talk_to_statue_2':
+			print('EXECUTE DIALOG EVENT: talk_to_statue_2')
 			return
 		_:
 			return
@@ -739,6 +756,7 @@ enum SONAR_FREQ {
 	STATIC_NODE, 
 	TEST_0, TEST_1, 
 	BASE, CAVE_OF_CURRENT, CAVE_OF_COLD, PIVOT_CAVE, 
+	STATUE_1, STATUE_2, STATUE_3,
 }
 @onready var sonar_frequencies = {
 	SONAR_FREQ.STATIC_NODE: {
@@ -776,14 +794,32 @@ enum SONAR_FREQ {
 		"target_node": $sonar_freq_targets/cave_of_cold,
 		"name": "Cave of Cold"
 	},
+	SONAR_FREQ.STATUE_3: {
+		"id": SONAR_FREQ.STATUE_3,
+		"order": 5,
+		"target_node": $sonar_freq_targets/statue_3,
+		"name": "????"
+	},
 	SONAR_FREQ.PIVOT_CAVE: {
 		"id": SONAR_FREQ.PIVOT_CAVE,
-		"order": 5,
+		"order": 6,
 		"target_node": $sonar_freq_targets/pivot_cave,
 		"name": "Pivot Cave"
 	},
+	SONAR_FREQ.STATUE_2: {
+		"id": SONAR_FREQ.STATUE_2,
+		"order": 7,
+		"target_node": $sonar_freq_targets/statue_2,
+		"name": "st2"
+	},
+	SONAR_FREQ.STATUE_1: {
+		"id": SONAR_FREQ.STATUE_1,
+		"order": -1,
+		"target_node": $sonar_freq_targets/statue_1,
+		"name": "st1"
+	},
 }
-@onready var available_sonar_freq = []
+@onready var available_sonar_freq: Array = []
 var current_sonar_freq_idx: int = 0
 
 func sonar(): 
@@ -1088,6 +1124,8 @@ func trigger_event(event_id: String) -> void:
 			return
 
 var event_find_statue_3_flag = false
+
+var event_talk_statue_2_flag = false
 var event_talk_statue_3_flag = false
 
 func event_find_statue_3():
