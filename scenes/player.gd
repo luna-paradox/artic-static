@@ -8,6 +8,7 @@ class_name Player
 @onready var damage_sound = $audio/damage_sound
 @onready var turbo_sound = $audio/turbo_sound
 @onready var central_light = $central_light
+@onready var lightstick_mode_ui = $lightstick_mode_ui
 
 var main_controller: MainController
 var pause: bool = true
@@ -169,6 +170,16 @@ func disable_turbo_boost() -> void:
 	
 	is_boosting = false
 
+# ---- LIGHTSTICK MODE ----
+func update_lightstick_mode_ui(is_on: bool):
+	if is_on:
+		lightstick_mode_ui.show()
+	else:
+		lightstick_mode_ui.hide()
+
+func get_lightstick_aim_direction() -> Vector2:
+	var res: Vector2 = lightstick_mode_ui.get_aim_direction()
+	return res
 
 # ---- PAUSE ----
 func update_pause(new_state: bool) -> void:

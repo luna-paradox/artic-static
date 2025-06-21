@@ -13,12 +13,12 @@ light_mode = 1
 shader = ExtResource("2_yen7y")
 shader_parameter/amount = 40.0
 
-[sub_resource type="Gradient" id="Gradient_55gme"]
+[sub_resource type="Gradient" id="Gradient_c6h81"]
 offsets = PackedFloat32Array(0, 0.126984, 0.134921, 0.27381, 0.285714, 0.436508, 0.448413, 0.607143, 0.623016, 0.785714, 0.797619, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.873016, 1, 1, 1, 0.833333, 1, 1, 1, 0.735294, 1, 1, 1, 0.704607, 1, 1, 1, 0.555556, 1, 1, 1, 0.488095, 1, 1, 1, 0.355182, 1, 1, 1, 0.327312, 1, 1, 1, 0.198413, 1, 1, 1, 0.166667, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_xkply"]
-gradient = SubResource("Gradient_55gme")
+gradient = SubResource("Gradient_c6h81")
 width = 100
 height = 100
 use_hdr = true

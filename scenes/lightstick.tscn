@@ -1,0 +1,60 @@
+[gd_scene load_steps=9 format=3 uid="uid://bdye7lhnnjiwa"]
+
+[ext_resource type="Script" path="res://scenes/lightstick.gd" id="1_70oqt"]
+[ext_resource type="Texture2D" uid="uid://dh7e30m2rwu1a" path="res://assets/visual/SPR_lightstick_base_v1.1.png" id="2_wndd8"]
+[ext_resource type="Texture2D" uid="uid://cgsnh1t0jlcvh" path="res://assets/visual/SPR_lightstick_base_under_v1.1.png" id="3_v2xch"]
+[ext_resource type="Texture2D" uid="uid://di7pow1hkioiy" path="res://assets/visual/SPR_lightstick_stick_v1.1.png" id="4_xljbr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hjqgd"]
+size = Vector2(2, 2)
+
+[sub_resource type="Gradient" id="Gradient_55gme"]
+offsets = PackedFloat32Array(0, 0.126984, 0.134921, 0.27381, 0.285714, 0.436508, 0.448413, 0.607143, 0.623016, 0.785714, 0.797619, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.873016, 1, 1, 1, 0.833333, 1, 1, 1, 0.735294, 1, 1, 1, 0.704607, 1, 1, 1, 0.555556, 1, 1, 1, 0.488095, 1, 1, 1, 0.355182, 1, 1, 1, 0.327312, 1, 1, 1, 0.198413, 1, 1, 1, 0.166667, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_7ksb2"]
+gradient = SubResource("Gradient_55gme")
+width = 100
+height = 100
+use_hdr = true
+fill = 1
+fill_from = Vector2(0.504587, 0.527523)
+fill_to = Vector2(0.183761, 0.811966)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_rtwh8"]
+light_mode = 1
+
+[node name="lightstick" type="CharacterBody2D"]
+collision_layer = 0
+script = ExtResource("1_70oqt")
+
+[node name="collider" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_hjqgd")
+
+[node name="light" type="PointLight2D" parent="."]
+position = Vector2(9, -2.38419e-07)
+scale = Vector2(5.39063, 4.90625)
+color = Color(0.828125, 0.828125, 0.828125, 1)
+energy = 5.0
+blend_mode = 2
+shadow_enabled = true
+shadow_item_cull_mask = 2
+texture = SubResource("GradientTexture2D_7ksb2")
+
+[node name="sprites" type="Node2D" parent="."]
+
+[node name="sprite_base" type="Sprite2D" parent="sprites"]
+material = SubResource("CanvasItemMaterial_rtwh8")
+position = Vector2(5, 0)
+texture = ExtResource("2_wndd8")
+
+[node name="sprite_base_under" type="Sprite2D" parent="sprites"]
+visible = false
+material = SubResource("CanvasItemMaterial_rtwh8")
+position = Vector2(5, 0)
+texture = ExtResource("3_v2xch")
+
+[node name="sprite_stick" type="Sprite2D" parent="sprites"]
+material = SubResource("CanvasItemMaterial_rtwh8")
+position = Vector2(5, 0)
+texture = ExtResource("4_xljbr")

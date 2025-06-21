@@ -156,10 +156,14 @@ func _ready() -> void:
 	upgrade_static_tank_ui.update_value(MAX_PLAYER_STATIC)
 	upgrade_static_tank_ui.update_cost(STATIC_TANK_UPGRADE_COST)
 	
+	# UI BARS
 	hp_bar.init(MAX_HP)
 	static_bar.init(MAX_PLAYER_STATIC, player_current_static)
 	energy_bar.init(MAX_ENERGY)
 	depth_max_ui.update_depth(CRUSH_DEPTH)
+	
+	# INIT LIGHTSTICK MODE
+	exit_lightstick_mode()
 	
 	await restart()
 	#show_instructions()
@@ -228,6 +232,9 @@ func _process(delta: float) -> void:
 			player.disable_turbo_boost()
 	
 	#INTERACT WITH STATIC NODES
+	if is_lightstick_mode_on:
+		return
+	
 	if Input.is_action_pressed("interact") and static_nodes_in_range.size() > 0:
 		var delta_static = delta * STATIC_CONSUMPTION_RATE
 		update_static(delta_static)
@@ -237,6 +244,8 @@ func _process(delta: float) -> void:
 		update_collecting_static(false)
 	elif static_nodes_in_range.size() == 0:
 		update_collecting_static(false)
+
+var is_lightstick_mode_on = true
 
 func _input(event: InputEvent) -> void:
 	# DEBUG 
@@ -267,11 +276,24 @@ func _input(event: InputEvent) -> void:
 	if pause:
 		return
 	
+	if is_lightstick_mode_on:
+		if event.is_action_released("lightstick_action"):
+			exit_lightstick_mode()
+		
+		if event.is_action_pressed("interact"):
+			shoot_lightstick()
+		
+		return;
+	
+	if event.is_action_pressed("lightstick_action"):
+		enter_lightstick_mode()
+		return
+	
+	# WHILE MOVING AROUND
 	if event.is_action_pressed("turn_sub"):
 		player.scale.x *= -1
 		return
 	
-	# WHILE MOVING AROUND
 	if event.is_action_pressed("interact") and can_dock:
 		start_dock_menu()
 		return
@@ -364,6 +386,34 @@ func execute_dialog_event(return_event_id: String) -> void:
 func unlock_turbo():
 	print('UNLOCK TURBO')
 	TURBO_BOOST_UNLOCKED = true
+
+
+# ---- LIGHTSTICK MODE ----
+func enter_lightstick_mode():
+	is_lightstick_mode_on = true
+	player.update_lightstick_mode_ui(true)
+	pass
+
+func exit_lightstick_mode():
+	is_lightstick_mode_on = false
+	player.update_lightstick_mode_ui(false)
+	pass
+
+@onready var lightsticks_container = $lightsticks
+var lightstick_scene = preload("res://scenes/lightstick.tscn")
+
+func shoot_lightstick():
+	
+	var new_lt: Lightstick = lightstick_scene.instantiate()
+	lightsticks_container.add_child(new_lt)
+	
+	new_lt.global_position = player.global_position
+	
+	var dir: Vector2 = player.get_lightstick_aim_direction()
+	new_lt.DIRECTION = dir
+	new_lt.rotation = dir.normalized().angle() + PI
+	
+	
 
 
 # ---- STATS ----
