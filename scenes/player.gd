@@ -7,6 +7,7 @@ class_name Player
 @onready var motor_sound = $audio/motor_sound
 @onready var damage_sound = $audio/damage_sound
 @onready var turbo_sound = $audio/turbo_sound
+@onready var central_light = $central_light
 
 var main_controller: MainController
 var pause: bool = true
@@ -21,6 +22,8 @@ func _ready() -> void:
 	sonar_timer.one_shot = true
 	sonar_timer.timeout.connect(hide_sonnar)
 	add_child(sonar_timer)
+	
+	central_light.show()
 
 func _process(delta: float) -> void:
 	if is_sonar_enabled:
