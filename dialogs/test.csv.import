@@ -1,18 +1,17 @@
 [remap]
 
-importer="com.timothyqiu.godot-csv-importer"
-type="Resource"
+importer="csv_translation"
+type="Translation"
 uid="uid://dgo06awwm2iy5"
-path="res://.godot/imported/test.csv-9e593877296fa5e1c404d3513940ad9f.res"
 
 [deps]
 
+files=["res://dialogs/test. aux.translation", "res://dialogs/test. aux.translation", "res://dialogs/test. aux.translation", "res://dialogs/test. dialog.translation"]
+
 source_file="res://dialogs/test.csv"
-dest_files=["res://.godot/imported/test.csv-9e593877296fa5e1c404d3513940ad9f.res"]
+dest_files=["res://dialogs/test. aux.translation", "res://dialogs/test. aux.translation", "res://dialogs/test. aux.translation", "res://dialogs/test. dialog.translation"]
 
 [params]
 
+compress=true
 delimiter=0
-headers=true
-detect_numbers=false
-force_float=true
