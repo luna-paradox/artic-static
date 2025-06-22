@@ -390,12 +390,10 @@ func unlock_turbo():
 func enter_lightstick_mode():
 	is_lightstick_mode_on = true
 	player.update_lightstick_mode_ui(true)
-	pass
 
 func exit_lightstick_mode():
 	is_lightstick_mode_on = false
 	player.update_lightstick_mode_ui(false)
-	pass
 
 @onready var lightsticks_container = $lightsticks
 var lightstick_scene = preload("res://scenes/lightstick.tscn")
@@ -410,8 +408,6 @@ func shoot_lightstick():
 	
 	new_lt.DIRECTION = dir
 	new_lt.rotation = dir.normalized().angle() + PI
-	
-	
 
 
 # ---- STATS ----
