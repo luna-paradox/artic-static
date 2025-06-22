@@ -1,4 +1,5 @@
 extends Node2D
+class_name AreaOfCurrent
 
 @onready var particles = $particles
 @onready var collider = $area_2d/collider

@@ -38,7 +38,7 @@ func _ready() -> void:
 # ---- SHOOT IT ----
 var SHOOTING: bool = true
 var DIRECTION: Vector2 = Vector2.RIGHT 
-var SPEED: float = 2000.0 
+@export var SPEED: float = 2000.0 
 
 var EXTRA_DISTANCE_SHOOTING: bool = false
 var EXTRA_DISTANCE: float = 8
