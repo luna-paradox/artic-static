@@ -282,8 +282,6 @@ func _input(event: InputEvent) -> void:
 		
 		if event.is_action_pressed("interact"):
 			shoot_lightstick()
-		
-		return;
 	
 	if event.is_action_pressed("lightstick_action"):
 		enter_lightstick_mode()
@@ -291,7 +289,7 @@ func _input(event: InputEvent) -> void:
 	
 	# WHILE MOVING AROUND
 	if event.is_action_pressed("turn_sub"):
-		player.scale.x *= -1
+		player.flip_vessel()
 		return
 	
 	if event.is_action_pressed("interact") and can_dock:
@@ -403,13 +401,13 @@ func exit_lightstick_mode():
 var lightstick_scene = preload("res://scenes/lightstick.tscn")
 
 func shoot_lightstick():
-	
 	var new_lt: Lightstick = lightstick_scene.instantiate()
 	lightsticks_container.add_child(new_lt)
 	
-	new_lt.global_position = player.global_position
+	new_lt.global_position = player.virtual_position.global_position
 	
 	var dir: Vector2 = player.get_lightstick_aim_direction()
+	
 	new_lt.DIRECTION = dir
 	new_lt.rotation = dir.normalized().angle() + PI
 	

@@ -9,6 +9,7 @@ class_name Player
 @onready var turbo_sound = $audio/turbo_sound
 @onready var central_light = $central_light
 @onready var lightstick_mode_ui = $lightstick_mode_ui
+@onready var alert_0 = $alert_0
 
 var main_controller: MainController
 var pause: bool = true
@@ -123,6 +124,12 @@ func crash_vessel(collision: KinematicCollision2D) -> void:
 		damage_sound.volume_db = linear_to_db(damage_volume)
 		damage_sound.play()
 
+func flip_vessel() -> void:
+	scale.x *= -1
+	if scale.x == -1:
+		lightstick_mode_ui.scale.x *= -1
+		alert_0.scale.x *= -1
+	pass
 
 # ---- SONNAR ----
 @onready var sonar: Node2D = $"../virtual_player_pos/sonar"

@@ -22,7 +22,7 @@ func _draw() -> void:
 
 
 func draw_aim_line() -> void:
-	var origin: Vector2 = to_local(player.global_position)
+	var origin: Vector2 = to_local(player.virtual_position.global_position)
 	var mouse_pos: Vector2 = get_local_mouse_position()
 	var dir: Vector2 = (mouse_pos - origin).normalized()
 	#var distance: float = min(origin.distance_to(mouse_pos), LINE_LENGTH)
@@ -36,7 +36,7 @@ func draw_aim_line() -> void:
 		draw_circle(pos, DOT_RADIUS, COLOR)
 
 func get_aim_direction() -> Vector2:
-	var origin: Vector2 = to_local(player.global_position)
+	var origin: Vector2 = to_local(player.virtual_position.global_position)
 	var mouse_pos: Vector2 = get_local_mouse_position()
 	var dir: Vector2 = (mouse_pos - origin).normalized()
 	

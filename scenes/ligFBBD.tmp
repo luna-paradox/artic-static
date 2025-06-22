@@ -55,6 +55,5 @@ position = Vector2(5, 0)
 texture = ExtResource("4_xljbr")
 
 [node name="glow_out_timer" type="Timer" parent="."]
-wait_time = 60.0
 one_shot = true
 autostart = true
