@@ -46,6 +46,8 @@ class_name MainController
 @onready var heater_sound = $global_audio/heater_sound
 @onready var change_sonar_freq_sound = $global_audio/change_sonar_freq_sound
 @onready var ritual_success_0_sound = $global_audio/ritual_success_0_sound
+# SHADERS
+@onready var screen_shaders = $screen_shaders
 # PROGRESS
 @onready var third_eye = $ui_exploration/top_right/third_eye
 
@@ -953,12 +955,6 @@ func control_temp(delta: float) -> void:
 	# CALCULATE HEAT TRANSFER
 	var heat_transfer = TEMP_TRANSFER_ENVIRONMENT
 	
-	# HEATER AND BOOSTING
-	if is_heater_on:
-		heat_transfer += calculate_heater_heat_transfer()
-	if player.is_boosting:
-		heat_transfer += TEMP_TRANSFER_BOOSTING
-	
 	# STATIC
 	var static_heat_transfer = player_current_static * TEMP_TRANSFER_STATIC_FACTOR
 	heat_transfer += static_heat_transfer
@@ -966,10 +962,23 @@ func control_temp(delta: float) -> void:
 	# COLD AREAS
 	heat_transfer += cold_areas_heat_transfer
 	
+	var heat_transfer_pre_heating: float = heat_transfer
+	
+	# HEATER AND BOOSTING
+	if is_heater_on:
+		heat_transfer += calculate_heater_heat_transfer()
+	if player.is_boosting:
+		heat_transfer += TEMP_TRANSFER_BOOSTING
+	
 	# CALCULATE FINAL HEAT TRANSFER AND UPDATE TEMP
 	heat_transfer = round(heat_transfer * 1000.0) / 1000.0
 	current_heat_transfer = heat_transfer
 	update_temp(heat_transfer)
+	
+	# UPDATE TEMPERATURE SHADERS
+	# COLD [-3.0, 0.0]
+	var ratio: float = heat_transfer_pre_heating * -1.0 / 3.0
+	screen_shaders.target_cold_ratio = ratio
 
 func damage_by_heat() -> void:
 	if _DISABLE_HEAT_DAMAGE:

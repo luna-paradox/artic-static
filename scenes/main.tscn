@@ -1,4 +1,4 @@
-[gd_scene load_steps=6722 format=3 uid="uid://chovb3krt6q56"]
+[gd_scene load_steps=6726 format=3 uid="uid://chovb3krt6q56"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_nuh7j"]
 [ext_resource type="AudioStream" uid="uid://cjjlq52c5q6oh" path="res://assets/audio/large-underwater-explosion-190270-TRIM.ogg" id="2_shk0a"]
@@ -56,6 +56,7 @@
 [ext_resource type="Script" path="res://scenes/third_eye_ui.gd" id="35_312e4"]
 [ext_resource type="Texture2D" uid="uid://dxju2yemdl8gr" path="res://assets/visual/SPR_third_eye_esclera_0.0.png" id="35_nf50o"]
 [ext_resource type="Texture2D" uid="uid://drw2usl3sqw4i" path="res://assets/visual/SPR_third_eye_pupil_0.0.png" id="36_tgba7"]
+[ext_resource type="Shader" path="res://scenes/cold_shader.gdshader" id="37_6dis7"]
 [ext_resource type="Texture2D" uid="uid://blqqdo0sw5er8" path="res://assets/visual/SPR_third_eye_front_0.0.png" id="37_8guw8"]
 [ext_resource type="Texture2D" uid="uid://co56bcdg1e4dy" path="res://assets/visual/SPR_statue_phase-03_v0.2.png" id="38_yyxnh"]
 [ext_resource type="Script" path="res://scenes/diegetic_ui.gd" id="39_yt8q6"]
@@ -64,12 +65,14 @@
 [ext_resource type="PackedScene" uid="uid://141dpp8eac0w" path="res://scenes/area_of_current.tscn" id="44_1301b"]
 [ext_resource type="Script" path="res://scenes/follow_the_eye.gd" id="44_o375y"]
 [ext_resource type="Script" path="res://scenes/lightstick_mode.gd" id="50_wv28o"]
+[ext_resource type="Script" path="res://scenes/light_controller.gd" id="51_1hkgo"]
 [ext_resource type="Texture2D" uid="uid://diiy7damaqey7" path="res://assets/visual/IMG_instructions_0.3.png" id="51_inuak"]
 [ext_resource type="Script" path="res://scenes/debug_ui.gd" id="52_uh1u6"]
 [ext_resource type="Script" path="res://scenes/ui_stat_upgrade.gd" id="55_qaab5"]
 [ext_resource type="Script" path="res://scenes/ui_dialog.gd" id="60_am7ug"]
 [ext_resource type="FontFile" uid="uid://mbp56gxppta4" path="res://assets/fonts/CourierPrime-Italic.ttf" id="61_creal"]
 [ext_resource type="FontFile" uid="uid://84ompx4b04jc" path="res://assets/fonts/CourierPrime-BoldItalic.ttf" id="62_ymd75"]
+[ext_resource type="Script" path="res://scenes/screen_shaders.gd" id="63_wu1ss"]
 
 [sub_resource type="Resource" id="Resource_5g8dg"]
 script = ExtResource("4_0o5lc")
@@ -46604,6 +46607,12 @@ light_mode = 1
 shader = ExtResource("13_02jgh")
 shader_parameter/amount = 40.0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n80wm"]
+shader = ExtResource("37_6dis7")
+shader_parameter/wave_intensity = 0.2
+shader_parameter/tint_strength = 0.3
+shader_parameter/tint_color = Color(0.09, 0.278, 0.306, 1)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nj52c"]
 bg_color = Color(0.82, 0.3198, 0.3198, 1)
 
@@ -47430,21 +47439,6 @@ visible = false
 modulate = Color(1, 1, 1, 0.3)
 polygon = PackedVector2Array(-332.135, -269.071, -182.464, -233.436, -29.2275, -365.289, 195.277, -315.398, 327.13, -155.036, 309.313, -12.4922, 419.783, 144.306, 348.513, 354.558, 195.277, 479.284, 6.40723, 440.084, -164.646, 504.229, -339.263, 465.029, -474.68, 546.992, -652.858, 486.411, -820.347, 308.231, -795.402, 69.4707, -898.745, -176.418, -770.457, -333.216, -588.715, -340.344, -332.135, -269.071)
 
-[node name="island_top_5" type="StaticBody2D" parent="room/A2"]
-position = Vector2(-23449, 2487)
-
-[node name="SS2D_Shape_Open" type="Node2D" parent="room/A2/island_top_5"]
-texture_repeat = 3
-script = ExtResource("8_7fml4")
-_points = SubResource("Resource_t48hm")
-shape_material = ExtResource("8_03o37")
-collision_polygon_node_path = NodePath("../CollisionPolygon2D")
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="room/A2/island_top_5"]
-visible = false
-modulate = Color(1, 1, 1, 0.3)
-polygon = PackedVector2Array(-332.135, -269.071, -182.464, -233.436, -29.2275, -365.289, 195.277, -315.398, 327.13, -155.036, 309.313, -12.4922, 419.783, 144.306, 348.513, 354.558, 195.277, 479.284, 6.40723, 440.084, -164.646, 504.229, -339.263, 465.029, -474.68, 546.992, -652.858, 486.411, -820.347, 308.231, -795.402, 69.4707, -898.745, -176.418, -770.457, -333.216, -588.715, -340.344, -332.135, -269.071)
-
 [node name="statue_03" type="Node2D" parent="room/A2"]
 position = Vector2(801, 1814)
 script = ExtResource("24_w0tsc")
@@ -47601,7 +47595,6 @@ enable_auto_particle_lifetime = false
 particle_lifetime = 0.7
 
 [node name="cold_areas" type="Node2D" parent="room/A2"]
-visible = false
 position = Vector2(949.621, 7807.45)
 
 [node name="cold_area_3" parent="room/A2/cold_areas" instance=ExtResource("40_ogxqb")]
@@ -48351,20 +48344,58 @@ shape = SubResource("RectangleShape2D_c73i1")
 position = Vector2(-1813, -4909)
 
 [node name="area_of_current" parent="room/tests" instance=ExtResource("44_1301b")]
-position = Vector2(-4577, 4211)
+position = Vector2(-31276, 10311)
 current_strenght = 100
 direction = Vector2(-1, 0)
 
 [node name="area_of_current2" parent="room/tests" instance=ExtResource("44_1301b")]
-position = Vector2(-5442, 4093)
+position = Vector2(-30404, 10340)
 scale = Vector2(0.5, 0.5)
 direction = Vector2(-1, 0)
 
 [node name="particles" parent="room/tests/area_of_current2" index="1"]
 lifetime = 0.5
 
+[node name="island_0" type="StaticBody2D" parent="room/tests"]
+position = Vector2(-30452.2, 12651.4)
+
+[node name="SS2D_Shape_Open" type="Node2D" parent="room/tests/island_0"]
+texture_repeat = 3
+position = Vector2(113.234, -141.391)
+script = ExtResource("8_7fml4")
+_points = SubResource("Resource_t48hm")
+shape_material = ExtResource("8_03o37")
+collision_polygon_node_path = NodePath("../CollisionPolygon2D")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="room/tests/island_0"]
+visible = false
+modulate = Color(1, 1, 1, 0.3)
+polygon = PackedVector2Array(-218.901, -410.462, -69.2296, -374.827, 84.0069, -506.68, 308.511, -456.789, 440.364, -296.427, 422.547, -153.883, 533.017, 2.91537, 461.747, 213.167, 308.511, 337.893, 119.642, 298.693, -51.4116, 362.838, -226.029, 323.638, -361.446, 405.601, -539.624, 345.02, -707.113, 166.84, -682.168, -71.9199, -785.511, -317.809, -657.223, -474.607, -475.481, -481.735, -218.901, -410.462)
+
+[node name="static_nodes" type="Node2D" parent="room/tests"]
+position = Vector2(-30607.5, 12623.8)
+
+[node name="ooze_node" parent="room/tests/static_nodes" instance=ExtResource("10_dq6to")]
+position = Vector2(-78.5293, -382.839)
+rotation = 1.5824
+
+[node name="cold_areas" type="Node2D" parent="room/tests"]
+visible = false
+
+[node name="cold_area_0" parent="room/tests/cold_areas" instance=ExtResource("40_ogxqb")]
+position = Vector2(-30700, 11872)
+scale = Vector2(3.61369, 2.21716)
+
+[node name="cold_area_1" parent="room/tests/cold_areas" instance=ExtResource("40_ogxqb")]
+position = Vector2(-30700, 11872)
+scale = Vector2(1.97943, 2.21716)
+
+[node name="cold_area_2" parent="room/tests/cold_areas" instance=ExtResource("40_ogxqb")]
+position = Vector2(-30700, 11872)
+scale = Vector2(0.893622, 2.22517)
+
 [node name="player" type="CharacterBody2D" parent="."]
-position = Vector2(-33488, 8384)
+position = Vector2(-33565, 6953)
 rotation = -0.00902627
 collision_layer = 0
 motion_mode = 1
@@ -48405,7 +48436,6 @@ texture = ExtResource("23_p3ho4")
 visible = false
 position = Vector2(-1.00024, 0.00280762)
 scale = Vector2(5.39063, 4.90625)
-enabled = false
 energy = 3.0
 blend_mode = 2
 shadow_enabled = true
@@ -48515,7 +48545,6 @@ position = Vector2(-21, -30)
 
 [node name="light" type="PointLight2D" parent="player/diegetic_ui/heater_light"]
 position = Vector2(0, -6)
-enabled = false
 color = Color(1, 0, 0, 1)
 energy = 16.0
 range_item_cull_mask = 32
@@ -48531,7 +48560,6 @@ position = Vector2(13, -31)
 
 [node name="light" type="PointLight2D" parent="player/diegetic_ui/turbo_light"]
 position = Vector2(0, -7)
-enabled = false
 color = Color(0.96875, 1, 0, 1)
 energy = 16.0
 range_item_cull_mask = 32
@@ -48549,7 +48577,6 @@ script = ExtResource("50_wv28o")
 
 [node name="central_light" type="PointLight2D" parent="player"]
 visible = false
-enabled = false
 energy = 3.0
 texture = SubResource("GradientTexture2D_nmcj0")
 
@@ -48749,6 +48776,10 @@ z_index = -20
 material = SubResource("CanvasItemMaterial_d51sn")
 texture = ExtResource("3_n01ow")
 
+[node name="light_controller" type="Node" parent="camera" node_paths=PackedStringArray("reference_node")]
+script = ExtResource("51_1hkgo")
+reference_node = NodePath("..")
+
 [node name="virtual_player_pos" type="Node2D" parent="."]
 rotation = 0.0109485
 script = ExtResource("26_xp587")
@@ -48763,6 +48794,12 @@ texture = ExtResource("32_4qck4")
 [node name="global_mod" type="CanvasModulate" parent="."]
 visible = false
 color = Color(0.0429688, 0.0429688, 0.0429688, 1)
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+visible = false
+rotation = 0.0109485
+scale = Vector2(1, 1)
+color = Color(0.96875, 0.96875, 0.96875, 1)
 
 [node name="player_start_pos" type="Node2D" parent="."]
 position = Vector2(550, -646)
@@ -49052,6 +49089,19 @@ offset_bottom = 30.0
 focus_mode = 0
 theme_override_fonts/font = ExtResource("27_rfndt")
 text = "?"
+
+[node name="screen_shaders" type="CanvasLayer" parent="."]
+script = ExtResource("63_wu1ss")
+
+[node name="cold_shader" type="ColorRect" parent="screen_shaders"]
+z_index = 20
+material = SubResource("ShaderMaterial_n80wm")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="ui_dock_menu" type="CanvasLayer" parent="."]
 visible = false
