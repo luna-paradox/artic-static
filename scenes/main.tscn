@@ -48380,7 +48380,6 @@ position = Vector2(-78.5293, -382.839)
 rotation = 1.5824
 
 [node name="cold_areas" type="Node2D" parent="room/tests"]
-visible = false
 
 [node name="cold_area_0" parent="room/tests/cold_areas" instance=ExtResource("40_ogxqb")]
 position = Vector2(-30700, 11872)
@@ -48395,7 +48394,7 @@ position = Vector2(-30700, 11872)
 scale = Vector2(0.893622, 2.22517)
 
 [node name="player" type="CharacterBody2D" parent="."]
-position = Vector2(-33565, 6953)
+position = Vector2(-13565, 9108)
 rotation = -0.00902627
 collision_layer = 0
 motion_mode = 1

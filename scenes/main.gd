@@ -947,7 +947,7 @@ var cold_areas_heat_transfer: float = 0.0
 var temp_action_counter = 0
 func control_temp(delta: float) -> void:
 	temp_action_counter += delta
-	if temp_action_counter < 1.0:
+	if temp_action_counter < 0.5:
 		return
 	
 	temp_action_counter = 0.0
@@ -962,7 +962,7 @@ func control_temp(delta: float) -> void:
 	# COLD AREAS
 	heat_transfer += cold_areas_heat_transfer
 	
-	var heat_transfer_pre_heating: float = heat_transfer
+	var heat_transfer_pre_heating: float = round(heat_transfer * 1000.0) / 1000.0
 	
 	# HEATER AND BOOSTING
 	if is_heater_on:
