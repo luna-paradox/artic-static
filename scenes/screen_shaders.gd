@@ -35,8 +35,8 @@ func update_cold_shader(ratio: float) -> void:
 	
 	# wave_intensity [0.0, 0.2]
 	# tint_strength [0.0, 0.3]
-	var new_wave_intensity = 0.2 * ratio
-	var new_tint_strength = 0.3 * ratio
+	var new_wave_intensity = 0.1 * ratio
+	var new_tint_strength = 0.25 * ratio
 	
 	cold_shader.material["shader_parameter/wave_intensity"] = new_wave_intensity
 	cold_shader.material["shader_parameter/tint_strength"] = new_tint_strength
