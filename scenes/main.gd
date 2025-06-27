@@ -322,16 +322,10 @@ func _input(event: InputEvent) -> void:
 	
 	# SKILLS
 	if event.is_action_pressed("skill_1"):
-		if player_current_static < 200 or current_hp >= MAX_HP:
-			return
-		update_hp(30)
-		update_static(-200)
+		skill_hp_plus()
 		return
 	if event.is_action_pressed("skill_2"):
-		if player_current_static < 200 or current_energy >= MAX_ENERGY:
-			return
-		update_energy(200)
-		update_static(-200)
+		skill_energy_plus()
 		return
 	
 	# PROGRESS
@@ -387,6 +381,38 @@ func execute_dialog_event(return_event_id: String) -> void:
 func unlock_turbo():
 	print('UNLOCK TURBO')
 	TURBO_BOOST_UNLOCKED = true
+
+
+# ---- SKILLS ----
+@export var SKILL_PRICE_HP_UP = 200
+@export var SKILL_HP_PLUS = 30
+
+# SKILL HP UP
+func skill_hp_plus() -> void:
+	if player_current_static < SKILL_PRICE_HP_UP:
+		return
+	if current_hp >= MAX_HP:
+		return
+	if SKILL_HP_PLUS + current_hp > MAX_HP:
+		return
+	
+	update_hp(SKILL_HP_PLUS)
+	update_static(-SKILL_PRICE_HP_UP)
+
+# SKILL ENERGY UP
+@export var SKILL_PRICE_ENERGY_UP = 200
+@export var SKILL_ENERGY_PLUS = 200
+
+func skill_energy_plus() -> void:
+	if player_current_static < SKILL_PRICE_ENERGY_UP:
+		return
+	if current_energy >= MAX_ENERGY:
+		return
+	if SKILL_ENERGY_PLUS + current_energy > MAX_ENERGY:
+		return
+	
+	update_energy(SKILL_ENERGY_PLUS)
+	update_static(-SKILL_PRICE_ENERGY_UP)
 
 
 # ---- LIGHTSTICK MODE ----
@@ -522,7 +548,7 @@ func restart():
 	update_temp(20 - current_temp)
 	update_static(-MAX_PLAYER_STATIC)
 	
-	update_heater_power(0.2)
+	update_heater_power(0.6)
 	update_heater_state(true)
 	
 	reset_all_static_nodes()
@@ -1001,7 +1027,7 @@ func damage_by_heat() -> void:
 var is_heater_on = false
 var HEATER_ENERGY_COST = 30
 var TEMP_TRANSFER_HEATER_MAX: float = 3.0
-var heater_power: float = 0.2
+var heater_power: float = 0.6
 
 func update_heater_state(new_state: bool) -> void:
 	if is_heater_on == new_state:

@@ -79,34 +79,29 @@ texture = ExtResource("3_kbiry")
 
 [node name="static_ooze_sprites" type="Node2D" parent="."]
 position = Vector2(0, -2.38419e-07)
-scale = Vector2(1, 1)
 
 [node name="static_ooze_s" type="Sprite2D" parent="static_ooze_sprites"]
 visible = false
 material = SubResource("ShaderMaterial_u1fx6")
 position = Vector2(-9, 2)
-scale = Vector2(1, 1)
 texture = ExtResource("5_vhehl")
 
 [node name="static_ooze_m" type="Sprite2D" parent="static_ooze_sprites"]
 visible = false
 material = SubResource("ShaderMaterial_7ekoa")
 position = Vector2(-9, 2)
-scale = Vector2(1, 1)
 texture = ExtResource("6_emuoc")
 
 [node name="static_ooze_l" type="Sprite2D" parent="static_ooze_sprites"]
 visible = false
 material = SubResource("ShaderMaterial_1o5un")
 position = Vector2(-9, 2)
-scale = Vector2(1, 1)
 texture = ExtResource("7_evry3")
 
 [node name="static_ooze_xl" type="Sprite2D" parent="static_ooze_sprites"]
 visible = false
 material = SubResource("ShaderMaterial_druaj")
 position = Vector2(-9, 2)
-scale = Vector2(1, 1)
 texture = ExtResource("8_18yqk")
 
 [node name="light" type="PointLight2D" parent="."]
