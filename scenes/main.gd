@@ -19,6 +19,7 @@ class_name MainController
 @onready var depth_max_ui = $ui_exploration/top_center/depth_max
 @onready var instructions_ui = $instructions_screen
 @onready var dialog_ui = $ui_dialog
+@onready var ui_pause = $ui_pause
 # UI DOCK MENU
 @onready var alert_docking = $ui_exploration/top_right/dock_alert/docking_icon
 @onready var alert_can_dock = $ui_exploration/top_right/dock_alert/can_dock
@@ -275,8 +276,13 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	# PAUSE MEANS NOT MOVING AROUND
+	if event.is_action_pressed("pause"):
+		update_pause(!pause)
+	
 	if pause:
 		return
+	
+	# WHILE MOVING AROUND
 	
 	if is_lightstick_mode_on:
 		if event.is_action_released("lightstick_action"):
@@ -289,7 +295,6 @@ func _input(event: InputEvent) -> void:
 		enter_lightstick_mode()
 		return
 	
-	# WHILE MOVING AROUND
 	if event.is_action_pressed("turn_sub"):
 		player.flip_vessel()
 		return
@@ -607,11 +612,14 @@ func _on_player_interaction_area_exited(area: Area2D) -> void:
 
 # ---- PAUSE GAME ----
 func update_pause(new_state: bool) -> void:
+	ui_pause.visible = new_state
 	pause = new_state
 	player.update_pause(new_state)
 	
 	if new_state:
 		getting_crushed_sound.stop()
+	
+	exit_lightstick_mode()
 
 
 # ---- THE CAGE ----

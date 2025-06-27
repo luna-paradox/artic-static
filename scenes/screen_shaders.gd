@@ -2,6 +2,9 @@ extends CanvasLayer
 
 @onready var cold_shader = $cold_shader
 
+func _ready() -> void:
+	show()
+
 func _process(delta: float) -> void:
 	process_cold_shader(delta)
 

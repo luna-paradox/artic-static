@@ -191,6 +191,8 @@ func get_lightstick_aim_direction() -> Vector2:
 # ---- PAUSE ----
 func update_pause(new_state: bool) -> void:
 	pause = new_state
+	light_container.pause = new_state
+	
 	if pause:
 		motor_sound.stop()
 		

@@ -1,4 +1,4 @@
-[gd_scene load_steps=6924 format=3 uid="uid://chovb3krt6q56"]
+[gd_scene load_steps=6926 format=3 uid="uid://chovb3krt6q56"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_nuh7j"]
 [ext_resource type="AudioStream" uid="uid://cjjlq52c5q6oh" path="res://assets/audio/large-underwater-explosion-190270-TRIM.ogg" id="2_shk0a"]
@@ -48033,6 +48033,14 @@ bg_color = Color(0.145098, 0.478431, 0.266667, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1a382"]
 bg_color = Color(0.152941, 0.682353, 0.34902, 1)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bax43"]
+shader = ExtResource("13_02jgh")
+shader_parameter/amount = 40.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kejka"]
+shader = ExtResource("13_02jgh")
+shader_parameter/amount = 2.0
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0bjtr"]
 shader = ExtResource("13_02jgh")
 shader_parameter/amount = 40.0
@@ -50259,6 +50267,8 @@ color = Color(0.96875, 0.96875, 0.96875, 1)
 [node name="player_start_pos" type="Node2D" parent="."]
 position = Vector2(550, -646)
 
+[node name="lightsticks" type="Node2D" parent="."]
+
 [node name="ui_exploration" type="CanvasLayer" parent="."]
 
 [node name="top_left" type="Control" parent="ui_exploration"]
@@ -50546,6 +50556,7 @@ theme_override_fonts/font = ExtResource("27_rfndt")
 text = "?"
 
 [node name="screen_shaders" type="CanvasLayer" parent="."]
+visible = false
 script = ExtResource("63_wu1ss")
 
 [node name="cold_shader" type="ColorRect" parent="screen_shaders"]
@@ -51166,6 +51177,71 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Restart"
 
+[node name="ui_pause" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="container" type="Control" parent="ui_pause"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="window" type="Control" parent="ui_pause/container"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -77.0
+offset_top = -37.0
+offset_right = 77.0
+offset_bottom = 37.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="ui_pause/container/window"]
+material = SubResource("ShaderMaterial_bax43")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.503906, 0.503906, 0.503906, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="ui_pause/container/window"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = -3.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Label" type="Label" parent="ui_pause/container/window"]
+material = SubResource("ShaderMaterial_kejka")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+text = "PAUSE"
+
 [node name="follow_the_eye_ui" type="CanvasLayer" parent="."]
 visible = false
 script = ExtResource("44_o375y")
@@ -51699,8 +51775,6 @@ theme_override_font_sizes/font_size = 12
 text = "-"
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="lightsticks" type="Node2D" parent="."]
 
 [connection signal="area_entered" from="room/A3/final_sphere/final_sphere_area_2d" to="." method="_on_final_sphere_area_2d_area_entered"]
 [connection signal="area_entered" from="room/BASE/cage_front/cage_area_2d" to="." method="_on_cage_area_2d_area_entered"]
