@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://22n73lu5euok"
+
+[deps]
+
+files=["res://dialogs/00_interact_statue_3. aux.translation", "res://dialogs/00_interact_statue_3. aux.translation", "res://dialogs/00_interact_statue_3. aux.translation", "res://dialogs/00_interact_statue_3. dialog.translation"]
+
+source_file="res://dialogs/00_interact_statue_3.csv"
+dest_files=["res://dialogs/00_interact_statue_3. aux.translation", "res://dialogs/00_interact_statue_3. aux.translation", "res://dialogs/00_interact_statue_3. aux.translation", "res://dialogs/00_interact_statue_3. dialog.translation"]
+
+[params]
+
+compress=true
+delimiter=0

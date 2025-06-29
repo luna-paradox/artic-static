@@ -7,6 +7,9 @@ class_name Player
 @onready var motor_sound = $audio/motor_sound
 @onready var damage_sound = $audio/damage_sound
 @onready var turbo_sound = $audio/turbo_sound
+@onready var central_light = $central_light
+@onready var lightstick_mode_ui = $lightstick_mode_ui
+@onready var alert_0 = $alert_0
 
 var main_controller: MainController
 var pause: bool = true
@@ -21,6 +24,8 @@ func _ready() -> void:
 	sonar_timer.one_shot = true
 	sonar_timer.timeout.connect(hide_sonnar)
 	add_child(sonar_timer)
+	
+	central_light.show()
 
 func _process(delta: float) -> void:
 	if is_sonar_enabled:
@@ -37,7 +42,7 @@ func _physics_process(delta):
 	var collision = move_vessel(delta)
 	crash_vessel(collision)
 
-func init(new_acceleration: int, new_deceleration: int, new_max_peed: int):
+func update_movement_stats(new_acceleration: int, new_deceleration: int, new_max_peed: int):
 	ACCELERATION = new_acceleration
 	DECELERATION = new_deceleration
 	MAX_SPEED = new_max_peed
@@ -103,6 +108,8 @@ func crash_vessel(collision: KinematicCollision2D) -> void:
 	
 	#BOUNCE
 	velocity = velocity.bounce(collision.get_normal()) / 3
+	if velocity.length() < 20:
+		return
 	
 	#DAMAGE
 	#print(str(velocity.length()))
@@ -117,6 +124,12 @@ func crash_vessel(collision: KinematicCollision2D) -> void:
 		damage_sound.volume_db = linear_to_db(damage_volume)
 		damage_sound.play()
 
+func flip_vessel() -> void:
+	scale.x *= -1
+	if scale.x == -1:
+		lightstick_mode_ui.scale.x *= -1
+		alert_0.scale.x *= -1
+	pass
 
 # ---- SONNAR ----
 @onready var sonar: Node2D = $"../virtual_player_pos/sonar"
@@ -164,10 +177,22 @@ func disable_turbo_boost() -> void:
 	
 	is_boosting = false
 
+# ---- LIGHTSTICK MODE ----
+func update_lightstick_mode_ui(is_on: bool):
+	if is_on:
+		lightstick_mode_ui.show()
+	else:
+		lightstick_mode_ui.hide()
+
+func get_lightstick_aim_direction() -> Vector2:
+	var res: Vector2 = lightstick_mode_ui.get_aim_direction()
+	return res
 
 # ---- PAUSE ----
 func update_pause(new_state: bool) -> void:
 	pause = new_state
+	light_container.pause = new_state
+	
 	if pause:
 		motor_sound.stop()
 		
@@ -250,9 +275,6 @@ func _on_cold_area_exited(area: Area2D) -> void:
 	
 	var heat_transfer = cold_area.heat_transfer
 	main_controller.cold_areas_heat_transfer -= heat_transfer
-	
-	if main_controller.cold_areas_heat_transfer < 0:
-		main_controller.cold_areas_heat_transfer = 0
 
 
 # ---- AREA OF CURRENT DETECTION ----
@@ -265,8 +287,8 @@ func _on_area_of_current_detector_area_entered(area: Area2D) -> void:
 		return
 	
 	var new_current = area_of_current.direction * area_of_current.current_strenght
+	
 	current_influence += new_current
-
 
 func _on_area_of_current_detector_area_exited(area: Area2D) -> void:
 	var area_of_current = area.get_parent()
@@ -277,3 +299,22 @@ func _on_area_of_current_detector_area_exited(area: Area2D) -> void:
 	
 	var new_current = area_of_current.direction * area_of_current.current_strenght
 	current_influence -= new_current
+
+
+# ---- EVENT COLLIDERS ----
+
+func _on_event_collider_area_entered(area: Area2D) -> void:
+	if !"event_id" in area:
+		return
+	
+	main_controller.trigger_event(area.event_id)
+	#print("ENTER:" + area.event_id)
+	pass
+
+
+func _on_event_collider_area_exited(area: Area2D) -> void:
+	if !"event_id" in area:
+		return
+	
+	#print("EXIT:" + area.event_id)
+	pass

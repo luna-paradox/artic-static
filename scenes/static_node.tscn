@@ -1,23 +1,58 @@
-[gd_scene load_steps=10 format=3 uid="uid://b7b5r00rfcajv"]
+[gd_scene load_steps=20 format=3 uid="uid://b7b5r00rfcajv"]
 
 [ext_resource type="Texture2D" uid="uid://dfh3roo0rdtpj" path="res://assets/visual/SPR_primordial_ooze_node_bg.png" id="1_gp0on"]
 [ext_resource type="Script" path="res://scenes/static_node.gd" id="1_jm4wq"]
 [ext_resource type="Shader" path="res://scenes/tv_noise.gdshader" id="2_yen7y"]
 [ext_resource type="Texture2D" uid="uid://d3enl1qamawxe" path="res://assets/visual/SPR_primordial_ooze_node_ooze.png" id="3_kbiry"]
+[ext_resource type="Script" path="res://scenes/interaction_area_generic.gd" id="5_85rbp"]
+[ext_resource type="Texture2D" uid="uid://c0eigdlsgrykl" path="res://assets/visual/SPR_primordial_ooze_node_s.png" id="5_vhehl"]
+[ext_resource type="Texture2D" uid="uid://4k1ij1dubjoe" path="res://assets/visual/SPR_primordial_ooze_node_m.png" id="6_emuoc"]
+[ext_resource type="Texture2D" uid="uid://b11sjc3wm84vq" path="res://assets/visual/SPR_primordial_ooze_node_l.png" id="7_evry3"]
+[ext_resource type="Texture2D" uid="uid://bbjtf8c7veyoa" path="res://assets/visual/SPR_primordial_ooze_node_xl.png" id="8_18yqk"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_0bovd"]
 light_mode = 1
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hb52j"]
 shader = ExtResource("2_yen7y")
-shader_parameter/amount = 40.0
+shader_parameter/amount = 10.0
 
-[sub_resource type="Gradient" id="Gradient_55gme"]
+[sub_resource type="Shader" id="Shader_pmcm5"]
+code = "shader_type canvas_item;
+
+uniform float amount = 40.0;
+
+void fragment() {
+	vec2 uv = UV*0.05;
+	float a = fract(sin(dot(UV, vec2(12.9898, 78.233) * TIME)) * 438.5453) * 1.9;
+	vec4 col = texture(TEXTURE, UV);
+	col.a *= pow(a, amount);
+	COLOR.a = col.a;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u1fx6"]
+shader = SubResource("Shader_pmcm5")
+shader_parameter/amount = 0.8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7ekoa"]
+shader = SubResource("Shader_pmcm5")
+shader_parameter/amount = 1.2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1o5un"]
+shader = SubResource("Shader_pmcm5")
+shader_parameter/amount = 1.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_druaj"]
+resource_local_to_scene = true
+shader = SubResource("Shader_pmcm5")
+shader_parameter/amount = 3.0
+
+[sub_resource type="Gradient" id="Gradient_kowdx"]
 offsets = PackedFloat32Array(0, 0.126984, 0.134921, 0.27381, 0.285714, 0.436508, 0.448413, 0.607143, 0.623016, 0.785714, 0.797619, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.873016, 1, 1, 1, 0.833333, 1, 1, 1, 0.735294, 1, 1, 1, 0.704607, 1, 1, 1, 0.555556, 1, 1, 1, 0.488095, 1, 1, 1, 0.355182, 1, 1, 1, 0.327312, 1, 1, 1, 0.198413, 1, 1, 1, 0.166667, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_xkply"]
-gradient = SubResource("Gradient_55gme")
+gradient = SubResource("Gradient_kowdx")
 width = 100
 height = 100
 use_hdr = true
@@ -38,8 +73,36 @@ material = SubResource("CanvasItemMaterial_0bovd")
 texture = ExtResource("1_gp0on")
 
 [node name="static_ooze" type="Sprite2D" parent="."]
+visible = false
 material = SubResource("ShaderMaterial_hb52j")
 texture = ExtResource("3_kbiry")
+
+[node name="static_ooze_sprites" type="Node2D" parent="."]
+position = Vector2(0, -2.38419e-07)
+
+[node name="static_ooze_s" type="Sprite2D" parent="static_ooze_sprites"]
+visible = false
+material = SubResource("ShaderMaterial_u1fx6")
+position = Vector2(-9, 2)
+texture = ExtResource("5_vhehl")
+
+[node name="static_ooze_m" type="Sprite2D" parent="static_ooze_sprites"]
+visible = false
+material = SubResource("ShaderMaterial_7ekoa")
+position = Vector2(-9, 2)
+texture = ExtResource("6_emuoc")
+
+[node name="static_ooze_l" type="Sprite2D" parent="static_ooze_sprites"]
+visible = false
+material = SubResource("ShaderMaterial_1o5un")
+position = Vector2(-9, 2)
+texture = ExtResource("7_evry3")
+
+[node name="static_ooze_xl" type="Sprite2D" parent="static_ooze_sprites"]
+visible = false
+material = SubResource("ShaderMaterial_druaj")
+position = Vector2(-9, 2)
+texture = ExtResource("8_18yqk")
 
 [node name="light" type="PointLight2D" parent="."]
 position = Vector2(-1.89494, 2.32606)
@@ -55,6 +118,8 @@ texture = SubResource("GradientTexture2D_xkply")
 visible = false
 collision_layer = 2
 collision_mask = 2
+script = ExtResource("5_85rbp")
+node_type = "STATIC_NODE"
 
 [node name="collider" type="CollisionShape2D" parent="interaction_area"]
 position = Vector2(-6, 8)

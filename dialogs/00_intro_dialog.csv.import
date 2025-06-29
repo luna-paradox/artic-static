@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://bibyfaq20em7h"
+
+[deps]
+
+files=["res://dialogs/00_intro_dialog. aux.translation", "res://dialogs/00_intro_dialog. aux.translation", "res://dialogs/00_intro_dialog. aux.translation", "res://dialogs/00_intro_dialog. dialog.translation"]
+
+source_file="res://dialogs/00_intro_dialog.csv"
+dest_files=["res://dialogs/00_intro_dialog. aux.translation", "res://dialogs/00_intro_dialog. aux.translation", "res://dialogs/00_intro_dialog. aux.translation", "res://dialogs/00_intro_dialog. dialog.translation"]
+
+[params]
+
+compress=true
+delimiter=0

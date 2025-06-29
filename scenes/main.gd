@@ -18,13 +18,24 @@ class_name MainController
 @onready var depth_gauge = $ui_exploration/top_center/depth_gauge
 @onready var depth_max_ui = $ui_exploration/top_center/depth_max
 @onready var instructions_ui = $instructions_screen
+@onready var dialog_ui = $ui_dialog
+@onready var ui_pause = $ui_pause
 # UI DOCK MENU
 @onready var alert_docking = $ui_exploration/top_right/dock_alert/docking_icon
 @onready var alert_can_dock = $ui_exploration/top_right/dock_alert/can_dock
 @onready var dock_menu = $ui_dock_menu
 @onready var dock_enable_sound = $global_audio/dock_enable_sound
 @onready var dock_menu_static_counter_label = $ui_dock_menu/container/static_counter/label
+
 @onready var upgrade_crush_depth_ui = $ui_dock_menu/container/depth_upgrade
+@onready var upgrade_hp_ui = $ui_dock_menu/container/HP_upgrade
+@onready var upgrade_energy_ui = $ui_dock_menu/container/energy_upgrade
+@onready var upgrade_heat_efficiency_ui = $ui_dock_menu/container/heat_efficiency_upgrade
+@onready var upgrade_speed_ui = $ui_dock_menu/container/speed_upgrade
+@onready var upgrade_acceleration_ui = $ui_dock_menu/container/acceleration_upgrade
+@onready var upgrade_deceleration_ui = $ui_dock_menu/container/deceleration_upgrade
+@onready var upgrade_static_tank_ui = $ui_dock_menu/container/static_tank_upgrade
+
 @onready var shop_third_eye_ui = $ui_dock_menu/container/third_eye_ui
 # AUDIO
 @onready var sub_explossion = $global_audio/sub_explossion
@@ -35,6 +46,9 @@ class_name MainController
 @onready var sonar_sound = $global_audio/sonar_sound
 @onready var heater_sound = $global_audio/heater_sound
 @onready var change_sonar_freq_sound = $global_audio/change_sonar_freq_sound
+@onready var ritual_success_0_sound = $global_audio/ritual_success_0_sound
+# SHADERS
+@onready var screen_shaders = $screen_shaders
 # PROGRESS
 @onready var third_eye = $ui_exploration/top_right/third_eye
 
@@ -46,22 +60,40 @@ class_name MainController
 @onready var area_3_door = $room/A3_wall_to_hide
 @onready var follow_the_eye_ui = $follow_the_eye_ui
 
+# ---- DEBUG OPTIONS ----
+@export var _DISABLE_HEAT_DAMAGE = false
+@export var _ENABLE_PROGRESS = true
+@export var _SPAWN_CHARACTER_ON_START_POS = true
+
 # ---- MOVEMENT STATS ----
 @export var ACCELERATION: int = 200
 @export var DECELERATION: int = 100
 @export var MAX_SPEED: int = 450
 
 # ---- OTHER STATS ----
-@export var STATIC_CONSUMPTION_RATE = 150
+@export var STATIC_CONSUMPTION_RATE = 250
 @export var TURBO_BOOST_ENERGY_RATE = 100
 
 # ---- DEPTH ----
-@export var CRUSH_DEPTH = 5800
+#@export var CRUSH_DEPTH = 5800
+@export var CRUSH_DEPTH = 7000
 var current_depth = 5550
 
 # ---- STORE ----
 # Cost in Static
 @export var CRUSH_DEPTH_UPGRADE = 1000
+@export var HP_UPGRADE_COST = 1000
+@export var ENERGY_UPGRADE_COST = 1000
+@export var HEAT_EFFICIENCY_UPGRADE_COST = 1000
+
+@export var SPEED_UPGRADE_COST = 1000
+@export var ACCELERATION_UPGRADE_COST = 1000
+@export var DECELERATION_UPGRADE_COST = 1000
+@export var STATIC_TANK_UPGRADE_COST = 1000
+
+
+# ---- PROGRESS UNLOCKS ----
+var TURBO_BOOST_UNLOCKED = true
 
 
 # ---- PROGRESS ----
@@ -84,13 +116,10 @@ func _ready() -> void:
 	alert_docking.hide()
 	alert_can_dock.hide()
 	close_dock_menu()
-	area_1.hide()
-	area_2.hide()
-	area_3.hide()
 	
 	current_hp = MAX_HP
 	player.main_controller = self
-	player.init(ACCELERATION, DECELERATION, MAX_SPEED)
+	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
 	
 	crusher_timer = Timer.new()
 	crusher_timer.wait_time = 0.5
@@ -104,17 +133,66 @@ func _ready() -> void:
 	heat_timer.timeout.connect(damage_by_heat)
 	add_child(heat_timer)
 	
+	dialog_ui.main_controller = self
+	
+	# CRUSH DEPTH
 	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
 	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
+	# HP
+	upgrade_hp_ui.update_value(MAX_HP)
+	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
+	# ENERGY
+	upgrade_energy_ui.update_value(MAX_ENERGY)
+	upgrade_energy_ui.update_cost(ENERGY_UPGRADE_COST)
+	# HEAT EFFICIENCY
+	#TODO HEAT EFFICIENCY UPGRADE SYSTEM
+	# SPEED
+	upgrade_speed_ui.update_value(MAX_SPEED)
+	upgrade_speed_ui.update_cost(SPEED_UPGRADE_COST)
+	# ACCELERATION
+	upgrade_acceleration_ui.update_value(ACCELERATION)
+	upgrade_acceleration_ui.update_cost(ACCELERATION_UPGRADE_COST)
+	# DECELERATION
+	upgrade_deceleration_ui.update_value(DECELERATION)
+	upgrade_deceleration_ui.update_cost(DECELERATION_UPGRADE_COST)
+	# STATIC TANK
+	upgrade_static_tank_ui.update_value(MAX_PLAYER_STATIC)
+	upgrade_static_tank_ui.update_cost(STATIC_TANK_UPGRADE_COST)
 	
+	# UI BARS
 	hp_bar.init(MAX_HP)
 	static_bar.init(MAX_PLAYER_STATIC, player_current_static)
 	energy_bar.init(MAX_ENERGY)
 	depth_max_ui.update_depth(CRUSH_DEPTH)
 	
-	third_eye.mode = 0
-	restart()
+	# INIT LIGHTSTICK MODE
+	exit_lightstick_mode()
+	
+	await restart()
 	#show_instructions()
+	
+	# PROGRESS CONFIGURATION
+	unlock_sonar_freq(SONAR_FREQ.BASE)
+	unlock_sonar_freq(SONAR_FREQ.CAVE_OF_COLD)
+	unlock_sonar_freq(SONAR_FREQ.CAVE_OF_CURRENT)
+	unlock_sonar_freq(SONAR_FREQ.STATUE_1)
+	
+	# FOR VIDEO
+	#unlock_sonar_freq(SONAR_FREQ.PIVOT_CAVE)
+	#dialog_ui.load_dialog('res://dialogs/test_2.csv')
+	
+	third_eye.mode = 0
+	
+	if !_ENABLE_PROGRESS:
+		return
+	
+	TURBO_BOOST_UNLOCKED = false
+	
+	dialog_ui.load_dialog(DIALOG_DB.dialog_files._00.intro_dialog.route)
+	
+	#area_1.hide()
+	#area_2.hide()
+	#area_3.hide()
 
 func _process(delta: float) -> void:
 	camera.global_position = player.global_position
@@ -157,6 +235,9 @@ func _process(delta: float) -> void:
 			player.disable_turbo_boost()
 	
 	#INTERACT WITH STATIC NODES
+	if is_lightstick_mode_on:
+		return
+	
 	if Input.is_action_pressed("interact") and static_nodes_in_range.size() > 0:
 		var delta_static = delta * STATIC_CONSUMPTION_RATE
 		update_static(delta_static)
@@ -166,6 +247,8 @@ func _process(delta: float) -> void:
 		update_collecting_static(false)
 	elif static_nodes_in_range.size() == 0:
 		update_collecting_static(false)
+
+var is_lightstick_mode_on = true
 
 func _input(event: InputEvent) -> void:
 	# DEBUG 
@@ -193,14 +276,29 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	# PAUSE MEANS NOT MOVING AROUND
+	if event.is_action_pressed("pause"):
+		update_pause(!pause)
+	
 	if pause:
 		return
 	
-	if event.is_action_pressed("turn_sub"):
-		player.scale.x *= -1
+	# WHILE MOVING AROUND
+	
+	if is_lightstick_mode_on:
+		if event.is_action_released("lightstick_action"):
+			exit_lightstick_mode()
+		
+		if event.is_action_pressed("interact"):
+			shoot_lightstick()
+	
+	if event.is_action_pressed("lightstick_action"):
+		enter_lightstick_mode()
 		return
 	
-	# WHILE MOVING AROUND
+	if event.is_action_pressed("turn_sub"):
+		player.flip_vessel()
+		return
+	
 	if event.is_action_pressed("interact") and can_dock:
 		start_dock_menu()
 		return
@@ -213,21 +311,137 @@ func _input(event: InputEvent) -> void:
 		update_heater_state(!is_heater_on)
 		return
 	
-	if event.is_action_pressed("turbo_boost_action") and current_energy > 0:
+	if event.is_action_pressed("heater_up_action"):
+		update_heater_power(heater_power + 0.02)
+		return
+	if event.is_action_pressed("heater_down_action"):
+		update_heater_power(heater_power - 0.02)
+		return
+	
+	if event.is_action_pressed("turbo_boost_action") and current_energy > 0 and TURBO_BOOST_UNLOCKED:
 		player.turbo_boost()
 		return
 	elif event.is_action_released("turbo_boost_action"):
 		player.disable_turbo_boost()
 		return
 	
+	# SKILLS
+	if event.is_action_pressed("skill_1"):
+		skill_hp_plus()
+		return
+	if event.is_action_pressed("skill_2"):
+		skill_energy_plus()
+		return
+	
 	# PROGRESS
+	if event.is_action_pressed("interact") and interaction_id != '':
+		if interaction_id == 'STATUE_3' and !event_talk_statue_3_flag:
+			print('INTERACT WITH STATUE 3')
+			
+			event_talk_statue_3_flag = true
+			interaction_id = ''
+			player_alert_0.hide()
+			
+			var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
+			dialog_ui.load_dialog(dialog_id, 'talk_to_statue_3')
+			return
+			
+		if interaction_id == 'STATUE_2' and !event_talk_statue_2_flag:
+			print('INTERACT WITH STATUE 2')
+			
+			event_talk_statue_2_flag = true
+			interaction_id = ''
+			player_alert_0.hide()
+			
+			var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
+			dialog_ui.load_dialog(dialog_id, 'talk_to_statue_2')
+			return
+	
+	
+	# PROGRESS BETA
 	if can_interact_with_statue_p2 and event.is_action_pressed("interact") and third_eye.mode == 2:
 		progress(3)
 		return
-	
 	if can_interact_with_statue_p4 and event.is_action_pressed("interact") and third_eye.mode == 4:
 		progress(5)
 		return
+
+func execute_dialog_event(return_event_id: String) -> void:
+	if !return_event_id:
+		return
+	
+	match return_event_id:
+		'talk_to_statue_3':
+			print('EXECUTE DIALOG EVENT: talk_to_statue_3')
+			unlock_turbo()
+			return
+		'talk_to_statue_2':
+			print('EXECUTE DIALOG EVENT: talk_to_statue_2')
+			return
+		_:
+			return
+
+
+# ---- PROGRESSION V2? ----
+func unlock_turbo():
+	print('UNLOCK TURBO')
+	TURBO_BOOST_UNLOCKED = true
+
+
+# ---- SKILLS ----
+@export var SKILL_PRICE_HP_UP = 200
+@export var SKILL_HP_PLUS = 30
+
+# SKILL HP UP
+func skill_hp_plus() -> void:
+	if player_current_static < SKILL_PRICE_HP_UP:
+		return
+	if current_hp >= MAX_HP:
+		return
+	if SKILL_HP_PLUS + current_hp > MAX_HP:
+		return
+	
+	update_hp(SKILL_HP_PLUS)
+	update_static(-SKILL_PRICE_HP_UP)
+
+# SKILL ENERGY UP
+@export var SKILL_PRICE_ENERGY_UP = 200
+@export var SKILL_ENERGY_PLUS = 200
+
+func skill_energy_plus() -> void:
+	if player_current_static < SKILL_PRICE_ENERGY_UP:
+		return
+	if current_energy >= MAX_ENERGY:
+		return
+	if SKILL_ENERGY_PLUS + current_energy > MAX_ENERGY:
+		return
+	
+	update_energy(SKILL_ENERGY_PLUS)
+	update_static(-SKILL_PRICE_ENERGY_UP)
+
+
+# ---- LIGHTSTICK MODE ----
+func enter_lightstick_mode():
+	is_lightstick_mode_on = true
+	player.update_lightstick_mode_ui(true)
+
+func exit_lightstick_mode():
+	is_lightstick_mode_on = false
+	player.update_lightstick_mode_ui(false)
+
+@onready var lightsticks_container = $lightsticks
+var lightstick_scene = preload("res://scenes/lightstick.tscn")
+
+func shoot_lightstick():
+	var new_lt: Lightstick = lightstick_scene.instantiate()
+	lightsticks_container.add_child(new_lt)
+	
+	new_lt.global_position = player.virtual_position.global_position
+	
+	var dir: Vector2 = player.get_lightstick_aim_direction()
+	
+	new_lt.DIRECTION = dir
+	new_lt.rotation = dir.normalized().angle() + PI
 
 
 # ---- STATS ----
@@ -331,14 +545,15 @@ func restart():
 	
 	player.velocity = Vector2.ZERO
 	player.disable_turbo_boost()
-	#player.global_position = player_start_pos.global_position
+	if _SPAWN_CHARACTER_ON_START_POS:
+		player.global_position = player_start_pos.global_position
 	
 	update_hp(MAX_HP)
 	update_energy(MAX_ENERGY)
 	update_temp(20 - current_temp)
 	update_static(-MAX_PLAYER_STATIC)
 	
-	update_heater_power(0.5)
+	update_heater_power(0.6)
 	update_heater_state(true)
 	
 	reset_all_static_nodes()
@@ -368,22 +583,43 @@ func reset_all_static_nodes() -> void:
 var static_nodes_in_range: Array[Node2D] = []
 
 func _on_player_interaction_area_entered(area: Area2D) -> void:
-	static_nodes_in_range.append(area.get_parent())
-	player_alert_0.show()
+	if !"node_type" in area:
+		return
+	
+	
+	if area.node_type == 'STATIC_NODE':
+		static_nodes_in_range.append(area.get_parent())
+		player_alert_0.show()
+	elif area.node_type == 'STATUE_3' and !event_talk_statue_3_flag:
+		interaction_id = 'STATUE_3'
+		player_alert_0.show()
+
+var interaction_id: String
 
 func _on_player_interaction_area_exited(area: Area2D) -> void:
-	static_nodes_in_range.erase(area.get_parent())
-	if static_nodes_in_range.size() <= 0:
+	if !"node_type" in area:
+		return
+	
+	if area.node_type == 'STATIC_NODE':
+		static_nodes_in_range.erase(area.get_parent())
+		
+		if static_nodes_in_range.size() <= 0:
+			player_alert_0.hide()
+	elif interaction_id != '':
+		interaction_id = ''
 		player_alert_0.hide()
 
 
 # ---- PAUSE GAME ----
 func update_pause(new_state: bool) -> void:
+	ui_pause.visible = new_state
 	pause = new_state
 	player.update_pause(new_state)
 	
 	if new_state:
 		getting_crushed_sound.stop()
+	
+	exit_lightstick_mode()
 
 
 # ---- THE CAGE ----
@@ -439,13 +675,13 @@ func start_dock_menu() -> void:
 	#if !dock_enable_sound.playing:
 	dock_enable_sound.play()
 	
-	if !have_third_eye and static_historic > STATIC_HISTORIC_FOR_THIRD_EYE:
-		shop_third_eye_ui.show()
-	else:
-		shop_third_eye_ui.hide()
+	#TODO START PROGRESS
+	#if !have_third_eye and static_historic > STATIC_HISTORIC_FOR_THIRD_EYE:
+		#shop_third_eye_ui.show()
+	#else:
+		#shop_third_eye_ui.hide()
 	
-	var can_buy_depth = CRUSH_DEPTH_UPGRADE >= available_static
-	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
+	update_upgrade_buttons()
 	
 	# SHOW MENU
 	dock_menu.show()
@@ -454,7 +690,18 @@ func close_dock_menu() -> void:
 	dock_menu.hide()
 	update_pause(false)
 
-func _on_upgrade_depth_button_pressed() -> void:
+func update_upgrade_buttons() -> void:
+	upgrade_crush_depth_ui.update_upgrade_btn_disabled(CRUSH_DEPTH_UPGRADE >= available_static)
+	upgrade_hp_ui.update_upgrade_btn_disabled(HP_UPGRADE_COST >= available_static)
+	upgrade_energy_ui.update_upgrade_btn_disabled(ENERGY_UPGRADE_COST >= available_static)
+	#TODO HEAT EFFICIENCY SYSTEM
+	upgrade_speed_ui.update_upgrade_btn_disabled(SPEED_UPGRADE_COST >= available_static)
+	upgrade_acceleration_ui.update_upgrade_btn_disabled(ACCELERATION_UPGRADE_COST >= available_static)
+	upgrade_deceleration_ui.update_upgrade_btn_disabled(DECELERATION_UPGRADE_COST >= available_static)
+	upgrade_static_tank_ui.update_upgrade_btn_disabled(STATIC_TANK_UPGRADE_COST >= available_static)
+
+
+func _on_upgrade_DEPTH_button_pressed() -> void:
 	if CRUSH_DEPTH_UPGRADE > available_static:
 		return
 	
@@ -466,8 +713,97 @@ func _on_upgrade_depth_button_pressed() -> void:
 	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
 	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
 	
-	var can_buy_depth = CRUSH_DEPTH_UPGRADE >= available_static
-	upgrade_crush_depth_ui.update_upgrade_btn_disabled(can_buy_depth)
+	update_upgrade_buttons()
+
+func _on_upgrade_HP_button_pressed() -> void:
+	if HP_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-HP_UPGRADE_COST)
+	MAX_HP += 50
+	HP_UPGRADE_COST *= 1.05
+	
+	upgrade_hp_ui.update_value(MAX_HP)
+	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
+	
+	hp_bar.init(MAX_HP)
+	update_hp(MAX_HP)
+	
+	update_upgrade_buttons()
+
+func _on_upgrade_ENERGY_button_pressed() -> void:
+	if ENERGY_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-ENERGY_UPGRADE_COST)
+	MAX_ENERGY += 50
+	ENERGY_UPGRADE_COST *= 1.05
+	
+	upgrade_energy_ui.update_value(MAX_ENERGY)
+	upgrade_energy_ui.update_cost(ENERGY_UPGRADE_COST)
+	
+	energy_bar.init(MAX_ENERGY)
+	update_energy(MAX_ENERGY)
+	
+	update_upgrade_buttons()
+
+func _on_upgrade_MAX_SPEED_button_pressed() -> void:
+	if SPEED_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-SPEED_UPGRADE_COST)
+	MAX_SPEED += 50
+	SPEED_UPGRADE_COST *= 1.05
+	
+	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
+	
+	upgrade_speed_ui.update_value(MAX_SPEED)
+	upgrade_speed_ui.update_cost(SPEED_UPGRADE_COST)
+	
+	update_upgrade_buttons()
+
+func _on_upgrade_ACCELERATION_button_pressed() -> void:
+	if ACCELERATION_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-ACCELERATION_UPGRADE_COST)
+	ACCELERATION += 10
+	ACCELERATION_UPGRADE_COST *= 1.05
+	
+	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
+	
+	upgrade_acceleration_ui.update_value(ACCELERATION)
+	upgrade_acceleration_ui.update_cost(ACCELERATION_UPGRADE_COST)
+	
+	update_upgrade_buttons()
+
+func _on_upgrade_DECELERATION_button_pressed() -> void:
+	if DECELERATION_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-DECELERATION_UPGRADE_COST)
+	DECELERATION += 10
+	DECELERATION_UPGRADE_COST *= 1.05
+	
+	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
+	
+	upgrade_deceleration_ui.update_value(DECELERATION)
+	upgrade_deceleration_ui.update_cost(DECELERATION_UPGRADE_COST)
+	
+	update_upgrade_buttons()
+
+func _on_upgrade_MAX_PLAYER_STATIC_button_pressed() -> void:
+	if STATIC_TANK_UPGRADE_COST > available_static:
+		return
+	
+	update_available_static(-STATIC_TANK_UPGRADE_COST)
+	MAX_PLAYER_STATIC += 500
+	STATIC_TANK_UPGRADE_COST *= 1.5
+	
+	upgrade_static_tank_ui.update_value(MAX_PLAYER_STATIC)
+	upgrade_static_tank_ui.update_cost(STATIC_TANK_UPGRADE_COST)
+	
+	update_upgrade_buttons()
 
 
 # ---- CRUSHING ----
@@ -497,7 +833,12 @@ func crush_by_depth_audio(delta: float) -> void:
 
 
 # ---- SONAR ----
-enum SONAR_FREQ { STATIC_NODE, TEST_0, TEST_1 }
+enum SONAR_FREQ { 
+	STATIC_NODE, 
+	TEST_0, TEST_1, 
+	BASE, CAVE_OF_CURRENT, CAVE_OF_COLD, PIVOT_CAVE, 
+	STATUE_1, STATUE_2, STATUE_3,
+}
 @onready var sonar_frequencies = {
 	SONAR_FREQ.STATIC_NODE: {
 		"id": SONAR_FREQ.STATIC_NODE,
@@ -516,10 +857,50 @@ enum SONAR_FREQ { STATIC_NODE, TEST_0, TEST_1 }
 		"target_node": $sonar_freq_targets/freq_test_1,
 		"name": "Test Freq. 1"
 	},
+	SONAR_FREQ.BASE: {
+		"id": SONAR_FREQ.BASE,
+		"order": 0,
+		"target_node": $sonar_freq_targets/base,
+		"name": "Base"
+	},
+	SONAR_FREQ.CAVE_OF_CURRENT: {
+		"id": SONAR_FREQ.CAVE_OF_CURRENT,
+		"order": 3,
+		"target_node": $sonar_freq_targets/cave_of_current,
+		"name": "Cave of Current"
+	},
+	SONAR_FREQ.CAVE_OF_COLD: {
+		"id": SONAR_FREQ.CAVE_OF_COLD,
+		"order": 4,
+		"target_node": $sonar_freq_targets/cave_of_cold,
+		"name": "Cave of Cold"
+	},
+	SONAR_FREQ.STATUE_3: {
+		"id": SONAR_FREQ.STATUE_3,
+		"order": 5,
+		"target_node": $sonar_freq_targets/statue_3,
+		"name": "????"
+	},
+	SONAR_FREQ.PIVOT_CAVE: {
+		"id": SONAR_FREQ.PIVOT_CAVE,
+		"order": 6,
+		"target_node": $sonar_freq_targets/pivot_cave,
+		"name": "Pivot Cave"
+	},
+	SONAR_FREQ.STATUE_2: {
+		"id": SONAR_FREQ.STATUE_2,
+		"order": 7,
+		"target_node": $sonar_freq_targets/statue_2,
+		"name": "st2"
+	},
+	SONAR_FREQ.STATUE_1: {
+		"id": SONAR_FREQ.STATUE_1,
+		"order": -1,
+		"target_node": $sonar_freq_targets/statue_1,
+		"name": "st1"
+	},
 }
-@onready var available_sonar_freq = [
-	sonar_frequencies[0],
-]
+@onready var available_sonar_freq: Array = []
 var current_sonar_freq_idx: int = 0
 
 func sonar(): 
@@ -588,7 +969,7 @@ var MAX_TEMP: float = 100
 var MIN_TEMP: float = -10
 var TEMP_TRANSFER_ENVIRONMENT: float = -0.5
 var TEMP_TRANSFER_BOOSTING: float = 0.3
-var TEMP_TRANSFER_STATIC_FACTOR: float = -0.1 / 400 # X°C by each Y static
+var TEMP_TRANSFER_STATIC_FACTOR: float = -0.1 / 1000 # X°C by each Y static
 var MAX_HP_DAMAGE_BY_HEAT: int = -10
 
 var current_temp: float = 9.0
@@ -600,19 +981,13 @@ var cold_areas_heat_transfer: float = 0.0
 var temp_action_counter = 0
 func control_temp(delta: float) -> void:
 	temp_action_counter += delta
-	if temp_action_counter < 1.0:
+	if temp_action_counter < 0.5:
 		return
 	
 	temp_action_counter = 0.0
 	
 	# CALCULATE HEAT TRANSFER
 	var heat_transfer = TEMP_TRANSFER_ENVIRONMENT
-	
-	# HEATER AND BOOSTING
-	if is_heater_on:
-		heat_transfer += calculate_heater_heat_transfer()
-	if player.is_boosting:
-		heat_transfer += TEMP_TRANSFER_BOOSTING
 	
 	# STATIC
 	var static_heat_transfer = player_current_static * TEMP_TRANSFER_STATIC_FACTOR
@@ -621,14 +996,30 @@ func control_temp(delta: float) -> void:
 	# COLD AREAS
 	heat_transfer += cold_areas_heat_transfer
 	
+	var heat_transfer_pre_heating: float = round(heat_transfer * 1000.0) / 1000.0
+	
+	# HEATER AND BOOSTING
+	if is_heater_on:
+		heat_transfer += calculate_heater_heat_transfer()
+	if player.is_boosting:
+		heat_transfer += TEMP_TRANSFER_BOOSTING
+	
 	# CALCULATE FINAL HEAT TRANSFER AND UPDATE TEMP
 	heat_transfer = round(heat_transfer * 1000.0) / 1000.0
 	current_heat_transfer = heat_transfer
 	update_temp(heat_transfer)
+	
+	# UPDATE TEMPERATURE SHADERS
+	# COLD [-3.0, 0.0]
+	var ratio: float = heat_transfer_pre_heating * -1.0 / 3.0
+	screen_shaders.target_cold_ratio = ratio
 
 func damage_by_heat() -> void:
+	if _DISABLE_HEAT_DAMAGE:
+		return
+	
 	var heat_index = 0
-	if current_temp > 30:
+	if current_temp > 40:
 		heat_index = (current_temp - 30) / 30
 	elif current_temp < 0:
 		heat_index = current_temp * (-1) / 10
@@ -642,9 +1033,9 @@ func damage_by_heat() -> void:
 
 # ---- HEATER ----
 var is_heater_on = false
-var HEATER_ENERGY_COST = 10
-var TEMP_TRANSFER_HEATER_MAX: float = 1.0
-var heater_power: float = 0.5
+var HEATER_ENERGY_COST = 30
+var TEMP_TRANSFER_HEATER_MAX: float = 3.0
+var heater_power: float = 0.6
 
 func update_heater_state(new_state: bool) -> void:
 	if is_heater_on == new_state:
@@ -671,6 +1062,7 @@ func calculate_heater_heat_transfer() -> float:
 	var heat_transfer: float = TEMP_TRANSFER_HEATER_MAX * heater_power
 	
 	return heat_transfer
+
 
 # ---- PROGRESSION ----
 func progress(new_mode: int) -> void:
@@ -805,3 +1197,26 @@ func get_all_static_nodes(parent: Node) -> Array:
 			matching_nodes += get_all_static_nodes(child)
 	
 	return matching_nodes
+
+
+# ---- EVENT ----
+
+func trigger_event(event_id: String) -> void:
+	match event_id:
+		"find_statue_3":
+			if !event_find_statue_3_flag:
+				event_find_statue_3()
+			return
+		_:
+			printerr("ERROR: INVALID_EVENT_ID")
+			return
+
+var event_find_statue_3_flag = false
+
+var event_talk_statue_2_flag = false
+var event_talk_statue_3_flag = false
+
+func event_find_statue_3():
+	event_find_statue_3_flag = true
+	ritual_success_0_sound.play()
+	pass

@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://8dh7h638wkjf"
+
+[deps]
+
+files=["res://dialogs/test_2. aux.translation", "res://dialogs/test_2. aux.translation", "res://dialogs/test_2. aux.translation", "res://dialogs/test_2. dialog.translation"]
+
+source_file="res://dialogs/test_2.csv"
+dest_files=["res://dialogs/test_2. aux.translation", "res://dialogs/test_2. aux.translation", "res://dialogs/test_2. aux.translation", "res://dialogs/test_2. dialog.translation"]
+
+[params]
+
+compress=true
+delimiter=0
