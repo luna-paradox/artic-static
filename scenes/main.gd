@@ -92,11 +92,11 @@ var current_depth = 5550
 @export var STATIC_TANK_UPGRADE_COST = 1000
 
 
-# ---- PROGRESS UNLOCKS ----
+# ---- PROGRESSION v1 ----
 var TURBO_BOOST_UNLOCKED = true
 
 
-# ---- PROGRESS ----
+# ---- PROGRESSION alpha ----
 var static_historic = 0
 
 @export var STATIC_HISTORIC_FOR_THIRD_EYE = 2000
@@ -257,7 +257,8 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	if event.is_action_pressed("1_debug"):
-		unlock_sonar_freq(SONAR_FREQ.TEST_0)
+		print('relics_found: ' + str(relics_found))
+		print('relics_available: ' + str(relics_available))
 		return
 	if event.is_action_pressed("2_debug"):
 		unlock_sonar_freq(SONAR_FREQ.TEST_1)
@@ -333,30 +334,11 @@ func _input(event: InputEvent) -> void:
 		skill_energy_plus()
 		return
 	
-	# PROGRESS
+	# GENERIC INTERACTION SYSTEM v1
 	if event.is_action_pressed("interact") and interaction_id != '':
-		if interaction_id == 'STATUE_3' and !event_talk_statue_3_flag:
-			print('INTERACT WITH STATUE 3')
-			
-			event_talk_statue_3_flag = true
-			interaction_id = ''
-			player_alert_0.hide()
-			
-			var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
-			dialog_ui.load_dialog(dialog_id, 'talk_to_statue_3')
-			return
-			
-		if interaction_id == 'STATUE_2' and !event_talk_statue_2_flag:
-			print('INTERACT WITH STATUE 2')
-			
-			event_talk_statue_2_flag = true
-			interaction_id = ''
-			player_alert_0.hide()
-			
-			var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
-			dialog_ui.load_dialog(dialog_id, 'talk_to_statue_2')
-			return
+		interact()
 	
+	# PROGRESS
 	
 	# PROGRESS BETA
 	if can_interact_with_statue_p2 and event.is_action_pressed("interact") and third_eye.mode == 2:
@@ -382,11 +364,13 @@ func execute_dialog_event(return_event_id: String) -> void:
 			return
 
 
-# ---- PROGRESSION V2? ----
+# ---- PROGRESSION v1? ----
 func unlock_turbo():
 	print('UNLOCK TURBO')
 	TURBO_BOOST_UNLOCKED = true
 
+var relics_found: int = 0
+var relics_available: int = 0
 
 # ---- SKILLS ----
 @export var SKILL_PRICE_HP_UP = 200
@@ -579,8 +563,11 @@ func reset_all_static_nodes() -> void:
 		node.reset()
 
 
-# ---- STATIC NODES ----
+# ---- GENERIC INTERACTION SYSTEM v1 ----
+var interaction_id: String
+
 var static_nodes_in_range: Array[Node2D] = []
+var relic_on_range: Node2D = null
 
 func _on_player_interaction_area_entered(area: Area2D) -> void:
 	if !"node_type" in area:
@@ -589,12 +576,15 @@ func _on_player_interaction_area_entered(area: Area2D) -> void:
 	
 	if area.node_type == 'STATIC_NODE':
 		static_nodes_in_range.append(area.get_parent())
-		player_alert_0.show()
 	elif area.node_type == 'STATUE_3' and !event_talk_statue_3_flag:
-		interaction_id = 'STATUE_3'
-		player_alert_0.show()
+		interaction_id = area.node_type
+	elif area.node_type == "RELIC":
+		if area.get_parent().was_collected:
+			return
+		relic_on_range = area.get_parent()
+		interaction_id = area.node_type
 
-var interaction_id: String
+	player_alert_0.show()
 
 func _on_player_interaction_area_exited(area: Area2D) -> void:
 	if !"node_type" in area:
@@ -608,6 +598,41 @@ func _on_player_interaction_area_exited(area: Area2D) -> void:
 	elif interaction_id != '':
 		interaction_id = ''
 		player_alert_0.hide()
+
+
+func interact() -> void:
+	if interaction_id == 'STATUE_3' and !event_talk_statue_3_flag:
+		print('INTERACT WITH STATUE 3')
+		
+		event_talk_statue_3_flag = true
+		clear_interaction()
+		
+		var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
+		dialog_ui.load_dialog(dialog_id, 'talk_to_statue_3')
+		return
+		
+	if interaction_id == 'STATUE_2' and !event_talk_statue_2_flag:
+		print('INTERACT WITH STATUE 2')
+		
+		event_talk_statue_2_flag = true
+		clear_interaction()
+		
+		var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
+		dialog_ui.load_dialog(dialog_id, 'talk_to_statue_2')
+		return
+	
+	if interaction_id == 'RELIC':
+		print('INTERACT RELIC')
+		
+		relics_found += 1
+		relics_available += 1
+		relic_on_range.collect()
+		
+		clear_interaction()
+
+func clear_interaction() -> void:
+	interaction_id = ''
+	player_alert_0.hide()
 
 
 # ---- PAUSE GAME ----
@@ -1064,7 +1089,7 @@ func calculate_heater_heat_transfer() -> float:
 	return heat_transfer
 
 
-# ---- PROGRESSION ----
+# ---- PROGRESSION beta ----
 func progress(new_mode: int) -> void:
 	third_eye.mode = new_mode
 	
