@@ -280,7 +280,7 @@ func _input(event: InputEvent) -> void:
 		print('relic_on_range: ' + str(relic_on_range))
 		return
 	if event.is_action_pressed("2_debug"):
-		unlock_sonar_freq(SONAR_FREQ.TEST_1)
+		$relic.reset()
 		return
 	
 	# WHILE INSTRUCTIONS ARE VISIBLE
