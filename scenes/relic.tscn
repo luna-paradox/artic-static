@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3 uid="uid://ba845i1slugt4"]
+
+[ext_resource type="Script" path="res://scenes/relic.gd" id="1_3kres"]
+[ext_resource type="Shader" path="res://scenes/scanning.gdshader" id="2_k538t"]
+[ext_resource type="Texture2D" uid="uid://hiasjtrk6dg6" path="res://assets/visual/SPR_relic_va0.0.png" id="3_g7d3d"]
+[ext_resource type="Script" path="res://scenes/interaction_area_relic.gd" id="4_v8txm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2hqne"]
+shader = ExtResource("2_k538t")
+shader_parameter/enabled = false
+shader_parameter/custom_time = 0.0
+shader_parameter/scan_speed = 2.0
+shader_parameter/scan_thickness = 1.0
+shader_parameter/scan_color = Color(0, 1, 0, 1)
+shader_parameter/scanline_strength = 0.1
+shader_parameter/chromatic_offset = 1.0
+shader_parameter/noise_strength = 0.025
+shader_parameter/flicker_speed = 2.0
+shader_parameter/image_size = Vector2(450, 300)
+shader_parameter/grid_cell_size = 15.0
+shader_parameter/grid_line_thickness = 0.5
+shader_parameter/grid_color = Color(0, 1, 0, 0.117647)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1qhxv"]
+size = Vector2(489, 390)
+
+[node name="relic" type="Node2D"]
+position = Vector2(-4148, 9736)
+script = ExtResource("1_3kres")
+
+[node name="sprite" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_2hqne")
+position = Vector2(-22.9998, 39.0003)
+scale = Vector2(0.974998, 0.974998)
+texture = ExtResource("3_g7d3d")
+
+[node name="detect_area_2d" type="Area2D" parent="."]
+visible = false
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("4_v8txm")
+node_type = "RELIC"
+
+[node name="collision_shape" type="CollisionShape2D" parent="detect_area_2d"]
+position = Vector2(-37.5, -12)
+shape = SubResource("RectangleShape2D_1qhxv")
