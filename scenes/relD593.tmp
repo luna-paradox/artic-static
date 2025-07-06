@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://ba845i1slugt4"]
+[gd_scene load_steps=23 format=3 uid="uid://ba845i1slugt4"]
 
 [ext_resource type="Script" path="res://scenes/relic.gd" id="1_3kres"]
 [ext_resource type="Shader" path="res://scenes/scanning.gdshader" id="2_k538t"]
@@ -14,6 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://yp6vx2m0m4ts" path="res://assets/visual/SPR_relic_v1.4_65p_squa_screen.png" id="7_sckye"]
 [ext_resource type="Texture2D" uid="uid://eskuwvwin7cy" path="res://assets/visual/SPR_relic_v1.4_65p_tumor.png" id="8_mw4rk"]
 [ext_resource type="Texture2D" uid="uid://brvmdvky1pmch" path="res://assets/visual/SPR_relic_65p_base_v1.5.png" id="9_eht5t"]
+[ext_resource type="Script" path="res://scenes/relic_code_box.gd" id="10_8ev35"]
 [ext_resource type="Shader" path="res://scenes/pulsate.gdshader" id="13_nxfcc"]
 [ext_resource type="Texture2D" uid="uid://1pcif53who5k" path="res://assets/visual/SPR_relic_v1.4_65p_squa_screen_code.png" id="14_jbhfc"]
 [ext_resource type="Script" path="res://scenes/relic_spr_tumor.gd" id="15_s2nva"]
@@ -75,15 +76,6 @@ shape = SubResource("RectangleShape2D_1qhxv")
 [node name="sprites" type="Node2D" parent="."]
 material = SubResource("ShaderMaterial_2hqne")
 
-[node name="square_screen" type="Sprite2D" parent="sprites"]
-material = SubResource("ShaderMaterial_m5nut")
-texture = ExtResource("7_sckye")
-
-[node name="code" type="Sprite2D" parent="sprites"]
-material = SubResource("ShaderMaterial_m5nut")
-position = Vector2(0, 5)
-texture = ExtResource("14_jbhfc")
-
 [node name="brain_bg" type="Sprite2D" parent="sprites"]
 material = SubResource("ShaderMaterial_m5nut")
 texture = ExtResource("3_s2n57")
@@ -103,6 +95,39 @@ texture = ExtResource("5_0av7i")
 [node name="brain_0" type="Sprite2D" parent="sprites/brain"]
 material = SubResource("ShaderMaterial_m5nut")
 texture = ExtResource("6_x0jfm")
+
+[node name="square_screen" type="Sprite2D" parent="sprites"]
+material = SubResource("ShaderMaterial_m5nut")
+texture = ExtResource("7_sckye")
+
+[node name="code_box" type="Node2D" parent="sprites"]
+script = ExtResource("10_8ev35")
+
+[node name="templates" type="Node2D" parent="sprites/code_box"]
+visible = false
+
+[node name="line_0" type="Polygon2D" parent="sprites/code_box/templates"]
+polygon = PackedVector2Array(73, -134, 73, -132, 120, -132, 120, -134)
+
+[node name="line_1" type="Polygon2D" parent="sprites/code_box/templates"]
+polygon = PackedVector2Array(73, -134, 73, -132, 115, -132, 115, -134)
+
+[node name="line_2" type="Polygon2D" parent="sprites/code_box/templates"]
+polygon = PackedVector2Array(73, -134, 73, -132, 105, -132, 105, -134)
+
+[node name="line_3" type="Polygon2D" parent="sprites/code_box/templates"]
+polygon = PackedVector2Array(73, -134, 73, -132, 97, -132, 97, -134)
+
+[node name="line_4" type="Polygon2D" parent="sprites/code_box/templates"]
+polygon = PackedVector2Array(73, -134, 73, -132, 87, -132, 87, -134)
+
+[node name="line_5" type="Polygon2D" parent="sprites/code_box/templates"]
+polygon = PackedVector2Array(73, -134, 73, -132, 81, -132, 81, -134)
+
+[node name="code" type="Sprite2D" parent="sprites"]
+visible = false
+material = SubResource("ShaderMaterial_m5nut")
+texture = ExtResource("14_jbhfc")
 
 [node name="base" type="Sprite2D" parent="sprites"]
 material = SubResource("ShaderMaterial_m5nut")
