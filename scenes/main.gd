@@ -47,6 +47,7 @@ class_name MainController
 @onready var heater_sound = $global_audio/heater_sound
 @onready var change_sonar_freq_sound = $global_audio/change_sonar_freq_sound
 @onready var ritual_success_0_sound = $global_audio/ritual_success_0_sound
+@onready var scanner_audio = $global_audio/scanner_raw
 # SHADERS
 @onready var screen_shaders = $screen_shaders
 # PROGRESS
@@ -72,7 +73,6 @@ class_name MainController
 
 # ---- OTHER STATS ----
 @export var STATIC_CONSUMPTION_RATE: int = 250
-@export var RELIC_SCANNING_RATE: int = 50
 @export var TURBO_BOOST_ENERGY_RATE: int = 100
 
 # ---- DEPTH ----
@@ -251,7 +251,9 @@ func _process(delta: float) -> void:
 	
 	# SCAN RELIC
 	if Input.is_action_pressed("interact") and relic_on_range != null:
-		var delta_scanning = delta * RELIC_SCANNING_RATE
+		var duration = scanner_audio.stream.get_length()
+		var scanning_rate: float = 100.0 / duration
+		var delta_scanning = delta * scanning_rate
 		relic_on_range.scan(delta_scanning)
 		
 		update_scanning_relic(!relic_on_range.was_scanned)
@@ -260,6 +262,8 @@ func _process(delta: float) -> void:
 			relics_available += 1
 			relic_on_range = null
 			clear_interaction()
+			scanner_audio.stop()
+		
 	elif scanning_relic and Input.is_action_just_released("interact"):
 		update_scanning_relic(false)
 	elif relic_on_range == null:
@@ -597,9 +601,12 @@ func update_scanning_relic(new_state: bool) -> void:
 	
 	# SFX
 	if scanning_relic and !collecting_static_sound.playing:
-		collecting_static_sound.play()
+		# start the audio where it was left based on the scaning percentage
+		var duration = scanner_audio.stream.get_length()
+		var position = duration * relic_on_range.scanned_percentage / 100
+		scanner_audio.play(position)
 	elif !scanning_relic and collecting_static_sound.playing:
-		collecting_static_sound.stop()
+		scanner_audio.stop()
 
 
 # ---- GENERIC INTERACTION SYSTEM v1 ----
@@ -635,6 +642,7 @@ func _on_player_interaction_area_exited(area: Area2D) -> void:
 			player_alert_0.hide()
 	elif area.node_type == 'RELIC':
 		clear_interaction()
+		scanner_audio.stop()
 		if relic_on_range != null:
 			relic_on_range.update_scanning(false)
 			relic_on_range = null

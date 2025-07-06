@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b6tuawmh8qurb"
-path="res://.godot/imported/SPR_relic_v1.4_65p_circ_screen.png-bcc8f6607711f50dae35fe01a495b7aa.ctex"
+uid="uid://0bjlspouw7fn"
+path="res://.godot/imported/SPR_relic_65p_circ_screen_v1.4.png-135a986a810f50fa9e29a87bb3ea4bb2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/visual/SPR_relic_v1.4_65p_circ_screen.png"
-dest_files=["res://.godot/imported/SPR_relic_v1.4_65p_circ_screen.png-bcc8f6607711f50dae35fe01a495b7aa.ctex"]
+source_file="res://assets/visual/SPR_relic_65p_circ_screen_v1.4.png"
+dest_files=["res://.godot/imported/SPR_relic_65p_circ_screen_v1.4.png-135a986a810f50fa9e29a87bb3ea4bb2.ctex"]
 
 [params]
 
