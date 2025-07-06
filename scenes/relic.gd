@@ -15,6 +15,10 @@ var sprites_material: Material
 	$sprites/tumor,
 ]
 
+@onready var spr_circle_screen = $sprites/circle_screen
+@onready var spr_tumor = $sprites/tumor
+@onready var spr_brain = $sprites/brain
+
 # If the relic is being scanned right now
 var scanning_enabled: bool = false
 var shader_scanner_time: float = 0.0
@@ -37,7 +41,13 @@ func scan(delta: float):
 	was_scanned = true
 
 func update_scanning(new_state: bool) -> void:
-	update_shader_enabled(new_state)
+	for sprite in all_sprites:
+		sprite.material.set_shader_parameter("enabled", new_state)
+	
+	spr_circle_screen.toggle_wave_2(new_state)
+	spr_tumor.toogle_mode(new_state)
+	spr_brain.toggle_mode(new_state)
+	
 	scanning_enabled = new_state
 	if new_state:
 		shader_scanner_time = 0.0
@@ -46,10 +56,6 @@ func _process(delta):
 	if scanning_enabled:
 		shader_scanner_time += delta
 		run_shader()
-
-func update_shader_enabled(new_state: bool) -> void:
-	for sprite in all_sprites:
-		sprite.material.set_shader_parameter("enabled", new_state)
 
 func run_shader() -> void:
 	for sprite in all_sprites:
