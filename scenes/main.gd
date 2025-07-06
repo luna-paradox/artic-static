@@ -47,7 +47,7 @@ class_name MainController
 @onready var heater_sound = $global_audio/heater_sound
 @onready var change_sonar_freq_sound = $global_audio/change_sonar_freq_sound
 @onready var ritual_success_0_sound = $global_audio/ritual_success_0_sound
-@onready var scanner_audio = $global_audio/scanner_low_filter
+@onready var scanner_audio = $global_audio/scanner_raw
 # SHADERS
 @onready var screen_shaders = $screen_shaders
 # PROGRESS
