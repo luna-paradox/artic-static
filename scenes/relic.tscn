@@ -39,10 +39,13 @@ shader_parameter/flicker_speed = 2.0
 shader_parameter/image_size = Vector2(450, 300)
 shader_parameter/grid_cell_size = 15.0
 shader_parameter/grid_line_thickness = 0.5
-shader_parameter/grid_color = Color(0, 1, 0, 0.117647)
+shader_parameter/grid_color = Color(0, 1, 0, 0.3)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_apmnq"]
 shader = ExtResource("13_ksqfb")
+shader_parameter/enabled = false
+shader_parameter/custom_time = 0.0
+shader_parameter/black = Vector4(0, 0, 0, 1)
 shader_parameter/enable_wave_2 = false
 shader_parameter/time_mult = 2.0
 shader_parameter/frequency = 15.0
@@ -52,8 +55,18 @@ shader_parameter/frequency_2 = 30.0
 shader_parameter/amplitude_2 = 0.02
 shader_parameter/wave_color = Vector4(0, 1, 0, 1)
 shader_parameter/wave_color_2 = Vector4(1, 0, 0, 1)
-shader_parameter/black = Vector4(0, 0, 0, 1)
 shader_parameter/thickness = 0.003
+shader_parameter/scan_speed = 2.0
+shader_parameter/scan_thickness = 1.0
+shader_parameter/scan_color = Vector4(0, 1, 0, 1)
+shader_parameter/scanline_strength = 0.1
+shader_parameter/chromatic_offset = 1.0
+shader_parameter/noise_strength = 0.025
+shader_parameter/flicker_speed = 2.0
+shader_parameter/image_size = Vector2(450, 300)
+shader_parameter/grid_cell_size = 15.0
+shader_parameter/grid_line_thickness = 0.5
+shader_parameter/grid_color = Vector4(0, 1, 0, 0.3)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_skud5"]
 shader = ExtResource("13_nxfcc")
