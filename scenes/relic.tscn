@@ -155,3 +155,9 @@ script = ExtResource("15_s2nva")
 visible = false
 material = SubResource("ShaderMaterial_2hqne")
 texture = ExtResource("3_vjsjv")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+visible = false
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PackedVector2Array(-149, -164, -156, -157, -156, 161, -113, 166, -78, 168, -33, 170, 17, 172, 74, 161, 148, 162, 149, -155, 139, -163)

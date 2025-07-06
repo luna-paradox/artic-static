@@ -73,7 +73,6 @@ class_name MainController
 
 # ---- OTHER STATS ----
 @export var STATIC_CONSUMPTION_RATE: int = 250
-@export var RELIC_SCANNING_RATE: int = 1
 @export var TURBO_BOOST_ENERGY_RATE: int = 100
 
 # ---- DEPTH ----
