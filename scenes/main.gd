@@ -71,13 +71,14 @@ class_name MainController
 @export var MAX_SPEED: int = 450
 
 # ---- OTHER STATS ----
-@export var STATIC_CONSUMPTION_RATE = 250
-@export var TURBO_BOOST_ENERGY_RATE = 100
+@export var STATIC_CONSUMPTION_RATE: int = 250
+@export var RELIC_SCANNING_RATE: int = 50
+@export var TURBO_BOOST_ENERGY_RATE: int = 100
 
 # ---- DEPTH ----
 #@export var CRUSH_DEPTH = 5800
-@export var CRUSH_DEPTH = 7000
-var current_depth = 5550
+@export var CRUSH_DEPTH: int = 7000
+var current_depth: int = 5550
 
 # ---- STORE ----
 # Cost in Static
@@ -92,11 +93,11 @@ var current_depth = 5550
 @export var STATIC_TANK_UPGRADE_COST = 1000
 
 
-# ---- PROGRESS UNLOCKS ----
+# ---- PROGRESSION v1 ----
 var TURBO_BOOST_UNLOCKED = true
 
 
-# ---- PROGRESS ----
+# ---- PROGRESSION alpha ----
 var static_historic = 0
 
 @export var STATIC_HISTORIC_FOR_THIRD_EYE = 2000
@@ -234,10 +235,10 @@ func _process(delta: float) -> void:
 		if current_energy <= 0:
 			player.disable_turbo_boost()
 	
-	#INTERACT WITH STATIC NODES
 	if is_lightstick_mode_on:
 		return
 	
+	# COLLECT STATIC NODES
 	if Input.is_action_pressed("interact") and static_nodes_in_range.size() > 0:
 		var delta_static = delta * STATIC_CONSUMPTION_RATE
 		update_static(delta_static)
@@ -247,6 +248,23 @@ func _process(delta: float) -> void:
 		update_collecting_static(false)
 	elif static_nodes_in_range.size() == 0:
 		update_collecting_static(false)
+	
+	# SCAN RELIC
+	if Input.is_action_pressed("interact") and relic_on_range != null:
+		var delta_scanning = delta * RELIC_SCANNING_RATE
+		relic_on_range.scan(delta_scanning)
+		
+		update_scanning_relic(!relic_on_range.was_scanned)
+		if relic_on_range.was_scanned:
+			relics_found += 1
+			relics_available += 1
+			relic_on_range = null
+			clear_interaction()
+	elif scanning_relic and Input.is_action_just_released("interact"):
+		update_scanning_relic(false)
+	elif relic_on_range == null:
+		update_scanning_relic(false)
+	
 
 var is_lightstick_mode_on = true
 
@@ -257,10 +275,12 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	if event.is_action_pressed("1_debug"):
-		unlock_sonar_freq(SONAR_FREQ.TEST_0)
+		print('relics_found: ' + str(relics_found))
+		print('relics_available: ' + str(relics_available))
+		print('relic_on_range: ' + str(relic_on_range))
 		return
 	if event.is_action_pressed("2_debug"):
-		unlock_sonar_freq(SONAR_FREQ.TEST_1)
+		$relic.reset()
 		return
 	
 	# WHILE INSTRUCTIONS ARE VISIBLE
@@ -333,30 +353,11 @@ func _input(event: InputEvent) -> void:
 		skill_energy_plus()
 		return
 	
-	# PROGRESS
+	# GENERIC INTERACTION SYSTEM v1
 	if event.is_action_pressed("interact") and interaction_id != '':
-		if interaction_id == 'STATUE_3' and !event_talk_statue_3_flag:
-			print('INTERACT WITH STATUE 3')
-			
-			event_talk_statue_3_flag = true
-			interaction_id = ''
-			player_alert_0.hide()
-			
-			var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
-			dialog_ui.load_dialog(dialog_id, 'talk_to_statue_3')
-			return
-			
-		if interaction_id == 'STATUE_2' and !event_talk_statue_2_flag:
-			print('INTERACT WITH STATUE 2')
-			
-			event_talk_statue_2_flag = true
-			interaction_id = ''
-			player_alert_0.hide()
-			
-			var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
-			dialog_ui.load_dialog(dialog_id, 'talk_to_statue_2')
-			return
+		interact()
 	
+	# PROGRESS
 	
 	# PROGRESS BETA
 	if can_interact_with_statue_p2 and event.is_action_pressed("interact") and third_eye.mode == 2:
@@ -382,11 +383,13 @@ func execute_dialog_event(return_event_id: String) -> void:
 			return
 
 
-# ---- PROGRESSION V2? ----
+# ---- PROGRESSION v1? ----
 func unlock_turbo():
 	print('UNLOCK TURBO')
 	TURBO_BOOST_UNLOCKED = true
 
+var relics_found: int = 0
+var relics_available: int = 0
 
 # ---- SKILLS ----
 @export var SKILL_PRICE_HP_UP = 200
@@ -510,18 +513,6 @@ func update_available_static(delta_static: int):
 	available_static += delta_static
 	dock_menu_static_counter_label.text = "STATIC: " + str(available_static)
 
-var collecting_static = false
-func update_collecting_static(new_state: bool) -> void:
-	if collecting_static == new_state:
-		return
-	collecting_static = new_state
-	
-	# SFX
-	if collecting_static and !collecting_static_sound.playing:
-		collecting_static_sound.play()
-	elif !collecting_static and collecting_static_sound.playing:
-		collecting_static_sound.stop()
-
 func update_temp(delta_temp: float):
 	delta_temp = round(delta_temp * 100.0) / 100.0
 	
@@ -579,22 +570,59 @@ func reset_all_static_nodes() -> void:
 		node.reset()
 
 
-# ---- STATIC NODES ----
+# ---- COLLECT STATIC ----
+var collecting_static = false
+func update_collecting_static(new_state: bool) -> void:
+	if collecting_static == new_state:
+		return
+	collecting_static = new_state
+	
+	# SFX
+	if collecting_static and !collecting_static_sound.playing:
+		collecting_static_sound.play()
+	elif !collecting_static and collecting_static_sound.playing:
+		collecting_static_sound.stop()
+
+
+# ---- SCAN RELIC ----
+var scanning_relic = false
+func update_scanning_relic(new_state: bool) -> void:
+	#print('UPDATE SCANNING STATE: ' + str(scanning_relic))
+	if scanning_relic == new_state:
+		return
+	scanning_relic = new_state
+	
+	if relic_on_range != null:
+		relic_on_range.update_scanning(new_state)
+	
+	# SFX
+	if scanning_relic and !collecting_static_sound.playing:
+		collecting_static_sound.play()
+	elif !scanning_relic and collecting_static_sound.playing:
+		collecting_static_sound.stop()
+
+
+# ---- GENERIC INTERACTION SYSTEM v1 ----
+var interaction_id: String
+
 var static_nodes_in_range: Array[Node2D] = []
+var relic_on_range: Node2D = null
 
 func _on_player_interaction_area_entered(area: Area2D) -> void:
 	if !"node_type" in area:
 		return
 	
-	
 	if area.node_type == 'STATIC_NODE':
 		static_nodes_in_range.append(area.get_parent())
-		player_alert_0.show()
 	elif area.node_type == 'STATUE_3' and !event_talk_statue_3_flag:
-		interaction_id = 'STATUE_3'
-		player_alert_0.show()
+		interaction_id = area.node_type
+	elif area.node_type == "RELIC":
+		if area.get_parent().was_scanned:
+			return
+		relic_on_range = area.get_parent()
+		interaction_id = area.node_type
 
-var interaction_id: String
+	player_alert_0.show()
 
 func _on_player_interaction_area_exited(area: Area2D) -> void:
 	if !"node_type" in area:
@@ -605,9 +633,39 @@ func _on_player_interaction_area_exited(area: Area2D) -> void:
 		
 		if static_nodes_in_range.size() <= 0:
 			player_alert_0.hide()
+	elif area.node_type == 'RELIC':
+		clear_interaction()
+		if relic_on_range != null:
+			relic_on_range.update_scanning(false)
+			relic_on_range = null
 	elif interaction_id != '':
-		interaction_id = ''
-		player_alert_0.hide()
+		clear_interaction()
+
+
+func interact() -> void:
+	if interaction_id == 'STATUE_3' and !event_talk_statue_3_flag:
+		print('INTERACT WITH STATUE 3')
+		
+		event_talk_statue_3_flag = true
+		clear_interaction()
+		
+		var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
+		dialog_ui.load_dialog(dialog_id, 'talk_to_statue_3')
+		return
+		
+	if interaction_id == 'STATUE_2' and !event_talk_statue_2_flag:
+		print('INTERACT WITH STATUE 2')
+		
+		event_talk_statue_2_flag = true
+		clear_interaction()
+		
+		var dialog_id = DIALOG_DB.dialog_files._00.interact_statue_3.route
+		dialog_ui.load_dialog(dialog_id, 'talk_to_statue_2')
+		return
+
+func clear_interaction() -> void:
+	interaction_id = ''
+	player_alert_0.hide()
 
 
 # ---- PAUSE GAME ----
@@ -1064,7 +1122,7 @@ func calculate_heater_heat_transfer() -> float:
 	return heat_transfer
 
 
-# ---- PROGRESSION ----
+# ---- PROGRESSION beta ----
 func progress(new_mode: int) -> void:
 	third_eye.mode = new_mode
 	

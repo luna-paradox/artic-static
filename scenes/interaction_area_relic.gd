@@ -1,0 +1,1 @@
+extends GenericInteractionArea2D
