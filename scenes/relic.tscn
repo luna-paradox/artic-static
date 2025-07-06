@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://ba845i1slugt4"]
+[gd_scene load_steps=25 format=3 uid="uid://ba845i1slugt4"]
 
 [ext_resource type="Script" path="res://scenes/relic.gd" id="1_3kres"]
 [ext_resource type="Shader" path="res://scenes/scanning.gdshader" id="2_k538t"]
@@ -9,12 +9,14 @@
 [ext_resource type="Script" path="res://scenes/interaction_area_relic.gd" id="4_v8txm"]
 [ext_resource type="Texture2D" uid="uid://243he1hjue0v" path="res://assets/visual/SPR_relic_v1.4_65p_brain_1.png" id="5_0av7i"]
 [ext_resource type="Texture2D" uid="uid://d0co6adkctvr2" path="res://assets/visual/SPR_relic_v1.4_65p_buttons.png" id="5_5ym7u"]
-[ext_resource type="Texture2D" uid="uid://b6tuawmh8qurb" path="res://assets/visual/SPR_relic_v1.4_65p_circ_screen.png" id="6_coo6h"]
 [ext_resource type="Texture2D" uid="uid://bln0tfggb3mi7" path="res://assets/visual/SPR_relic_v1.4_65p_brain_0.png" id="6_x0jfm"]
 [ext_resource type="Texture2D" uid="uid://yp6vx2m0m4ts" path="res://assets/visual/SPR_relic_v1.4_65p_squa_screen.png" id="7_sckye"]
 [ext_resource type="Texture2D" uid="uid://eskuwvwin7cy" path="res://assets/visual/SPR_relic_v1.4_65p_tumor.png" id="8_mw4rk"]
-[ext_resource type="Texture2D" uid="uid://brvmdvky1pmch" path="res://assets/visual/SPR_relic_65p_base_v1.5.png" id="9_eht5t"]
+[ext_resource type="Script" path="res://scenes/relic_circle_screen.gd" id="9_43m6u"]
+[ext_resource type="Texture2D" uid="uid://4fvj5v6kgypv" path="res://assets/visual/SPR_relic_65p_base_v1.6.png" id="13_h7ww1"]
+[ext_resource type="Shader" path="res://scenes/relic_circle_screen.gdshader" id="13_ksqfb"]
 [ext_resource type="Shader" path="res://scenes/pulsate.gdshader" id="13_nxfcc"]
+[ext_resource type="Texture2D" uid="uid://qseq6ri5siro" path="res://assets/visual/SPR_relic_65p_circ_screen_v1.5.png" id="14_agieo"]
 [ext_resource type="Texture2D" uid="uid://1pcif53who5k" path="res://assets/visual/SPR_relic_v1.4_65p_squa_screen_code.png" id="14_jbhfc"]
 [ext_resource type="Script" path="res://scenes/relic_spr_tumor.gd" id="15_s2nva"]
 
@@ -38,6 +40,20 @@ shader_parameter/image_size = Vector2(450, 300)
 shader_parameter/grid_cell_size = 15.0
 shader_parameter/grid_line_thickness = 0.5
 shader_parameter/grid_color = Color(0, 1, 0, 0.117647)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_apmnq"]
+shader = ExtResource("13_ksqfb")
+shader_parameter/enable_wave_2 = false
+shader_parameter/time_mult = 2.0
+shader_parameter/frequency = 15.0
+shader_parameter/amplitude = 0.01
+shader_parameter/time_mult_2 = 15.0
+shader_parameter/frequency_2 = 30.0
+shader_parameter/amplitude_2 = 0.02
+shader_parameter/wave_color = Vector4(0, 1, 0, 1)
+shader_parameter/wave_color_2 = Vector4(1, 0, 0, 1)
+shader_parameter/black = Vector4(0, 0, 0, 1)
+shader_parameter/thickness = 0.003
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_skud5"]
 shader = ExtResource("13_nxfcc")
@@ -88,6 +104,11 @@ texture = ExtResource("14_jbhfc")
 material = SubResource("ShaderMaterial_m5nut")
 texture = ExtResource("3_s2n57")
 
+[node name="circle_screen" type="Sprite2D" parent="sprites"]
+material = SubResource("ShaderMaterial_apmnq")
+texture = ExtResource("14_agieo")
+script = ExtResource("9_43m6u")
+
 [node name="brain" type="Node2D" parent="sprites"]
 position = Vector2(5, 2)
 script = ExtResource("4_nkxny")
@@ -106,15 +127,11 @@ texture = ExtResource("6_x0jfm")
 
 [node name="base" type="Sprite2D" parent="sprites"]
 material = SubResource("ShaderMaterial_m5nut")
-texture = ExtResource("9_eht5t")
+texture = ExtResource("13_h7ww1")
 
 [node name="buttons" type="Sprite2D" parent="sprites"]
 material = SubResource("ShaderMaterial_m5nut")
 texture = ExtResource("5_5ym7u")
-
-[node name="circle_screen" type="Sprite2D" parent="sprites"]
-material = SubResource("ShaderMaterial_m5nut")
-texture = ExtResource("6_coo6h")
 
 [node name="tumor" type="Sprite2D" parent="sprites"]
 material = SubResource("ShaderMaterial_skud5")
