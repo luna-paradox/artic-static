@@ -34,7 +34,7 @@ func reset():
 	was_scanned = false
 
 func scan(delta: float):
-	scanned_percentage += delta / 5
+	scanned_percentage += delta
 	#print('SCANNING: ' + str(scanned_percentage))
 	if scanned_percentage < 100.0:
 		return
