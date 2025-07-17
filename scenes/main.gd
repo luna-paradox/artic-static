@@ -116,7 +116,7 @@ var heat_timer: Timer
 func _ready() -> void:
 	
 	if _IS_DEBUG:
-		update_available_static(20000)
+		update_available_static(8000)
 	
 	$global_mod.show()
 	$camera.show()
@@ -764,7 +764,7 @@ func close_dock_menu() -> void:
 	dock_menu.hide()
 	update_pause(false)
 
-func _on_upgrade_clicked(upgrade_id: String) -> void:
+func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	print(upgrade_id)
 	pass
 
