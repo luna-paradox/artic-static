@@ -2,7 +2,7 @@ extends Node
 
 var upgrades = {
 	UPGRADE_DB.upg_ids.heater_efficiency: 0,
-	UPGRADE_DB.upg_ids.heater_controller: null,
+	UPGRADE_DB.upg_ids.heater_controller: 0,
 	UPGRADE_DB.upg_ids.skills_hp_up: null,
 	UPGRADE_DB.upg_ids.skills_energy_up: null,
 	UPGRADE_DB.upg_ids.skills_temp_up: null,

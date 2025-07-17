@@ -53764,11 +53764,12 @@ text = "       HEATER
 
 [node name="efficiency" parent="ui_dock_menu_v2/main_container/upgrade_box_container/heater_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
 layout_mode = 2
-text = "<null>"
+text = "> EFFICIENCY II
+ 00000000"
 
 [node name="heater_controller" parent="ui_dock_menu_v2/main_container/upgrade_box_container/heater_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
 layout_mode = 2
-text = "> HEATER CONTROLLER
+text = "> AUTO CONTROLLER
  00000000
 "
 upgrade_id = 1

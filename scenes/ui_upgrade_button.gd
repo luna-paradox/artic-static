@@ -51,6 +51,7 @@ func update_from_save() -> void:
 	var current_price: int = upgrade_data.prices[save_state]
 	text = "> " + current_text + "\n" + str(current_price)
 	
+	show()
+	
 	disabled = main_controller.available_static < current_price
 	
-	show()
