@@ -20,7 +20,7 @@ enum upg_ids {
 	lightstick_glow,
 	hull_defense,
 	hull_insulation,
-	depth_max,
+	hull_depth_max,
 	static_tank,
 	static_insulation,
 	motor_turbo_boost,
@@ -36,6 +36,10 @@ class UpgradeData:
 
 # GET THE MODELED DATA OF AN UPGRADE FROM THE RAW DATA
 func get_upgrade_data(upgrade_id: upg_ids) -> UpgradeData:
+	if !upgrade_db.has(upgrade_id):
+		printerr('NO UPGRADE DATA FOR ' + str(upgrade_id))
+		return
+	
 	var res_data: UpgradeData = UpgradeData.new()
 	var raw_data = upgrade_db[upgrade_id]
 	
@@ -55,6 +59,7 @@ func get_upgrade_data(upgrade_id: upg_ids) -> UpgradeData:
 # RAW DATA FOR UPGRADES
 # Could it be a csv? yeah, will i make it a csv? no
 var upgrade_db = {
+	# ---- HEATER ----
 	upg_ids.heater_efficiency: {
 		"max_state": 2,
 		"name_0": "EFFICIENCY I",
@@ -67,12 +72,34 @@ var upgrade_db = {
 		"name_0": "AUTO CONTROLLER",
 		"price_0": 10000,
 	},
+	# ---- SKILLS ----
+	upg_ids.skills_hp_up: {
+		"max_state": 2,
+		"name_0": "MECHANICAL TRANSMUTATION",
+		"price_0": 5000,
+		"name_1": "MECHANICAL TRANSMUTATION\nEFFICIENCY",
+		"price_1": 10000,
+	},
+	upg_ids.skills_energy_up: {
+		"max_state": 2,
+		"name_0": "ENERGY TRANSMUTATION",
+		"price_0": 5000,
+		"name_1": "ENERGY TRANSMUTATION\nEFFICIENCY",
+		"price_1": 10000,
+	},
+	upg_ids.skills_temp_up: {
+		"max_state": 2,
+		"name_0": "EXOTHERMAL ACTIVITY",
+		"price_0": 5000,
+		"name_1": "EXOTHERMAL ACTIVITY\nEFFICIENCY",
+		"price_1": 10000,
+	},
+	upg_ids.skills_temp_down: {
+		"max_state": 1,
+		"name_0": "THERMAL RELEASE",
+		"price_0": 7000,
+	},
 }
-	#'heater_controller': null,
-	#'skills_hp_up': null,
-	#'skills_energy_up': null,
-	#'skills_temp_up': null,
-	#'skills_temp_down': null,
 	#'freq_closer_static': null,
 	#'freq_closer_relic': null,
 	#'freq_': null,
@@ -82,7 +109,7 @@ var upgrade_db = {
 	#'lightstick_glow': null,
 	#'hull_defense': 0,
 	#'hull_insulation': null,
-	#'depth_max': 0,
+	#'hull_depth_max': 0,
 	#'static_tank': 0,
 	#'static_insulation': null,
 	#'motor_turbo_boost': null,

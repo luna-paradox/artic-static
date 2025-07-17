@@ -18,7 +18,7 @@ extends Button
 	"lightstick_glow",
 	"hull_defense",
 	"hull_insulation",
-	"depth_max",
+	"hull_depth_max",
 	"static_tank",
 	"static_insulation",
 	'motor_turbo_boost',
@@ -37,6 +37,9 @@ func init(new_main_controller: MainController) -> void:
 
 # Update own data based on upgrade save state
 func update_from_save() -> void:
+	if !upgrade_data:
+		return
+	
 	var save_state = SAVE_STATE.upgrades[upgrade_id]
 
 	if save_state == null or save_state >= upgrade_data.max_state:

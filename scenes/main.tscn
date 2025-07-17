@@ -1,4 +1,4 @@
-[gd_scene load_steps=7277 format=3 uid="uid://chovb3krt6q56"]
+[gd_scene load_steps=7278 format=3 uid="uid://chovb3krt6q56"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_nuh7j"]
 [ext_resource type="AudioStream" uid="uid://cjjlq52c5q6oh" path="res://assets/audio/large-underwater-explosion-190270-TRIM.ogg" id="2_shk0a"]
@@ -90,6 +90,7 @@
 [ext_resource type="Texture2D" uid="uid://40pt0m8ymx2j" path="res://assets/dock-ui-v2/upgrade-UI-upgrade-static-tank-v1.0.png" id="81_t6eiw"]
 [ext_resource type="Texture2D" uid="uid://c8k6qa6ro5k65" path="res://assets/dock-ui-v2/upgrade-UI-upgrade-turbo-boost-v1.0.png" id="82_sqxp1"]
 [ext_resource type="PackedScene" uid="uid://ca7reaoei0dl8" path="res://scenes/ui_upgrade_button.tscn" id="84_if03a"]
+[ext_resource type="Script" path="res://scenes/ui_upgrade_container.gd" id="84_lslxy"]
 
 [sub_resource type="Resource" id="Resource_b270b"]
 script = ExtResource("4_0o5lc")
@@ -53128,17 +53129,6 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 color = Color(0.0513, 0.08613, 0.09, 1)
 
-[node name="bg" type="ColorRect" parent="ui_dock_menu/container"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-color = Color(0.0470588, 0.0509804, 0.0509804, 1)
-
 [node name="close_btn" type="Button" parent="ui_dock_menu/container"]
 layout_mode = 0
 offset_left = 661.0
@@ -53151,6 +53141,17 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_nj52c")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_5ajys")
 theme_override_styles/normal = SubResource("StyleBoxFlat_chpfm")
 text = "X"
+
+[node name="bg" type="ColorRect" parent="ui_dock_menu/container"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+color = Color(0.0470588, 0.0509804, 0.0509804, 1)
 
 [node name="static_counter" type="Control" parent="ui_dock_menu/container"]
 anchors_preset = 0
@@ -53661,6 +53662,43 @@ grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
+[node name="bg2" type="ColorRect" parent="ui_dock_menu_v2/main_container"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_top = -32.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0.588235, 0.286275, 1)
+
+[node name="upper_bar_bg" type="ColorRect" parent="ui_dock_menu_v2/main_container"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.06
+anchor_right = 1.0
+anchor_bottom = 0.01
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+color = Color(0.0513, 0.08613, 0.09, 1)
+
+[node name="close_btn" type="Button" parent="ui_dock_menu_v2/main_container"]
+offset_left = 816.0
+offset_top = -26.0
+offset_right = 836.0
+offset_bottom = -6.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 14
+theme_override_styles/hover = SubResource("StyleBoxFlat_nj52c")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_5ajys")
+theme_override_styles/normal = SubResource("StyleBoxFlat_chpfm")
+text = "X"
+
 [node name="bg" type="ColorRect" parent="ui_dock_menu_v2/main_container"]
 layout_mode = 1
 anchors_preset = 15
@@ -53679,76 +53717,140 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("72_75l1t")
 
-[node name="upgrade_box_container" type="Control" parent="ui_dock_menu_v2/main_container"]
+[node name="upgrade_overlay_ui" type="Control" parent="ui_dock_menu_v2/main_container"]
 anchors_preset = 0
 
-[node name="depth" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="depth" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_overlay_ui"]
 layout_mode = 1
-offset_right = 840.0
-offset_bottom = 500.0
+offset_left = -11.0
+offset_top = -13.0
+offset_right = 829.0
+offset_bottom = 487.0
 texture = ExtResource("73_ywjfc")
 
-[node name="energy" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="energy" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_overlay_ui"]
 layout_mode = 1
 offset_right = 840.0
 offset_bottom = 500.0
 texture = ExtResource("74_8p1sd")
 
-[node name="frequencies" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="frequencies" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_overlay_ui"]
 layout_mode = 1
 offset_right = 840.0
 offset_bottom = 500.0
 texture = ExtResource("75_eaa8x")
 
-[node name="heater" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="heater" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_overlay_ui"]
 layout_mode = 1
 offset_right = 840.0
 offset_bottom = 500.0
 texture = ExtResource("76_ilycd")
 
-[node name="hp2" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="hp2" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_overlay_ui"]
 layout_mode = 1
 offset_right = 840.0
 offset_bottom = 500.0
 texture = ExtResource("77_28hyr")
 
-[node name="lights" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="lights" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_overlay_ui"]
 layout_mode = 1
 offset_right = 840.0
 offset_bottom = 500.0
 texture = ExtResource("78_8yf2o")
 
-[node name="lightstick" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="lightstick" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_overlay_ui"]
 layout_mode = 1
 offset_right = 840.0
 offset_bottom = 500.0
 texture = ExtResource("79_g4v2u")
 
-[node name="skills" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="skills" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_overlay_ui"]
 layout_mode = 1
 offset_right = 840.0
 offset_bottom = 500.0
 texture = ExtResource("80_uofed")
 
-[node name="static-tank" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="static-tank" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_overlay_ui"]
 layout_mode = 1
 offset_right = 840.0
 offset_bottom = 500.0
 texture = ExtResource("81_t6eiw")
 
-[node name="turbo-boost" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="turbo-boost" type="TextureRect" parent="ui_dock_menu_v2/main_container/upgrade_overlay_ui"]
+visible = false
 layout_mode = 1
 offset_right = 840.0
 offset_bottom = 500.0
 texture = ExtResource("82_sqxp1")
 
-[node name="heater_upgrade_ui" type="PanelContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+[node name="upgrade_box_container" type="Control" parent="ui_dock_menu_v2/main_container"]
+anchors_preset = 0
+
+[node name="skill_upgrade_ui" type="PanelContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container" node_paths=PackedStringArray("line_anchor")]
 layout_mode = 0
-offset_left = 101.0
-offset_top = 120.0
-offset_right = 225.0
-offset_bottom = 154.0
+offset_left = 171.0
+offset_top = 15.0
+offset_right = 175.0
+offset_bottom = 30.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_1pxhw")
+script = ExtResource("84_lslxy")
+line_anchor = NodePath("../anchors/skill_anchor")
+
+[node name="v_box_container" type="VBoxContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container/skill_upgrade_ui"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="label" type="Label" parent="ui_dock_menu_v2/main_container/upgrade_box_container/skill_upgrade_ui/v_box_container"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_fonts/font = SubResource("FontVariation_1wivf")
+theme_override_font_sizes/font_size = 10
+text = "           SKILLS
+------------------------------"
+
+[node name="hp_up" parent="ui_dock_menu_v2/main_container/upgrade_box_container/skill_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> MECHANICAL TRANSMUTATION+
+ 5000"
+upgrade_id = 2
+
+[node name="energy_up" parent="ui_dock_menu_v2/main_container/upgrade_box_container/skill_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> ENERGY TRANSMUTATION+
+ 5000
+"
+upgrade_id = 3
+
+[node name="temp_up" parent="ui_dock_menu_v2/main_container/upgrade_box_container/skill_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> EXOTHERMAL ACTIVITY+
+ 5000
+"
+upgrade_id = 4
+
+[node name="temp_down" parent="ui_dock_menu_v2/main_container/upgrade_box_container/skill_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> THERMAL RELEASE
+ 5000
+"
+upgrade_id = 5
+
+[node name="line" type="Line2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/skill_upgrade_ui"]
+points = PackedVector2Array(183.5, 13, 188, 13)
+width = 1.0
+default_color = Color(0, 0.588235, 0.286275, 1)
+sharp_limit = 0.0
+antialiased = true
+
+[node name="heater_upgrade_ui" type="PanelContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container" node_paths=PackedStringArray("line_anchor")]
+layout_mode = 0
+offset_left = 96.0
+offset_top = 160.0
+offset_right = 100.0
+offset_bottom = 175.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1pxhw")
+script = ExtResource("84_lslxy")
+line_anchor = NodePath("../anchors/heater_anchor")
 
 [node name="v_box_container" type="VBoxContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container/heater_upgrade_ui"]
 layout_mode = 2
@@ -53765,22 +53867,343 @@ text = "       HEATER
 [node name="efficiency" parent="ui_dock_menu_v2/main_container/upgrade_box_container/heater_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
 layout_mode = 2
 text = "> EFFICIENCY II
- 00000000"
+ 5000"
 
 [node name="heater_controller" parent="ui_dock_menu_v2/main_container/upgrade_box_container/heater_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
 layout_mode = 2
 text = "> AUTO CONTROLLER
- 00000000
+ 5000
 "
 upgrade_id = 1
 
-[node name="Line2D" type="Line2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/heater_upgrade_ui"]
-position = Vector2(123, 13)
-points = PackedVector2Array(1, -2, 20, 21)
+[node name="line" type="Line2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/heater_upgrade_ui"]
+points = PackedVector2Array(123.5, 12, 129, 12)
 width = 1.0
 default_color = Color(0, 0.588235, 0.286275, 1)
 sharp_limit = 0.0
 antialiased = true
+
+[node name="battery_upgrade_ui" type="PanelContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container" node_paths=PackedStringArray("line_anchor")]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 260.0
+offset_right = 64.0
+offset_bottom = 275.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1pxhw")
+script = ExtResource("84_lslxy")
+line_anchor = NodePath("../anchors/battery_anchor")
+
+[node name="v_box_container" type="VBoxContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container/battery_upgrade_ui"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="label" type="Label" parent="ui_dock_menu_v2/main_container/upgrade_box_container/battery_upgrade_ui/v_box_container"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_fonts/font = SubResource("FontVariation_1wivf")
+theme_override_font_sizes/font_size = 10
+text = "        BATTERY
+-----------------------"
+
+[node name="bigger_battery" parent="ui_dock_menu_v2/main_container/upgrade_box_container/battery_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> BIGGER BATTERY III
+ 5000"
+upgrade_id = 20
+
+[node name="line" type="Line2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/battery_upgrade_ui"]
+points = PackedVector2Array(141.5, 12, 147, 12)
+width = 1.0
+default_color = Color(0, 0.588235, 0.286275, 1)
+sharp_limit = 0.0
+antialiased = true
+
+[node name="boost_upgrade_ui" type="PanelContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container" node_paths=PackedStringArray("line_anchor")]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 346.0
+offset_right = 54.0
+offset_bottom = 361.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1pxhw")
+script = ExtResource("84_lslxy")
+line_anchor = NodePath("../anchors/boost_anchor")
+
+[node name="v_box_container" type="VBoxContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container/boost_upgrade_ui"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="label" type="Label" parent="ui_dock_menu_v2/main_container/upgrade_box_container/boost_upgrade_ui/v_box_container"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_fonts/font = SubResource("FontVariation_1wivf")
+theme_override_font_sizes/font_size = 10
+text = "         MOTOR        
+-----------------------"
+
+[node name="turbo_boost" parent="ui_dock_menu_v2/main_container/upgrade_box_container/boost_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> TURBO BOOST GEAR 2
+ 5000"
+upgrade_id = 18
+
+[node name="efficiency" parent="ui_dock_menu_v2/main_container/upgrade_box_container/boost_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> EFFICIENCY II
+ 5000"
+upgrade_id = 19
+
+[node name="line" type="Line2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/boost_upgrade_ui"]
+points = PackedVector2Array(141.5, 12, 148, 12)
+width = 1.0
+default_color = Color(0, 0.588235, 0.286275, 1)
+sharp_limit = 0.0
+antialiased = true
+
+[node name="static_tank_upgrade_ui" type="PanelContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container" node_paths=PackedStringArray("line_anchor")]
+layout_mode = 0
+offset_left = 285.0
+offset_top = 407.0
+offset_right = 289.0
+offset_bottom = 422.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1pxhw")
+script = ExtResource("84_lslxy")
+line_anchor = NodePath("../anchors/static_anchor")
+
+[node name="v_box_container" type="VBoxContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container/static_tank_upgrade_ui"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="label" type="Label" parent="ui_dock_menu_v2/main_container/upgrade_box_container/static_tank_upgrade_ui/v_box_container"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_fonts/font = SubResource("FontVariation_1wivf")
+theme_override_font_sizes/font_size = 10
+text = "     STATIC TANK     
+---------------------"
+
+[node name="tank_capacity" parent="ui_dock_menu_v2/main_container/upgrade_box_container/static_tank_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> TANK CAPACITY III
+ 5000"
+upgrade_id = 16
+
+[node name="tank_insulation" parent="ui_dock_menu_v2/main_container/upgrade_box_container/static_tank_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> TANK INSULATION
+ 5000"
+upgrade_id = 17
+
+[node name="line" type="Line2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/static_tank_upgrade_ui"]
+points = PackedVector2Array(112, 0.5, 112, -5)
+width = 1.0
+default_color = Color(0, 0.588235, 0.286275, 1)
+sharp_limit = 0.0
+antialiased = true
+
+[node name="hull_upgrade_ui" type="PanelContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container" node_paths=PackedStringArray("line_anchor")]
+layout_mode = 0
+offset_left = 436.0
+offset_top = 372.0
+offset_right = 440.0
+offset_bottom = 387.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1pxhw")
+script = ExtResource("84_lslxy")
+line_anchor = NodePath("../anchors/hull_anchor")
+
+[node name="v_box_container" type="VBoxContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container/hull_upgrade_ui"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="label" type="Label" parent="ui_dock_menu_v2/main_container/upgrade_box_container/hull_upgrade_ui/v_box_container"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_fonts/font = SubResource("FontVariation_1wivf")
+theme_override_font_sizes/font_size = 10
+text = "       HULL
+------------------"
+
+[node name="defense" parent="ui_dock_menu_v2/main_container/upgrade_box_container/hull_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> DEFENSE III
+ 5000"
+upgrade_id = 13
+
+[node name="insulation" parent="ui_dock_menu_v2/main_container/upgrade_box_container/hull_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> INSULATION II
+ 5000"
+upgrade_id = 14
+
+[node name="max_depth" parent="ui_dock_menu_v2/main_container/upgrade_box_container/hull_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> MAX DEPTH III
+ 5000"
+upgrade_id = 15
+
+[node name="line" type="Line2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/hull_upgrade_ui"]
+points = PackedVector2Array(60, 0.5, 60, -4)
+width = 1.0
+default_color = Color(0, 0.588235, 0.286275, 1)
+sharp_limit = 0.0
+antialiased = true
+
+[node name="lightsticks_upgrade_ui" type="PanelContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container" node_paths=PackedStringArray("line_anchor")]
+layout_mode = 0
+offset_left = 565.0
+offset_top = 295.0
+offset_right = 569.0
+offset_bottom = 310.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1pxhw")
+script = ExtResource("84_lslxy")
+line_anchor = NodePath("../anchors/lightstick_anchor")
+
+[node name="v_box_container" type="VBoxContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container/lightsticks_upgrade_ui"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="label" type="Label" parent="ui_dock_menu_v2/main_container/upgrade_box_container/lightsticks_upgrade_ui/v_box_container"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_fonts/font = SubResource("FontVariation_1wivf")
+theme_override_font_sizes/font_size = 10
+text = "   LIGHTSTICK   
+----------------"
+
+[node name="amount" parent="ui_dock_menu_v2/main_container/upgrade_box_container/lightsticks_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> AMOUNT II
+ 5000"
+upgrade_id = 11
+
+[node name="glow" parent="ui_dock_menu_v2/main_container/upgrade_box_container/lightsticks_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> GLOW II
+ 5000"
+upgrade_id = 12
+
+[node name="line" type="Line2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/lightsticks_upgrade_ui"]
+points = PackedVector2Array(0.5, 12, -5, 12)
+width = 1.0
+default_color = Color(0, 0.588235, 0.286275, 1)
+sharp_limit = 0.0
+antialiased = true
+
+[node name="eyes_upgrade_ui" type="PanelContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container" node_paths=PackedStringArray("line_anchor")]
+layout_mode = 0
+offset_left = 653.0
+offset_top = 95.0
+offset_right = 657.0
+offset_bottom = 110.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1pxhw")
+script = ExtResource("84_lslxy")
+line_anchor = NodePath("../anchors/light_anchor")
+
+[node name="v_box_container" type="VBoxContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container/eyes_upgrade_ui"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="label" type="Label" parent="ui_dock_menu_v2/main_container/upgrade_box_container/eyes_upgrade_ui/v_box_container"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_fonts/font = SubResource("FontVariation_1wivf")
+theme_override_font_sizes/font_size = 10
+text = "          LIGHTS          
+--------------------------"
+
+[node name="eye_lights" parent="ui_dock_menu_v2/main_container/upgrade_box_container/eyes_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> EYE LIGHTS II
+ 5000"
+upgrade_id = 9
+
+[node name="surrounding_lights" parent="ui_dock_menu_v2/main_container/upgrade_box_container/eyes_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> SURROUNDING LIGHTS III
+ 5000"
+upgrade_id = 10
+
+[node name="line" type="Line2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/eyes_upgrade_ui"]
+points = PackedVector2Array(0.5, 13, -4, 13)
+width = 1.0
+default_color = Color(0, 0.588235, 0.286275, 1)
+sharp_limit = 0.0
+antialiased = true
+
+[node name="frequencies_upgrade_ui" type="PanelContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container" node_paths=PackedStringArray("line_anchor")]
+layout_mode = 0
+offset_left = 491.0
+offset_top = 15.0
+offset_right = 495.0
+offset_bottom = 30.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1pxhw")
+script = ExtResource("84_lslxy")
+line_anchor = NodePath("../anchors/frequencies_anchor")
+
+[node name="v_box_container" type="VBoxContainer" parent="ui_dock_menu_v2/main_container/upgrade_box_container/frequencies_upgrade_ui"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="label" type="Label" parent="ui_dock_menu_v2/main_container/upgrade_box_container/frequencies_upgrade_ui/v_box_container"]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_fonts/font = SubResource("FontVariation_1wivf")
+theme_override_font_sizes/font_size = 10
+text = "     FREQUIENCIES    
+----------------------"
+
+[node name="closer_static_node" parent="ui_dock_menu_v2/main_container/upgrade_box_container/frequencies_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> CLOSER STATIC NODE
+ 5000"
+upgrade_id = 6
+
+[node name="closer_meat_server" parent="ui_dock_menu_v2/main_container/upgrade_box_container/frequencies_upgrade_ui/v_box_container" instance=ExtResource("84_if03a")]
+layout_mode = 2
+text = "> CLOSER MEAT SERVER
+ 5000"
+upgrade_id = 7
+
+[node name="line" type="Line2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/frequencies_upgrade_ui"]
+points = PackedVector2Array(0.5, 13, -5, 13)
+width = 1.0
+default_color = Color(0, 0.588235, 0.286275, 1)
+sharp_limit = 0.0
+antialiased = true
+
+[node name="anchors" type="Control" parent="ui_dock_menu_v2/main_container/upgrade_box_container"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="skill_anchor" type="Node2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/anchors"]
+position = Vector2(401, 152)
+
+[node name="heater_anchor" type="Node2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/anchors"]
+position = Vector2(319, 218)
+
+[node name="battery_anchor" type="Node2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/anchors"]
+position = Vector2(269, 283)
+
+[node name="boost_anchor" type="Node2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/anchors"]
+position = Vector2(264, 356)
+
+[node name="static_anchor" type="Node2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/anchors"]
+position = Vector2(379, 355)
+
+[node name="hull_anchor" type="Node2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/anchors"]
+position = Vector2(443, 324)
+
+[node name="lightstick_anchor" type="Node2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/anchors"]
+position = Vector2(464, 255)
+
+[node name="light_anchor" type="Node2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/anchors"]
+position = Vector2(514.877, 149.552)
+
+[node name="frequencies_anchor" type="Node2D" parent="ui_dock_menu_v2/main_container/upgrade_box_container/anchors"]
+position = Vector2(445, 88)
 
 [node name="game_over_overlay" type="CanvasLayer" parent="."]
 visible = false
@@ -54410,6 +54833,7 @@ vertical_alignment = 1
 [connection signal="pressed" from="ui_dock_menu/container/deceleration_upgrade/upgrade_button" to="." method="_on_upgrade_DECELERATION_button_pressed"]
 [connection signal="pressed" from="ui_dock_menu/container/static_tank_upgrade/upgrade_button" to="." method="_on_upgrade_MAX_PLAYER_STATIC_button_pressed"]
 [connection signal="pressed" from="ui_dock_menu/container/third_eye_ui/get_eye_button" to="." method="_on_get_eye_button_pressed"]
+[connection signal="pressed" from="ui_dock_menu_v2/main_container/close_btn" to="." method="_on_ui_dock_menu_close_btn_pressed"]
 [connection signal="pressed" from="game_over_overlay/container/window/restart_btn" to="." method="_on_restart_btn_pressed"]
 [connection signal="pressed" from="DEBUG_UI/container/more_hp_btn" to="DEBUG_UI" method="_on_more_hp_btn_pressed"]
 [connection signal="pressed" from="DEBUG_UI/container/less_hp_btn" to="DEBUG_UI" method="_on_less_hp_btn_pressed"]
