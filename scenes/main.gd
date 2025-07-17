@@ -20,6 +20,7 @@ class_name MainController
 @onready var instructions_ui = $instructions_screen
 @onready var dialog_ui = $ui_dialog
 @onready var ui_pause = $ui_pause
+@onready var ui_dock_menu_v2 = $ui_dock_menu_v2
 # UI DOCK MENU
 @onready var alert_docking = $ui_exploration/top_right/dock_alert/docking_icon
 @onready var alert_can_dock = $ui_exploration/top_right/dock_alert/can_dock
@@ -62,6 +63,7 @@ class_name MainController
 @onready var follow_the_eye_ui = $follow_the_eye_ui
 
 # ---- DEBUG OPTIONS ----
+@export var _IS_DEBUG = false
 @export var _DISABLE_HEAT_DAMAGE = false
 @export var _ENABLE_PROGRESS = true
 @export var _SPAWN_CHARACTER_ON_START_POS = true
@@ -112,6 +114,10 @@ var crusher_timer: Timer
 var heat_timer: Timer
 
 func _ready() -> void:
+	
+	if _IS_DEBUG:
+		update_available_static(20000)
+	
 	$global_mod.show()
 	$camera.show()
 	alert_docking.hide()
@@ -135,6 +141,7 @@ func _ready() -> void:
 	add_child(heat_timer)
 	
 	dialog_ui.main_controller = self
+	ui_dock_menu_v2.init(self)
 	
 	# CRUSH DEPTH
 	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
@@ -181,6 +188,7 @@ func _ready() -> void:
 	# FOR VIDEO
 	#unlock_sonar_freq(SONAR_FREQ.PIVOT_CAVE)
 	#dialog_ui.load_dialog('res://dialogs/test_2.csv')
+	
 	
 	third_eye.mode = 0
 	
@@ -755,6 +763,13 @@ func start_dock_menu() -> void:
 func close_dock_menu() -> void:
 	dock_menu.hide()
 	update_pause(false)
+
+func _on_upgrade_clicked(upgrade_id: String) -> void:
+	print(upgrade_id)
+	pass
+
+
+
 
 func update_upgrade_buttons() -> void:
 	upgrade_crush_depth_ui.update_upgrade_btn_disabled(CRUSH_DEPTH_UPGRADE >= available_static)

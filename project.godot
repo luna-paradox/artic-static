@@ -18,6 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 AUDIO_MANAGER="*res://scripts/AUDIO_MANAGER.gd"
+SAVE_STATE="*res://scripts/SAVE_STATE.gd"
+UPGRADE_DB="*res://scripts/UPGRADE_DB.gd"
 
 [display]
 
@@ -32,6 +34,16 @@ version_control/autoload_on_startup=true
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/csv-data-importer/plugin.cfg", "res://addons/rmsmartshape/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://assets/": "pink",
+"res://dialogs/": "purple",
+"res://examples/": "gray",
+"res://scenes/": "teal",
+"res://scripts/": "red"
+}
 
 [input]
 

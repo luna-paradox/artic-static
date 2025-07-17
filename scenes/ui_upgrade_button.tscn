@@ -1,0 +1,54 @@
+[gd_scene load_steps=7 format=3 uid="uid://ca7reaoei0dl8"]
+
+[ext_resource type="FontFile" uid="uid://v31m6on342jj" path="res://assets/fonts/CourierPrime-Regular.ttf" id="1_7yljf"]
+[ext_resource type="Script" path="res://scenes/ui_upgrade_button.gd" id="2_q0blt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vj35o"]
+bg_color = Color(1, 1, 1, 0)
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_osm2d"]
+bg_color = Color(0, 1, 0.483333, 0.133333)
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sb03v"]
+bg_color = Color(0, 1, 0.486275, 0.207843)
+border_color = Color(0.101961, 0.670588, 0.0823529, 1)
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1a382"]
+content_margin_left = 2.0
+content_margin_top = 4.0
+content_margin_right = 2.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 0)
+expand_margin_left = 2.0
+expand_margin_top = 1.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[node name="efficiency" type="Button"]
+focus_mode = 0
+theme_override_colors/font_disabled_color = Color(0.32, 0.32, 0.32, 1)
+theme_override_colors/font_hover_color = Color(0, 1, 0.486275, 1)
+theme_override_colors/font_color = Color(0, 1, 0.486275, 1)
+theme_override_fonts/font = ExtResource("1_7yljf")
+theme_override_font_sizes/font_size = 10
+theme_override_styles/disabled = SubResource("StyleBoxFlat_vj35o")
+theme_override_styles/hover = SubResource("StyleBoxFlat_osm2d")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_sb03v")
+theme_override_styles/normal = SubResource("StyleBoxFlat_1a382")
+text = "> EFFICIENCY
+ 00000000
+"
+alignment = 0
+script = ExtResource("2_q0blt")

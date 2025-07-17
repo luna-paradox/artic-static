@@ -1,0 +1,27 @@
+extends Node
+
+var upgrades = {
+	#'heater_efficiency': 0,
+	#'heater_controller': null,
+	UPGRADE_DB.upg_ids.heater_efficiency: 0,
+	UPGRADE_DB.upg_ids.heater_controller: 0,
+	'skills_hp_up': null,
+	'skills_energy_up': null,
+	'skills_temp_up': null,
+	'skills_temp_down': null,
+	'freq_closer_static': null,
+	'freq_closer_relic': null,
+	'freq_': null,
+	'light_eye': null,
+	'light_core': null,
+	'lightstick': null,
+	'lightstick_glow': null,
+	'hull_defense': 0,
+	'hull_insulation': null,
+	'depth_max': 0,
+	'static_tank': 0,
+	'static_insulation': null,
+	'motor_turbo_boost': null,
+	'motor_boost_efficiency': null,
+	'batteries': 0,
+}
