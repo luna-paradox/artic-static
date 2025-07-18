@@ -78,8 +78,6 @@ class_name MainController
 @export var TURBO_BOOST_ENERGY_RATE: int = 100
 
 # ---- DEPTH ----
-#@export var CRUSH_DEPTH = 5800
-@export var CRUSH_DEPTH: int = 7000
 var current_depth: int = 5550
 
 # ---- STORE ----
@@ -144,7 +142,7 @@ func _ready() -> void:
 	ui_dock_menu_v2.init(self)
 	
 	# CRUSH DEPTH
-	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
+	upgrade_crush_depth_ui.update_crush_depth(get_depth_max())
 	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
 	# HP
 	upgrade_hp_ui.update_value(MAX_HP)
@@ -171,7 +169,7 @@ func _ready() -> void:
 	hp_bar.init(MAX_HP)
 	static_bar.init(MAX_PLAYER_STATIC, player_current_static)
 	energy_bar.init(MAX_ENERGY)
-	depth_max_ui.update_depth(CRUSH_DEPTH)
+	depth_max_ui.update_depth(get_depth_max())
 	
 	# INIT LIGHTSTICK MODE
 	exit_lightstick_mode()
@@ -226,7 +224,7 @@ func _process(delta: float) -> void:
 			update_heater_state(false)
 	
 	# CRUSH BY DEPTH
-	if current_depth > CRUSH_DEPTH and crusher_timer.is_stopped():
+	if current_depth > get_depth_max() and crusher_timer.is_stopped():
 		crusher_timer.start()
 	
 	crush_by_depth_audio(delta)
@@ -765,8 +763,71 @@ func close_dock_menu() -> void:
 	update_pause(false)
 
 func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
+	# ---- COMMON CODE I ----
+	var upgrade_data := UPGRADE_DB.get_upgrade_data(upgrade_id)
+	var save_state = SAVE_STATE.upgrades[upgrade_id]
+	
+	if save_state >= upgrade_data.max_state or save_state < 0:
+		ui_dock_menu_v2.upgrade_ui_based_on_save_data()
+		return
+	
+	var upgrade_price = upgrade_data.prices[save_state]
+	if available_static < upgrade_price:
+		ui_dock_menu_v2.upgrade_ui_based_on_save_data()
+		return
+	
+	update_available_static(-upgrade_price)
+	SAVE_STATE.update_upgrade_state(upgrade_id, 1)
+	
+	
+	# ---- UPGRADE SPECIFIC CODE ----
+	if upgrade_id == UPGRADE_DB.upg_ids.hull_depth_max:
+		depth_max_ui.update_depth(get_depth_max())
+	
+	
+	# ---- COMMON CODE II ----
+	ui_dock_menu_v2.upgrade_ui_based_on_save_data()
+	
+	
+	#UPGRADE_DB.upg_ids.heater_efficiency
+	#UPGRADE_DB.upg_ids.heater_controller
+	#UPGRADE_DB.upg_ids.skills_hp_up
+	#UPGRADE_DB.upg_ids.skills_energy_up
+	#UPGRADE_DB.upg_ids.skills_temp_up
+	#UPGRADE_DB.upg_ids.skills_temp_down
+	#UPGRADE_DB.upg_ids.freq_closer_static
+	#UPGRADE_DB.upg_ids.freq_closer_relic
+	#UPGRADE_DB.upg_ids.freq_
+	#UPGRADE_DB.upg_ids.light_eye
+	#UPGRADE_DB.upg_ids.light_core
+	#UPGRADE_DB.upg_ids.lightstick
+	#UPGRADE_DB.upg_ids.lightstick_glow
+	#UPGRADE_DB.upg_ids.hull_defense
+	#UPGRADE_DB.upg_ids.hull_insulation
+	#UPGRADE_DB.upg_ids.static_tank
+	#UPGRADE_DB.upg_ids.static_insulation
+	#UPGRADE_DB.upg_ids.motor_turbo_boost
+	#UPGRADE_DB.upg_ids.motor_boost_efficiency
+	#UPGRADE_DB.upg_ids.batteries
+	
 	print(upgrade_id)
 	pass
+
+# Get current DEPTH_MAX based on the corresponding upgrade save state
+func get_depth_max() -> int:
+	var save_state = SAVE_STATE.upgrades[UPGRADE_DB.upg_ids.hull_depth_max]
+	
+	match save_state:
+		1:
+			return 5900
+		2:
+			return 6300
+		3:
+			return 6700
+		4:
+			return 7500
+		_:
+			return 5700
 
 
 
@@ -782,17 +843,17 @@ func update_upgrade_buttons() -> void:
 	upgrade_static_tank_ui.update_upgrade_btn_disabled(STATIC_TANK_UPGRADE_COST >= available_static)
 
 
-func _on_upgrade_DEPTH_button_pressed() -> void:
-	if CRUSH_DEPTH_UPGRADE > available_static:
-		return
-	
-	update_available_static(-CRUSH_DEPTH_UPGRADE)
-	CRUSH_DEPTH += 100
-	CRUSH_DEPTH_UPGRADE *= 1.05
-	
-	depth_max_ui.update_depth(CRUSH_DEPTH)
-	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
-	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
+#func _on_upgrade_DEPTH_button_pressed() -> void:
+	#if CRUSH_DEPTH_UPGRADE > available_static:
+		#return
+	#
+	#update_available_static(-CRUSH_DEPTH_UPGRADE)
+	#get_depth_max() += 100
+	#CRUSH_DEPTH_UPGRADE *= 1.05
+	#
+	#depth_max_ui.update_depth(get_depth_max())
+	#upgrade_crush_depth_ui.update_crush_depth(get_depth_max())
+	#upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
 	
 	update_upgrade_buttons()
 
@@ -894,16 +955,16 @@ func damage_by_pressure() -> void:
 	update_hp(MAX_HP * -0.15)
 
 func crush_by_depth_audio(delta: float) -> void:
-	if current_depth > CRUSH_DEPTH and !getting_crushed_sound.playing:
+	if current_depth > get_depth_max() and !getting_crushed_sound.playing:
 		getting_crushed_sound.play()
 		current_crashing_volume = 0
 		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
-	if current_depth > CRUSH_DEPTH and getting_crushed_sound.playing:
+	if current_depth > get_depth_max() and getting_crushed_sound.playing:
 		current_crashing_volume += 1 * delta
 		if current_crashing_volume > 1:
 			current_crashing_volume = 1
 		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
-	elif current_depth <= CRUSH_DEPTH and getting_crushed_sound.playing:
+	elif current_depth <= get_depth_max() and getting_crushed_sound.playing:
 		current_crashing_volume -= 3 * delta
 		if current_crashing_volume < 0:
 			current_crashing_volume = 0

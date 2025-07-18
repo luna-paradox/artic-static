@@ -43,7 +43,7 @@ func update_from_save() -> void:
 	
 	var save_state = SAVE_STATE.upgrades[upgrade_id]
 
-	if save_state == null or save_state >= upgrade_data.max_state:
+	if save_state < 0 or save_state >= upgrade_data.max_state:
 		disabled = true
 		text = "HIDE"
 		hide()

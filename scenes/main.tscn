@@ -54489,7 +54489,6 @@ theme_override_constants/margin_bottom = 5
 layout_mode = 2
 
 [node name="DEBUG_UI" type="CanvasLayer" parent="."]
-visible = false
 script = ExtResource("52_uh1u6")
 
 [node name="container" type="Control" parent="DEBUG_UI"]

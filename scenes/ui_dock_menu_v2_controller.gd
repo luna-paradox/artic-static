@@ -41,7 +41,11 @@ func upgrade_ui_based_on_save_data():
 				container.show()
 				container.overlay_ui.show()
 				break
-	
+
+#TODO TEST UPGRADE UI ON THE FLY
+#TODO UPGRADE UI SFX
+#TODO MAKE IT SO MAXED OUT UPGRADES DON'T DISSAPEAR BUT HAVE A COOLER LOOK
+#TODO COLOR CODE THE STATE OF THE UPGRADE
 
 # Recursively search for all upgrade buttons on the tree
 # based on the class_name UIUpgradeButton
