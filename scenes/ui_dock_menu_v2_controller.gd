@@ -1,15 +1,6 @@
 extends CanvasLayer
 
-@onready var all_upgrade_buttons = [
-	$main_container/upgrade_box_container/heater_upgrade_ui/v_box_container/efficiency,
-	$main_container/upgrade_box_container/heater_upgrade_ui/v_box_container/heater_controller,
-	$main_container/upgrade_box_container/skill_upgrade_ui/v_box_container/hp_up,
-	$main_container/upgrade_box_container/skill_upgrade_ui/v_box_container/energy_up,
-	$main_container/upgrade_box_container/skill_upgrade_ui/v_box_container/temp_up,
-	$main_container/upgrade_box_container/skill_upgrade_ui/v_box_container/temp_down,
-]
-
-
+@onready var all_upgrade_buttons = find_all_upgrade_buttons()
 
 var main_controller: MainController
 
@@ -25,7 +16,6 @@ func init(new_main_controller: MainController):
 	#var skill_anchor = $main_container/upgrade_box_container/anchors/skill_anchor
 	#var skill_line = $main_container/upgrade_box_container/skill_upgrade_ui/Line2D
 	#skill_line.points[1] = skill_anchor.position - skill_container.position
-	
 	#print("LINE POINT")
 	#print(skill_line.points[1])
 	#print("ANCHOR POSITION")
@@ -34,9 +24,24 @@ func init(new_main_controller: MainController):
 	#print(skill_container.position)
 	#print("SKILL CONTAINER GLOBAL POSITION")
 	#print(skill_container.global_position)
-	
+
 
 # Trigger every button to update its data from the upgrade save state
 func upgrade_ui_based_on_save_data():
 	for button in all_upgrade_buttons:
 		button.update_from_save()
+
+# Recursively search for all upgrade buttons on the tree
+# based on the class_name UIUpgradeButton
+func find_all_upgrade_buttons(node: Node = null) -> Array:
+	if node == null:
+		node = self
+	
+	var result := []
+	for child in node.get_children():
+		if child is UIUpgradeButton:
+			result.append(child)
+		
+		result += find_all_upgrade_buttons(child)
+	
+	return result

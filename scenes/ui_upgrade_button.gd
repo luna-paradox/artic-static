@@ -1,4 +1,5 @@
 extends Button
+class_name UIUpgradeButton
 
 # THIS LIST HAS TO BE EXACTLY THE SAME
 # AS UPGRADE_DB.upg_ids, SAME ORDER EVEN
