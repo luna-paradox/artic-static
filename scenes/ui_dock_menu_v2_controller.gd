@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 @onready var all_upgrade_buttons = find_all_upgrade_buttons()
+@onready var all_upgrade_containers = find_all_upgrade_containers()
 
 var main_controller: MainController
 
@@ -30,6 +31,17 @@ func init(new_main_controller: MainController):
 func upgrade_ui_based_on_save_data():
 	for button in all_upgrade_buttons:
 		button.update_from_save()
+	
+	for container in all_upgrade_containers:
+		var buttons = find_all_upgrade_buttons(container)
+		container.hide()
+		container.overlay_ui.hide()
+		for button in buttons:
+			if button.visible:
+				container.show()
+				container.overlay_ui.show()
+				break
+	
 
 # Recursively search for all upgrade buttons on the tree
 # based on the class_name UIUpgradeButton
@@ -43,5 +55,21 @@ func find_all_upgrade_buttons(node: Node = null) -> Array:
 			result.append(child)
 		
 		result += find_all_upgrade_buttons(child)
+	
+	return result
+
+# Recursively search for all upgrade containers on the tree
+# based on the class_name UIUpgradeContainer
+func find_all_upgrade_containers(node: Node = null) -> Array:
+	if node == null:
+		node = self
+	
+	var result := []
+	for child in node.get_children():
+		if child is UIUpgradeContainer:
+			result.append(child)
+			print(child.name)
+		
+		result += find_all_upgrade_containers(child)
 	
 	return result

@@ -1,7 +1,9 @@
 extends PanelContainer
+class_name UIUpgradeContainer
 
 @onready var line = $line
 @export var line_anchor: Node2D
+@export var overlay_ui: TextureRect
 
 func _ready() -> void:
 	if line_anchor:

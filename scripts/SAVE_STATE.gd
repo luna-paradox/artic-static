@@ -1,8 +1,8 @@
 extends Node
 
 var upgrades = {
-	UPGRADE_DB.upg_ids.heater_efficiency: 0,
-	UPGRADE_DB.upg_ids.heater_controller: 0,
+	UPGRADE_DB.upg_ids.heater_efficiency: null,
+	UPGRADE_DB.upg_ids.heater_controller: null,
 	UPGRADE_DB.upg_ids.skills_hp_up: 0,
 	UPGRADE_DB.upg_ids.skills_energy_up: 0,
 	UPGRADE_DB.upg_ids.skills_temp_up: 0,
@@ -10,8 +10,8 @@ var upgrades = {
 	UPGRADE_DB.upg_ids.freq_closer_static: 0,
 	UPGRADE_DB.upg_ids.freq_closer_relic: 0,
 	UPGRADE_DB.upg_ids.freq_: 0,
-	UPGRADE_DB.upg_ids.light_eye: 0,
-	UPGRADE_DB.upg_ids.light_core: 0,
+	UPGRADE_DB.upg_ids.light_eye: null,
+	UPGRADE_DB.upg_ids.light_core: null,
 	UPGRADE_DB.upg_ids.lightstick: 0,
 	UPGRADE_DB.upg_ids.lightstick_glow: 0,
 	UPGRADE_DB.upg_ids.hull_defense: 0,
