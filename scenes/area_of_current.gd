@@ -75,8 +75,11 @@ func update_particle_lifetime() -> void:
 	# current_strenght = 100 -> lifetime 1.2
 	# current_strenght = 500 -> lifetime 0.7
 	# lifetime = (-current_strenght / 800) + 1.075
+	var local_current_strenght = current_strenght
+	if local_current_strenght > 1000:
+		local_current_strenght = 1000
 	
-	var new_lifetime = (-current_strenght / 800.0) + 1.325
+	var new_lifetime = (-local_current_strenght / 800.0) + 1.325
 	particles.lifetime = new_lifetime
 	
 	if id == 'test':

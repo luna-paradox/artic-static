@@ -54,11 +54,11 @@ class_name MainController
 # PROGRESS
 @onready var third_eye = $ui_exploration/top_right/third_eye
 
-@onready var area_1 = $room/A1
+#@onready var area_1 = $room/A1
 @onready var area_1_door = $room/A1_wall_to_hide
-@onready var area_2 = $room/A2
+#@onready var area_2 = $room/A2
 @onready var area_2_door = $room/A2_wall_to_hide
-@onready var area_3 = $room/A3
+#@onready var area_3 = $room/A3
 @onready var area_3_door = $room/A3_wall_to_hide
 @onready var follow_the_eye_ui = $follow_the_eye_ui
 
@@ -1198,7 +1198,7 @@ func _on_point_1_area_2d_area_entered(area: Area2D) -> void:
 func activate_area_1() -> void:
 	secret_success_sound.play()
 	area_1_door.queue_free()
-	area_1.show()
+	#area_1.show()
 
 # MODE 2
 var can_interact_with_statue_p2 = false
@@ -1229,7 +1229,7 @@ func _on_point_3_area_2d_area_entered(area: Area2D) -> void:
 func activate_area_2() -> void:
 	secret_success_sound.play()
 	area_2_door.queue_free()
-	area_2.show()
+	#area_2.show()
 
 # MODE 4
 var can_interact_with_statue_p4 = false
@@ -1242,7 +1242,7 @@ func _on_point_5_area_2d_area_entered(area: Area2D) -> void:
 func activate_area_3() -> void:
 	secret_success_sound.play()
 	area_3_door.queue_free()
-	area_3.show()
+	#area_3.show()
 
 # MODE 6
 func _on_final_sphere_area_2d_area_entered(_area: Area2D) -> void:
