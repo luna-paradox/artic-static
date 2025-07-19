@@ -31,8 +31,15 @@ enum upg_ids {
 # MODEL THE DATA OF AN UPGRADE
 class UpgradeData:
 	var max_state: int
-	var names: Array
-	var prices: Array
+	var names: Array[String]
+	var prices: Array[int]
+	
+	var data_by_state: Array[UpgradeDataByState] = []
+
+class UpgradeDataByState:
+	var name: String
+	var price: int
+	var value: Variant
 
 # GET THE MODELED DATA OF AN UPGRADE FROM THE RAW DATA
 func get_upgrade_data(upgrade_id: upg_ids) -> UpgradeData:
@@ -47,14 +54,50 @@ func get_upgrade_data(upgrade_id: upg_ids) -> UpgradeData:
 	
 	# If i added a 5th level it would be annoying but whatever
 	var levels = [0, 1, 2, 3, 4]
-	res_data.names = [null, null, null, null, null]
-	res_data.prices = [null, null, null, null, null]
+	res_data.names = ["ERROR", "ERROR", "ERROR", "ERROR", "ERROR"]
+	res_data.prices = [-1, -1, -1, -1, -1]
 	
 	for level in levels:
-		res_data.names[level] = raw_data.get('name_' + str(level), 'ERROR')
-		res_data.prices[level] = raw_data.get('price_' + str(level), null)
-	
+		
+		var data_by_state_array = raw_data.get('data_by_state', null)
+		if data_by_state_array != null:
+			var data_by_state = data_by_state_array[level]
+			
+			res_data.data_by_state.push_back(UpgradeDataByState.new())
+			res_data.data_by_state[level].name = data_by_state.get('name', 'ERROR')
+			res_data.data_by_state[level].price = data_by_state.get('price', -1)
+			res_data.data_by_state[level].value = data_by_state.get('value', -1)
+			
+			# LEGACY
+			res_data.names[level] = res_data.data_by_state[level].name
+			res_data.prices[level] = res_data.data_by_state[level].price
+			
+		else:
+			# LEGACY
+			res_data.names[level] = raw_data.get('name_' + str(level), 'ERROR')
+			res_data.prices[level] = raw_data.get('price_' + str(level), -1)
+		
 	return res_data
+
+func get_upgrade_data_for_state(upgrade_id: upg_ids, state: int) -> UpgradeDataByState:
+	if !upgrade_db.has(upgrade_id):
+		printerr('NO UPGRADE DATA FOR ' + str(upgrade_id))
+		return null
+	
+	var raw_data = upgrade_db[upgrade_id]
+	
+	var data_by_state_array = raw_data.get('data_by_state', null)
+	if data_by_state_array == null:
+		return null
+	
+	var data_by_state = data_by_state_array[state]
+	
+	var res: UpgradeDataByState = UpgradeDataByState.new()
+	res.name = data_by_state.get('name', 'ERROR')
+	res.price = data_by_state.get('price', -1)
+	res.value = data_by_state.get('value', -1)
+
+	return res
 
 # RAW DATA FOR UPGRADES
 # Could it be a csv? yeah, will i make it a csv? no
@@ -166,14 +209,38 @@ var upgrade_db = {
 	},
 	upg_ids.hull_depth_max: {
 		"max_state": 4,
-		"name_0": "MAX DEPTH I",
-		"price_0": 5000,
-		"name_1": "MAX DEPTH II",
-		"price_1": 10000,
-		"name_2": "MAX DEPTH III",
-		"price_2": 15000,
-		"name_3": "MAX DEPTH IV",
-		"price_3": 25000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "MAX DEPTH I",
+				"price": 5000,
+				"value": 5700,
+			},
+			# 1
+			{
+				"name": "MAX DEPTH II",
+				"price": 10000,
+				"value": 5900,
+			},
+			# 2
+			{
+				"name": "MAX DEPTH III",
+				"price": 15000,
+				"value": 6300,
+			},
+			# 3
+			{
+				"name": "MAX DEPTH IV",
+				"price": 25000,
+				"value": 6700,
+			},
+			# 4
+			{
+				"name": "MAX",
+				"price": -1,
+				"value": 7500,
+			},
+		],
 	},
 	# ---- STATIC TANK ----
 	upg_ids.static_tank: {

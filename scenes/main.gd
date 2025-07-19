@@ -114,7 +114,7 @@ var heat_timer: Timer
 func _ready() -> void:
 	
 	if _IS_DEBUG:
-		update_available_static(8000)
+		update_available_static(15842)
 	
 	$global_mod.show()
 	$camera.show()
@@ -122,7 +122,6 @@ func _ready() -> void:
 	alert_can_dock.hide()
 	close_dock_menu()
 	
-	current_hp = MAX_HP
 	player.main_controller = self
 	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
 	
@@ -141,8 +140,13 @@ func _ready() -> void:
 	dialog_ui.main_controller = self
 	ui_dock_menu_v2.init(self)
 	
+	
+	reset_gampley_data_from_upgrade_state()
+	
+	current_hp = MAX_HP
+	
 	# CRUSH DEPTH
-	upgrade_crush_depth_ui.update_crush_depth(get_depth_max())
+	upgrade_crush_depth_ui.update_crush_depth(DEPTH_MAX)
 	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
 	# HP
 	upgrade_hp_ui.update_value(MAX_HP)
@@ -169,7 +173,7 @@ func _ready() -> void:
 	hp_bar.init(MAX_HP)
 	static_bar.init(MAX_PLAYER_STATIC, player_current_static)
 	energy_bar.init(MAX_ENERGY)
-	depth_max_ui.update_depth(get_depth_max())
+	depth_max_ui.update_depth(DEPTH_MAX)
 	
 	# INIT LIGHTSTICK MODE
 	exit_lightstick_mode()
@@ -224,7 +228,7 @@ func _process(delta: float) -> void:
 			update_heater_state(false)
 	
 	# CRUSH BY DEPTH
-	if current_depth > get_depth_max() and crusher_timer.is_stopped():
+	if current_depth > DEPTH_MAX and crusher_timer.is_stopped():
 		crusher_timer.start()
 	
 	crush_by_depth_audio(delta)
@@ -521,7 +525,7 @@ func update_static(delta_static: float) -> void:
 
 func update_available_static(delta_static: int):
 	available_static += delta_static
-	dock_menu_static_counter_label.text = "STATIC: " + str(available_static)
+	ui_dock_menu_v2.upgrade_static_counter(available_static)
 
 func update_temp(delta_temp: float):
 	delta_temp = round(delta_temp * 100.0) / 100.0
@@ -729,6 +733,8 @@ func start_dock_menu() -> void:
 	# PAUSE
 	update_pause(true)
 	
+	reset_gampley_data_from_upgrade_state()
+	
 	# UNLOAD STATIC
 	if player_current_static > 0:
 		static_historic += player_current_static
@@ -778,11 +784,12 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	
 	update_available_static(-upgrade_price)
 	SAVE_STATE.update_upgrade_state(upgrade_id, 1)
-	
+	ui_dock_menu_v2.play_upgrade_click_sfx()
 	
 	# ---- UPGRADE SPECIFIC CODE ----
 	if upgrade_id == UPGRADE_DB.upg_ids.hull_depth_max:
-		depth_max_ui.update_depth(get_depth_max())
+		reset_gampley_data_from_upgrade_state()
+		depth_max_ui.update_depth(DEPTH_MAX)
 	
 	
 	# ---- COMMON CODE II ----
@@ -813,21 +820,19 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	print(upgrade_id)
 	pass
 
+
+func reset_gampley_data_from_upgrade_state() -> void:
+	update_depth_max()
+
+
 # Get current DEPTH_MAX based on the corresponding upgrade save state
-func get_depth_max() -> int:
-	var save_state = SAVE_STATE.upgrades[UPGRADE_DB.upg_ids.hull_depth_max]
+var DEPTH_MAX: int = 5300
+func update_depth_max() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.hull_depth_max
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
 	
-	match save_state:
-		1:
-			return 5900
-		2:
-			return 6300
-		3:
-			return 6700
-		4:
-			return 7500
-		_:
-			return 5700
+	DEPTH_MAX = upgrade_data.value
 
 
 
@@ -842,20 +847,6 @@ func update_upgrade_buttons() -> void:
 	upgrade_deceleration_ui.update_upgrade_btn_disabled(DECELERATION_UPGRADE_COST >= available_static)
 	upgrade_static_tank_ui.update_upgrade_btn_disabled(STATIC_TANK_UPGRADE_COST >= available_static)
 
-
-#func _on_upgrade_DEPTH_button_pressed() -> void:
-	#if CRUSH_DEPTH_UPGRADE > available_static:
-		#return
-	#
-	#update_available_static(-CRUSH_DEPTH_UPGRADE)
-	#get_depth_max() += 100
-	#CRUSH_DEPTH_UPGRADE *= 1.05
-	#
-	#depth_max_ui.update_depth(get_depth_max())
-	#upgrade_crush_depth_ui.update_crush_depth(get_depth_max())
-	#upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
-	
-	update_upgrade_buttons()
 
 func _on_upgrade_HP_button_pressed() -> void:
 	if HP_UPGRADE_COST > available_static:
@@ -955,16 +946,16 @@ func damage_by_pressure() -> void:
 	update_hp(MAX_HP * -0.15)
 
 func crush_by_depth_audio(delta: float) -> void:
-	if current_depth > get_depth_max() and !getting_crushed_sound.playing:
+	if current_depth > DEPTH_MAX and !getting_crushed_sound.playing:
 		getting_crushed_sound.play()
 		current_crashing_volume = 0
 		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
-	if current_depth > get_depth_max() and getting_crushed_sound.playing:
+	if current_depth > DEPTH_MAX and getting_crushed_sound.playing:
 		current_crashing_volume += 1 * delta
 		if current_crashing_volume > 1:
 			current_crashing_volume = 1
 		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
-	elif current_depth <= get_depth_max() and getting_crushed_sound.playing:
+	elif current_depth <= DEPTH_MAX and getting_crushed_sound.playing:
 		current_crashing_volume -= 3 * delta
 		if current_crashing_volume < 0:
 			current_crashing_volume = 0
