@@ -54,27 +54,23 @@ func get_upgrade_data(upgrade_id: upg_ids) -> UpgradeData:
 	
 	# If i added a 5th level it would be annoying but whatever
 	var levels = [0, 1, 2, 3, 4]
-	res_data.names = ["ERROR", "ERROR", "ERROR", "ERROR", "ERROR"]
+	res_data.names = ["L ERROR", "L ERROR", "L ERROR", "L ERROR", "L ERROR"]
 	res_data.prices = [-1, -1, -1, -1, -1]
 	
-	for level in levels:
-		
-		var data_by_state_array = raw_data.get('data_by_state', null)
-		if data_by_state_array != null:
+	var data_by_state_array = raw_data.get('data_by_state', null)
+	# NEW SYSTEM
+	if data_by_state_array != null:
+		for level in res_data.max_state + 1:
 			var data_by_state = data_by_state_array[level]
 			
 			res_data.data_by_state.push_back(UpgradeDataByState.new())
-			res_data.data_by_state[level].name = data_by_state.get('name', 'ERROR')
+			res_data.data_by_state[level].name = data_by_state.get('name', 'DB: ERROR')
 			res_data.data_by_state[level].price = data_by_state.get('price', -1)
 			res_data.data_by_state[level].value = data_by_state.get('value', -1)
-			
-			# LEGACY
-			res_data.names[level] = res_data.data_by_state[level].name
-			res_data.prices[level] = res_data.data_by_state[level].price
-			
-		else:
-			# LEGACY
-			res_data.names[level] = raw_data.get('name_' + str(level), 'ERROR')
+	# LEGACY SYSTEM
+	else:
+		for level in levels:
+			res_data.names[level] = raw_data.get('name_' + str(level), 'DB: LEGACY ERROR')
 			res_data.prices[level] = raw_data.get('price_' + str(level), -1)
 		
 	return res_data
@@ -93,7 +89,7 @@ func get_upgrade_data_for_state(upgrade_id: upg_ids, state: int) -> UpgradeDataB
 	var data_by_state = data_by_state_array[state]
 	
 	var res: UpgradeDataByState = UpgradeDataByState.new()
-	res.name = data_by_state.get('name', 'ERROR')
+	res.name = data_by_state.get('name', 'DB: DATA FOR STATE ERROR')
 	res.price = data_by_state.get('price', -1)
 	res.value = data_by_state.get('value', -1)
 
@@ -275,12 +271,32 @@ var upgrade_db = {
 	# ---- BATTERIES ----
 	upg_ids.batteries: {
 		"max_state": 3,
-		"name_0": "BIGGER BATTERY I",
-		"price_0": 2500,
-		"name_1": "BIGGER BATTERY II",
-		"price_1": 7000,
-		"name_2": "BIGGER BATTERY III",
-		"price_2": 15000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "BIGGER BATTERY I",
+				"price": 2500,
+				"value": 1500,
+			},
+			# 1
+			{
+				"name": "BIGGER BATTERY II",
+				"price": 7000,
+				"value": 2500,
+			},
+			# 2
+			{
+				"name": "BIGGER BATTERY III",
+				"price": 15000,
+				"value": 3500,
+			},
+			# 3
+			{
+				"name": "MAX",
+				"price": -1,
+				"value": 5000,
+			},
+		],
 	},
 }
 #}

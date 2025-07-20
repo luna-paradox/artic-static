@@ -145,7 +145,7 @@ func _ready() -> void:
 	current_hp = MAX_HP
 	
 	# CRUSH DEPTH
-	upgrade_crush_depth_ui.update_crush_depth(DEPTH_MAX)
+	upgrade_crush_depth_ui.update_crush_depth(MAX_DEPTH)
 	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
 	# HP
 	upgrade_hp_ui.update_value(MAX_HP)
@@ -172,7 +172,7 @@ func _ready() -> void:
 	hp_bar.init(MAX_HP)
 	static_bar.init(MAX_PLAYER_STATIC, player_current_static)
 	energy_bar.init(MAX_ENERGY)
-	depth_max_ui.update_depth(DEPTH_MAX)
+	depth_max_ui.update_depth(MAX_DEPTH)
 	
 	# INIT LIGHTSTICK MODE
 	exit_lightstick_mode()
@@ -227,7 +227,7 @@ func _process(delta: float) -> void:
 			update_heater_state(false)
 	
 	# CRUSH BY DEPTH
-	if current_depth > DEPTH_MAX and crusher_timer.is_stopped():
+	if current_depth > MAX_DEPTH and crusher_timer.is_stopped():
 		crusher_timer.start()
 	
 	crush_by_depth_audio(delta)
@@ -461,11 +461,8 @@ func shoot_lightstick():
 
 
 # ---- STATS ----
-@export var MAX_HP: float = 200.0
 var current_hp: float = 200.0
-@export var MAX_ENERGY: float = 2000.0
 var current_energy: float = 2000.0
-@export var MAX_PLAYER_STATIC = 5000.0
 # Static stored on the submarine
 var player_current_static = 0.0
 # Static stored on the base
@@ -783,12 +780,16 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	
 	update_available_static(-upgrade_price)
 	SAVE_STATE.update_upgrade_state(upgrade_id, 1)
+	reset_gampley_data_from_upgrade_state()
 	ui_dock_menu_v2.play_upgrade_click_sfx()
 	
 	# ---- UPGRADE SPECIFIC CODE ----
 	if upgrade_id == UPGRADE_DB.upg_ids.hull_depth_max:
-		reset_gampley_data_from_upgrade_state()
-		depth_max_ui.update_depth(DEPTH_MAX)
+		depth_max_ui.update_depth(MAX_DEPTH)
+	
+	if upgrade_id == UPGRADE_DB.upg_ids.batteries:
+		update_energy(MAX_ENERGY)
+		energy_bar.init(MAX_ENERGY)
 	
 	#TODO ADD THE REST OF STATS
 	
@@ -815,7 +816,6 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	#UPGRADE_DB.upg_ids.static_insulation
 	#UPGRADE_DB.upg_ids.motor_turbo_boost
 	#UPGRADE_DB.upg_ids.motor_boost_efficiency
-	#UPGRADE_DB.upg_ids.batteries
 	
 	print(upgrade_id)
 	pass
@@ -823,19 +823,33 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 
 func reset_gampley_data_from_upgrade_state() -> void:
 	update_depth_max_from_save()
+	update_max_energy_from_save()
 	#TODO ADD THE REST OF STATS
 
 
-# Get current DEPTH_MAX based on the corresponding upgrade save state
-var DEPTH_MAX: int = 5300
+#UPGRADE_DB.upg_ids.hull_depth_max
+# Get current MAX_DEPTH based on the corresponding upgrade save state
+var MAX_DEPTH: int = 5300
 func update_depth_max_from_save() -> void:
 	var upg_id = UPGRADE_DB.upg_ids.hull_depth_max
 	var save_state = SAVE_STATE.upgrades[upg_id]
 	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
 	
-	DEPTH_MAX = upgrade_data.value
+	MAX_DEPTH = upgrade_data.value
+
+#UPGRADE_DB.upg_ids.batteries
+# Get current 
+var MAX_ENERGY: float = 2000.0
+func update_max_energy_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.batteries
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
+	
+	MAX_ENERGY = upgrade_data.value
 
 
+@export var MAX_HP: float = 200.0
+@export var MAX_PLAYER_STATIC = 5000.0
 
 
 # -- DEPRECATED UPGRADE MENU
@@ -947,16 +961,16 @@ func damage_by_pressure() -> void:
 	update_hp(MAX_HP * -0.15)
 
 func crush_by_depth_audio(delta: float) -> void:
-	if current_depth > DEPTH_MAX and !getting_crushed_sound.playing:
+	if current_depth > MAX_DEPTH and !getting_crushed_sound.playing:
 		getting_crushed_sound.play()
 		current_crashing_volume = 0
 		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
-	if current_depth > DEPTH_MAX and getting_crushed_sound.playing:
+	if current_depth > MAX_DEPTH and getting_crushed_sound.playing:
 		current_crashing_volume += 1 * delta
 		if current_crashing_volume > 1:
 			current_crashing_volume = 1
 		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
-	elif current_depth <= DEPTH_MAX and getting_crushed_sound.playing:
+	elif current_depth <= MAX_DEPTH and getting_crushed_sound.playing:
 		current_crashing_volume -= 3 * delta
 		if current_crashing_volume < 0:
 			current_crashing_volume = 0

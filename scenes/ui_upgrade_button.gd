@@ -43,7 +43,7 @@ func update_from_save() -> void:
 	
 	var save_state = SAVE_STATE.upgrades[upgrade_id]
 
-	if save_state < 0 or save_state >= upgrade_data.max_state:
+	if save_state < 0:
 		disabled = true
 		text = "HIDE"
 		hide()
@@ -51,8 +51,14 @@ func update_from_save() -> void:
 	
 	#> UPGRADE NAME
 	#00000000
-	var current_text: String = upgrade_data.names[save_state]
-	var current_price: int = upgrade_data.prices[save_state]
+	var current_text: String = 'UI BUTTON: ERROR'
+	var current_price: int = -1
+	if upgrade_data.data_by_state:
+		current_text = upgrade_data.data_by_state[save_state].name
+		current_price = upgrade_data.data_by_state[save_state].price
+	else:
+		current_text = upgrade_data.names[save_state]
+		current_price = upgrade_data.prices[save_state]
 	text = "> " + current_text + "\n" + str(current_price)
 	
 	show()

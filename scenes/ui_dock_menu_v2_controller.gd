@@ -91,7 +91,7 @@ func find_all_upgrade_containers(node: Node = null) -> Array:
 	for child in node.get_children():
 		if child is UIUpgradeContainer:
 			result.append(child)
-			print(child.name)
+			#print(child.name)
 		
 		result += find_all_upgrade_containers(child)
 	
