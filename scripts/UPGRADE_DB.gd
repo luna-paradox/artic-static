@@ -189,12 +189,32 @@ var upgrade_db = {
 	# ---- HULL ----
 	upg_ids.hull_defense: {
 		"max_state": 3,
-		"name_0": "DEFENSE I",
-		"price_0": 2500,
-		"name_1": "DEFENSE II",
-		"price_1": 7000,
-		"name_2": "DEFENSE III",
-		"price_2": 15000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "DEFENSE I",
+				"price": 2500,
+				"value": 150,
+			},
+			# 1
+			{
+				"name": "DEFENSE II",
+				"price": 7000,
+				"value": 200,
+			},
+			# 2
+			{
+				"name": "DEFENSE III",
+				"price": 15000,
+				"value": 300,
+			},
+			# 3
+			{
+				"name": "MAX",
+				"price": -1,
+				"value": 500,
+			},
+		]
 	},
 	upg_ids.hull_insulation: {
 		"max_state": 2,

@@ -786,6 +786,10 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	# ---- UPGRADE SPECIFIC CODE ----
 	if upgrade_id == UPGRADE_DB.upg_ids.hull_depth_max:
 		depth_max_ui.update_depth(MAX_DEPTH)
+		
+	if upgrade_id == UPGRADE_DB.upg_ids.hull_defense:
+		hp_bar.init(MAX_HP)
+		update_hp(MAX_HP)
 	
 	if upgrade_id == UPGRADE_DB.upg_ids.batteries:
 		update_energy(MAX_ENERGY)
@@ -810,7 +814,6 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	#UPGRADE_DB.upg_ids.light_core
 	#UPGRADE_DB.upg_ids.lightstick
 	#UPGRADE_DB.upg_ids.lightstick_glow
-	#UPGRADE_DB.upg_ids.hull_defense
 	#UPGRADE_DB.upg_ids.hull_insulation
 	#UPGRADE_DB.upg_ids.static_tank
 	#UPGRADE_DB.upg_ids.static_insulation
@@ -824,11 +827,12 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 func reset_gampley_data_from_upgrade_state() -> void:
 	update_depth_max_from_save()
 	update_max_energy_from_save()
+	update_max_hp_from_save()
 	#TODO ADD THE REST OF STATS
 
 
 #UPGRADE_DB.upg_ids.hull_depth_max
-# Get current MAX_DEPTH based on the corresponding upgrade save state
+# Set current max depth based on save data
 var MAX_DEPTH: int = 5300
 func update_depth_max_from_save() -> void:
 	var upg_id = UPGRADE_DB.upg_ids.hull_depth_max
@@ -838,7 +842,7 @@ func update_depth_max_from_save() -> void:
 	MAX_DEPTH = upgrade_data.value
 
 #UPGRADE_DB.upg_ids.batteries
-# Get current 
+# Set current Energy based on save data
 var MAX_ENERGY: float = 2000.0
 func update_max_energy_from_save() -> void:
 	var upg_id = UPGRADE_DB.upg_ids.batteries
@@ -847,8 +851,17 @@ func update_max_energy_from_save() -> void:
 	
 	MAX_ENERGY = upgrade_data.value
 
+#UPGRADE_DB.upg_ids.hull_defense
+# Set current HP based on save data
+var MAX_HP: float = 200.0
+func update_max_hp_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.hull_defense
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
+	
+	MAX_HP = upgrade_data.value
 
-@export var MAX_HP: float = 200.0
+
 @export var MAX_PLAYER_STATIC = 5000.0
 
 
