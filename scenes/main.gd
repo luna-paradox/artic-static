@@ -20,13 +20,12 @@ class_name MainController
 @onready var instructions_ui = $instructions_screen
 @onready var dialog_ui = $ui_dialog
 @onready var ui_pause = $ui_pause
-@onready var ui_dock_menu_v2 = $ui_dock_menu_v2
 # UI DOCK MENU
 @onready var alert_docking = $ui_exploration/top_right/dock_alert/docking_icon
 @onready var alert_can_dock = $ui_exploration/top_right/dock_alert/can_dock
-@onready var dock_menu = $ui_dock_menu
 @onready var dock_enable_sound = $global_audio/dock_enable_sound
 @onready var dock_menu_static_counter_label = $ui_dock_menu/container/static_counter/label
+@onready var ui_dock_menu_v2 = $ui_dock_menu_v2
 
 @onready var upgrade_crush_depth_ui = $ui_dock_menu/container/depth_upgrade
 @onready var upgrade_hp_ui = $ui_dock_menu/container/HP_upgrade
@@ -304,7 +303,7 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	# WHILE DOCK MENU IS VISIBLE
-	if dock_menu.visible:
+	if ui_dock_menu_v2.visible:
 		if event.is_action_pressed("exit_dock"):
 			close_dock_menu()
 		return
@@ -726,7 +725,8 @@ func _on_cage_interaction_area_2d_area_exited(area: Area2D) -> void:
 
 
 # ---- DOCKER MENU ----
-func _on_ui_dock_menu_close_btn_pressed() -> void:
+
+func _on_ui_dock_v2_menu_close_btn_pressed() -> void:
 	close_dock_menu()
 
 func start_dock_menu() -> void:
@@ -759,13 +759,12 @@ func start_dock_menu() -> void:
 	#else:
 		#shop_third_eye_ui.hide()
 	
-	update_upgrade_buttons()
-	
 	# SHOW MENU
-	dock_menu.show()
+	ui_dock_menu_v2.show()
+	ui_dock_menu_v2.upgrade_ui_based_on_save_data()
 
 func close_dock_menu() -> void:
-	dock_menu.hide()
+	ui_dock_menu_v2.hide()
 	update_pause(false)
 
 func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
@@ -791,6 +790,7 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 		reset_gampley_data_from_upgrade_state()
 		depth_max_ui.update_depth(DEPTH_MAX)
 	
+	#TODO ADD THE REST OF STATS
 	
 	# ---- COMMON CODE II ----
 	ui_dock_menu_v2.upgrade_ui_based_on_save_data()
@@ -822,12 +822,13 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 
 
 func reset_gampley_data_from_upgrade_state() -> void:
-	update_depth_max()
+	update_depth_max_from_save()
+	#TODO ADD THE REST OF STATS
 
 
 # Get current DEPTH_MAX based on the corresponding upgrade save state
 var DEPTH_MAX: int = 5300
-func update_depth_max() -> void:
+func update_depth_max_from_save() -> void:
 	var upg_id = UPGRADE_DB.upg_ids.hull_depth_max
 	var save_state = SAVE_STATE.upgrades[upg_id]
 	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
@@ -837,6 +838,7 @@ func update_depth_max() -> void:
 
 
 
+# -- DEPRECATED UPGRADE MENU
 func update_upgrade_buttons() -> void:
 	upgrade_crush_depth_ui.update_upgrade_btn_disabled(CRUSH_DEPTH_UPGRADE >= available_static)
 	upgrade_hp_ui.update_upgrade_btn_disabled(HP_UPGRADE_COST >= available_static)
@@ -846,7 +848,6 @@ func update_upgrade_buttons() -> void:
 	upgrade_acceleration_ui.update_upgrade_btn_disabled(ACCELERATION_UPGRADE_COST >= available_static)
 	upgrade_deceleration_ui.update_upgrade_btn_disabled(DECELERATION_UPGRADE_COST >= available_static)
 	upgrade_static_tank_ui.update_upgrade_btn_disabled(STATIC_TANK_UPGRADE_COST >= available_static)
-
 
 func _on_upgrade_HP_button_pressed() -> void:
 	if HP_UPGRADE_COST > available_static:
