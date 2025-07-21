@@ -51,11 +51,11 @@ class_name MainController
 @onready var follow_the_eye_ui = $follow_the_eye_ui
 
 # ---- DEBUG OPTIONS ----
-@export var _IS_DEBUG = false
-@export var _DISABLE_HEAT_DAMAGE = false
-@export var _ENABLE_TURBO = 0
-@export var _ENABLE_PROGRESS = true
-@export var _SPAWN_CHARACTER_ON_START_POS = true
+@export var _STATIC_DEBUG: int = 0
+@export var _TURBO_SAVE_STATE: int = -2
+@export var _DISABLE_HEAT_DAMAGE: bool = false
+@export var _ENABLE_PROGRESS: bool = true
+@export var _SPAWN_CHARACTER_ON_START_POS: bool = true
 
 # ---- MOVEMENT STATS ----
 var ACCELERATION: int = 200
@@ -89,12 +89,12 @@ var heat_timer: Timer
 
 func _ready() -> void:
 	
-	if _IS_DEBUG:
-		update_available_static(15842)
-	if _ENABLE_TURBO > 0:
-		if _ENABLE_TURBO > 2:
-			_ENABLE_TURBO = 2
-		SAVE_STATE.update_upgrade_state(UPGRADE_DB.upg_ids.motor_turbo_boost, _ENABLE_TURBO + 1)
+	if _STATIC_DEBUG > 0:
+		update_available_static(_STATIC_DEBUG)
+	# If the save state is valid then overwrite, 
+	# otherwise, the original one will be used
+	if _TURBO_SAVE_STATE >= -1 and _TURBO_SAVE_STATE <= 2:
+		SAVE_STATE.upgrades[UPGRADE_DB.upg_ids.motor_turbo_boost] = _TURBO_SAVE_STATE
 	
 	$global_mod.show()
 	$camera.show()
@@ -727,7 +727,8 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 		ui_dock_menu_v2.upgrade_ui_based_on_save_data()
 		return
 	
-	var upgrade_price = upgrade_data.prices[save_state]
+	var upgrade_data_for_state = upgrade_data.data_by_state[save_state]
+	var upgrade_price = upgrade_data_for_state.price
 	if available_static < upgrade_price:
 		ui_dock_menu_v2.upgrade_ui_based_on_save_data()
 		return

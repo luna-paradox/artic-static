@@ -50428,9 +50428,9 @@ shader_parameter/amount = 40.0
 
 [node name="main" type="Node"]
 script = ExtResource("1_nuh7j")
-_IS_DEBUG = true
+_STATIC_DEBUG = 15321
+_TURBO_SAVE_STATE = 1
 _DISABLE_HEAT_DAMAGE = true
-_ENABLE_TURBO = 1
 _ENABLE_PROGRESS = false
 _SPAWN_CHARACTER_ON_START_POS = false
 
