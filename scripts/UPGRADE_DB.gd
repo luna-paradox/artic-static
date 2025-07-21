@@ -296,10 +296,26 @@ var upgrade_db = {
 	# ---- MOTOR ----
 	upg_ids.motor_turbo_boost: {
 		"max_state": 2,
-		"name_0": "TURBO BOOST",
-		"price_0": 7000,
-		"name_1": "TURBO BOOST GEAR II",
-		"price_1": 15000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "TURBO BOOST",
+				"price": 2500,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "TURBO BOOST GEAR II",
+				"price": 15000,
+				"value": 1,
+			},
+			# 2
+			{
+				"name": "MAX",
+				"price": -1,
+				"value": 2,
+			},
+		],
 	},
 	upg_ids.motor_boost_efficiency: {
 		"max_state": 2,

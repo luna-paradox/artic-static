@@ -93,7 +93,6 @@ var current_depth: int = 5550
 
 
 # ---- PROGRESSION v1 ----
-var TURBO_BOOST_UNLOCKED = true
 
 
 # ---- PROGRESSION alpha ----
@@ -121,9 +120,6 @@ func _ready() -> void:
 	alert_can_dock.hide()
 	close_dock_menu()
 	
-	player.main_controller = self
-	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
-	
 	crusher_timer = Timer.new()
 	crusher_timer.wait_time = 0.5
 	crusher_timer.one_shot = true
@@ -136,46 +132,22 @@ func _ready() -> void:
 	heat_timer.timeout.connect(damage_by_heat)
 	add_child(heat_timer)
 	
+	player.main_controller = self
+	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
 	dialog_ui.main_controller = self
 	ui_dock_menu_v2.init(self)
 	
-	
 	reset_gampley_data_from_upgrade_state()
-	
 	current_hp = MAX_HP
 	
-	# CRUSH DEPTH
-	upgrade_crush_depth_ui.update_crush_depth(MAX_DEPTH)
-	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
-	# HP
-	upgrade_hp_ui.update_value(MAX_HP)
-	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
-	# ENERGY
-	upgrade_energy_ui.update_value(MAX_ENERGY)
-	upgrade_energy_ui.update_cost(ENERGY_UPGRADE_COST)
-	# HEAT EFFICIENCY
-	#TODO HEAT EFFICIENCY UPGRADE SYSTEM
-	# SPEED
-	upgrade_speed_ui.update_value(MAX_SPEED)
-	upgrade_speed_ui.update_cost(SPEED_UPGRADE_COST)
-	# ACCELERATION
-	upgrade_acceleration_ui.update_value(ACCELERATION)
-	upgrade_acceleration_ui.update_cost(ACCELERATION_UPGRADE_COST)
-	# DECELERATION
-	upgrade_deceleration_ui.update_value(DECELERATION)
-	upgrade_deceleration_ui.update_cost(DECELERATION_UPGRADE_COST)
-	# STATIC TANK
-	upgrade_static_tank_ui.update_value(MAX_PLAYER_STATIC)
-	upgrade_static_tank_ui.update_cost(STATIC_TANK_UPGRADE_COST)
+	# INIT LIGHTSTICK MODE
+	exit_lightstick_mode()
 	
 	# UI BARS
 	hp_bar.init(MAX_HP)
 	static_bar.init(MAX_PLAYER_STATIC, player_current_static)
 	energy_bar.init(MAX_ENERGY)
 	depth_max_ui.update_depth(MAX_DEPTH)
-	
-	# INIT LIGHTSTICK MODE
-	exit_lightstick_mode()
 	
 	await restart()
 	#show_instructions()
@@ -196,7 +168,6 @@ func _ready() -> void:
 	if !_ENABLE_PROGRESS:
 		return
 	
-	TURBO_BOOST_UNLOCKED = false
 	
 	dialog_ui.load_dialog(DIALOG_DB.dialog_files._00.intro_dialog.route)
 	
@@ -351,12 +322,13 @@ func _input(event: InputEvent) -> void:
 		update_heater_power(heater_power - 0.02)
 		return
 	
-	if event.is_action_pressed("turbo_boost_action") and current_energy > 0 and TURBO_BOOST_UNLOCKED:
-		player.turbo_boost()
-		return
-	elif event.is_action_released("turbo_boost_action"):
-		player.disable_turbo_boost()
-		return
+	if TURBO_BOOST_GEAR > 0 and current_energy > 0:
+		if event.is_action_pressed("turbo_boost_action"):
+			player.turbo_boost()
+			return
+		elif event.is_action_released("turbo_boost_action"):
+			player.disable_turbo_boost()
+			return
 	
 	# SKILLS
 	if event.is_action_pressed("skill_1"):
@@ -399,7 +371,8 @@ func execute_dialog_event(return_event_id: String) -> void:
 # ---- PROGRESSION v1? ----
 func unlock_turbo():
 	print('UNLOCK TURBO')
-	TURBO_BOOST_UNLOCKED = true
+	#TURBO_BOOST_UNLOCKED = true
+
 
 var relics_found: int = 0
 var relics_available: int = 0
@@ -819,7 +792,6 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	#UPGRADE_DB.upg_ids.lightstick_glow
 	#UPGRADE_DB.upg_ids.hull_insulation
 	#UPGRADE_DB.upg_ids.static_insulation
-	#UPGRADE_DB.upg_ids.motor_turbo_boost
 	#UPGRADE_DB.upg_ids.motor_boost_efficiency
 	
 	print(upgrade_id)
@@ -831,6 +803,7 @@ func reset_gampley_data_from_upgrade_state() -> void:
 	update_max_energy_from_save()
 	update_max_hp_from_save()
 	update_max_player_static_from_save()
+	update_turbo_boost_gear_from_save()
 	#TODO ADD THE REST OF STATS
 
 
@@ -875,6 +848,18 @@ func update_max_player_static_from_save() -> void:
 	
 	MAX_PLAYER_STATIC = upgrade_data.value
 
+
+# Gear 0: Feature disabled
+# Gear 1: Only Gear 1 enabled
+# Gear 2: Gear 2 option enabled
+var TURBO_BOOST_GEAR = 0
+#UPGRADE_DB.upg_ids.motor_turbo_boost
+func update_turbo_boost_gear_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.motor_turbo_boost
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
+	
+	TURBO_BOOST_GEAR = upgrade_data.value
 
 
 # -- DEPRECATED UPGRADE MENU
