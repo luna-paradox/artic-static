@@ -53,32 +53,21 @@ class_name MainController
 # ---- DEBUG OPTIONS ----
 @export var _IS_DEBUG = false
 @export var _DISABLE_HEAT_DAMAGE = false
+@export var _ENABLE_TURBO = 0
 @export var _ENABLE_PROGRESS = true
 @export var _SPAWN_CHARACTER_ON_START_POS = true
 
 # ---- MOVEMENT STATS ----
-@export var ACCELERATION: int = 200
-@export var DECELERATION: int = 100
-@export var MAX_SPEED: int = 450
+var ACCELERATION: int = 200
+var DECELERATION: int = 100
+var MAX_SPEED: int = 450
 
 # ---- OTHER STATS ----
-@export var STATIC_CONSUMPTION_RATE: int = 250
-@export var TURBO_BOOST_ENERGY_RATE: int = 100
+var STATIC_CONSUMPTION_RATE: int = 250
+var TURBO_BOOST_ENERGY_RATE: int = 100
 
 # ---- DEPTH ----
 var current_depth: int = 5550
-
-# ---- STORE ----
-# Cost in Static
-@export var CRUSH_DEPTH_UPGRADE = 1000
-@export var HP_UPGRADE_COST = 1000
-@export var ENERGY_UPGRADE_COST = 1000
-@export var HEAT_EFFICIENCY_UPGRADE_COST = 1000
-
-@export var SPEED_UPGRADE_COST = 1000
-@export var ACCELERATION_UPGRADE_COST = 1000
-@export var DECELERATION_UPGRADE_COST = 1000
-@export var STATIC_TANK_UPGRADE_COST = 1000
 
 
 # ---- PROGRESSION v1 ----
@@ -102,6 +91,10 @@ func _ready() -> void:
 	
 	if _IS_DEBUG:
 		update_available_static(15842)
+	if _ENABLE_TURBO > 0:
+		if _ENABLE_TURBO > 2:
+			_ENABLE_TURBO = 2
+		SAVE_STATE.update_upgrade_state(UPGRADE_DB.upg_ids.motor_turbo_boost, _ENABLE_TURBO + 1)
 	
 	$global_mod.show()
 	$camera.show()
@@ -237,9 +230,6 @@ func _process(delta: float) -> void:
 		update_scanning_relic(false)
 	elif relic_on_range == null:
 		update_scanning_relic(false)
-	
-
-var is_lightstick_mode_on = true
 
 func _input(event: InputEvent) -> void:
 	# DEBUG 
@@ -399,6 +389,8 @@ func skill_energy_plus() -> void:
 
 
 # ---- LIGHTSTICK MODE ----
+var is_lightstick_mode_on = true
+
 func enter_lightstick_mode():
 	is_lightstick_mode_on = true
 	player.update_lightstick_mode_ui(true)

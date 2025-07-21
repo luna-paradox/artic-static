@@ -57,7 +57,7 @@ var upgrades = {
 	UPGRADE_DB.upg_ids.hull_depth_max: 0,
 	UPGRADE_DB.upg_ids.static_tank: 0,
 	UPGRADE_DB.upg_ids.static_insulation: -1,
-	UPGRADE_DB.upg_ids.motor_turbo_boost: 0,
+	UPGRADE_DB.upg_ids.motor_turbo_boost: -1,
 	UPGRADE_DB.upg_ids.motor_boost_efficiency: -1,
 	UPGRADE_DB.upg_ids.batteries: 0,
 }
