@@ -795,6 +795,9 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 		update_energy(MAX_ENERGY)
 		energy_bar.init(MAX_ENERGY)
 	
+	if upgrade_id == UPGRADE_DB.upg_ids.static_tank:
+		static_bar.init(MAX_PLAYER_STATIC, player_current_static)
+	
 	#TODO ADD THE REST OF STATS
 	
 	# ---- COMMON CODE II ----
@@ -815,7 +818,6 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	#UPGRADE_DB.upg_ids.lightstick
 	#UPGRADE_DB.upg_ids.lightstick_glow
 	#UPGRADE_DB.upg_ids.hull_insulation
-	#UPGRADE_DB.upg_ids.static_tank
 	#UPGRADE_DB.upg_ids.static_insulation
 	#UPGRADE_DB.upg_ids.motor_turbo_boost
 	#UPGRADE_DB.upg_ids.motor_boost_efficiency
@@ -828,6 +830,7 @@ func reset_gampley_data_from_upgrade_state() -> void:
 	update_depth_max_from_save()
 	update_max_energy_from_save()
 	update_max_hp_from_save()
+	update_max_player_static_from_save()
 	#TODO ADD THE REST OF STATS
 
 
@@ -862,7 +865,16 @@ func update_max_hp_from_save() -> void:
 	MAX_HP = upgrade_data.value
 
 
-@export var MAX_PLAYER_STATIC = 5000.0
+#UPGRADE_DB.upg_ids.static_tank
+# Set current HP based on save data
+var MAX_PLAYER_STATIC = 5000.0
+func update_max_player_static_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.static_tank
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
+	
+	MAX_PLAYER_STATIC = upgrade_data.value
+
 
 
 # -- DEPRECATED UPGRADE MENU

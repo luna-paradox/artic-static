@@ -261,12 +261,32 @@ var upgrade_db = {
 	# ---- STATIC TANK ----
 	upg_ids.static_tank: {
 		"max_state": 3,
-		"name_0": "TANK CAPACITY I",
-		"price_0": 2500,
-		"name_1": "TANK CAPACITY II",
-		"price_1": 7000,
-		"name_2": "TANK CAPACITY III",
-		"price_2": 15000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "TANK CAPACITY I",
+				"price": 2500,
+				"value": 2000,
+			},
+			# 1
+			{
+				"name": "TANK CAPACITY II",
+				"price": 7000,
+				"value": 3000,
+			},
+			# 2
+			{
+				"name": "TANK CAPACITY III",
+				"price": 15000,
+				"value": 5000,
+			},
+			# 3
+			{
+				"name": "MAX",
+				"price": -1,
+				"value": 10000,
+			},
+		],
 	},
 	upg_ids.static_insulation: {
 		"max_state": 1,
