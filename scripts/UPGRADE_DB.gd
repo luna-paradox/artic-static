@@ -86,6 +86,8 @@ func get_upgrade_data_for_state(upgrade_id: upg_ids, state: int) -> UpgradeDataB
 	if data_by_state_array == null:
 		return null
 	
+	if state < 0:
+		state = 0
 	var data_by_state = data_by_state_array[state]
 	
 	var res: UpgradeDataByState = UpgradeDataByState.new()

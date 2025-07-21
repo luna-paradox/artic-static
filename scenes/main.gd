@@ -24,19 +24,8 @@ class_name MainController
 @onready var alert_docking = $ui_exploration/top_right/dock_alert/docking_icon
 @onready var alert_can_dock = $ui_exploration/top_right/dock_alert/can_dock
 @onready var dock_enable_sound = $global_audio/dock_enable_sound
-@onready var dock_menu_static_counter_label = $ui_dock_menu/container/static_counter/label
 @onready var ui_dock_menu_v2 = $ui_dock_menu_v2
 
-@onready var upgrade_crush_depth_ui = $ui_dock_menu/container/depth_upgrade
-@onready var upgrade_hp_ui = $ui_dock_menu/container/HP_upgrade
-@onready var upgrade_energy_ui = $ui_dock_menu/container/energy_upgrade
-@onready var upgrade_heat_efficiency_ui = $ui_dock_menu/container/heat_efficiency_upgrade
-@onready var upgrade_speed_ui = $ui_dock_menu/container/speed_upgrade
-@onready var upgrade_acceleration_ui = $ui_dock_menu/container/acceleration_upgrade
-@onready var upgrade_deceleration_ui = $ui_dock_menu/container/deceleration_upgrade
-@onready var upgrade_static_tank_ui = $ui_dock_menu/container/static_tank_upgrade
-
-@onready var shop_third_eye_ui = $ui_dock_menu/container/third_eye_ui
 # AUDIO
 @onready var sub_explossion = $global_audio/sub_explossion
 @onready var background_sound_0 = $global_audio/background_sound_0
@@ -862,108 +851,6 @@ func update_turbo_boost_gear_from_save() -> void:
 	TURBO_BOOST_GEAR = upgrade_data.value
 
 
-# -- DEPRECATED UPGRADE MENU
-func update_upgrade_buttons() -> void:
-	upgrade_crush_depth_ui.update_upgrade_btn_disabled(CRUSH_DEPTH_UPGRADE >= available_static)
-	upgrade_hp_ui.update_upgrade_btn_disabled(HP_UPGRADE_COST >= available_static)
-	upgrade_energy_ui.update_upgrade_btn_disabled(ENERGY_UPGRADE_COST >= available_static)
-	#TODO HEAT EFFICIENCY SYSTEM
-	upgrade_speed_ui.update_upgrade_btn_disabled(SPEED_UPGRADE_COST >= available_static)
-	upgrade_acceleration_ui.update_upgrade_btn_disabled(ACCELERATION_UPGRADE_COST >= available_static)
-	upgrade_deceleration_ui.update_upgrade_btn_disabled(DECELERATION_UPGRADE_COST >= available_static)
-	upgrade_static_tank_ui.update_upgrade_btn_disabled(STATIC_TANK_UPGRADE_COST >= available_static)
-
-func _on_upgrade_HP_button_pressed() -> void:
-	if HP_UPGRADE_COST > available_static:
-		return
-	
-	update_available_static(-HP_UPGRADE_COST)
-	MAX_HP += 50
-	HP_UPGRADE_COST *= 1.05
-	
-	upgrade_hp_ui.update_value(MAX_HP)
-	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
-	
-	hp_bar.init(MAX_HP)
-	update_hp(MAX_HP)
-	
-	update_upgrade_buttons()
-
-func _on_upgrade_ENERGY_button_pressed() -> void:
-	if ENERGY_UPGRADE_COST > available_static:
-		return
-	
-	update_available_static(-ENERGY_UPGRADE_COST)
-	MAX_ENERGY += 50
-	ENERGY_UPGRADE_COST *= 1.05
-	
-	upgrade_energy_ui.update_value(MAX_ENERGY)
-	upgrade_energy_ui.update_cost(ENERGY_UPGRADE_COST)
-	
-	energy_bar.init(MAX_ENERGY)
-	update_energy(MAX_ENERGY)
-	
-	update_upgrade_buttons()
-
-func _on_upgrade_MAX_SPEED_button_pressed() -> void:
-	if SPEED_UPGRADE_COST > available_static:
-		return
-	
-	update_available_static(-SPEED_UPGRADE_COST)
-	MAX_SPEED += 50
-	SPEED_UPGRADE_COST *= 1.05
-	
-	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
-	
-	upgrade_speed_ui.update_value(MAX_SPEED)
-	upgrade_speed_ui.update_cost(SPEED_UPGRADE_COST)
-	
-	update_upgrade_buttons()
-
-func _on_upgrade_ACCELERATION_button_pressed() -> void:
-	if ACCELERATION_UPGRADE_COST > available_static:
-		return
-	
-	update_available_static(-ACCELERATION_UPGRADE_COST)
-	ACCELERATION += 10
-	ACCELERATION_UPGRADE_COST *= 1.05
-	
-	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
-	
-	upgrade_acceleration_ui.update_value(ACCELERATION)
-	upgrade_acceleration_ui.update_cost(ACCELERATION_UPGRADE_COST)
-	
-	update_upgrade_buttons()
-
-func _on_upgrade_DECELERATION_button_pressed() -> void:
-	if DECELERATION_UPGRADE_COST > available_static:
-		return
-	
-	update_available_static(-DECELERATION_UPGRADE_COST)
-	DECELERATION += 10
-	DECELERATION_UPGRADE_COST *= 1.05
-	
-	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
-	
-	upgrade_deceleration_ui.update_value(DECELERATION)
-	upgrade_deceleration_ui.update_cost(DECELERATION_UPGRADE_COST)
-	
-	update_upgrade_buttons()
-
-func _on_upgrade_MAX_PLAYER_STATIC_button_pressed() -> void:
-	if STATIC_TANK_UPGRADE_COST > available_static:
-		return
-	
-	update_available_static(-STATIC_TANK_UPGRADE_COST)
-	MAX_PLAYER_STATIC += 500
-	STATIC_TANK_UPGRADE_COST *= 1.5
-	
-	upgrade_static_tank_ui.update_value(MAX_PLAYER_STATIC)
-	upgrade_static_tank_ui.update_cost(STATIC_TANK_UPGRADE_COST)
-	
-	update_upgrade_buttons()
-
-
 # ---- CRUSHING ----
 var current_crashing_volume = 0
 
@@ -1228,7 +1115,7 @@ func progress(new_mode: int) -> void:
 	
 	if new_mode == 1:
 		enable_third_eye()
-		shop_third_eye_ui.hide()
+		#shop_third_eye_ui.hide()
 	elif new_mode == 2:
 		$progress/point_1_area_2d.queue_free()
 		activate_area_1()
