@@ -62,7 +62,6 @@ func upgrade_ui_based_on_save_data():
 				container.overlay_ui.show()
 				break
 
-#TODO UPGRADE UI SFX
 #TODO MAKE IT SO MAXED OUT UPGRADES DON'T DISSAPEAR BUT HAVE A COOLER LOOK
 #TODO COLOR CODE THE STATE OF THE UPGRADE
 

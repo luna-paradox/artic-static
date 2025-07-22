@@ -58,20 +58,16 @@ func get_upgrade_data(upgrade_id: upg_ids) -> UpgradeData:
 	res_data.prices = [-1, -1, -1, -1, -1]
 	
 	var data_by_state_array = raw_data.get('data_by_state', null)
-	# NEW SYSTEM
-	if data_by_state_array != null:
-		for level in res_data.max_state + 1:
-			var data_by_state = data_by_state_array[level]
-			
-			res_data.data_by_state.push_back(UpgradeDataByState.new())
-			res_data.data_by_state[level].name = data_by_state.get('name', 'DB: ERROR')
-			res_data.data_by_state[level].price = data_by_state.get('price', -1)
-			res_data.data_by_state[level].value = data_by_state.get('value', -1)
-	# LEGACY SYSTEM
-	else:
-		for level in levels:
-			res_data.names[level] = raw_data.get('name_' + str(level), 'DB: LEGACY ERROR')
-			res_data.prices[level] = raw_data.get('price_' + str(level), -1)
+	if data_by_state_array == null:
+		return null
+	
+	for level in res_data.max_state + 1:
+		var data_by_state = data_by_state_array[level]
+		
+		res_data.data_by_state.push_back(UpgradeDataByState.new())
+		res_data.data_by_state[level].name = data_by_state.get('name', 'DB: ERROR')
+		res_data.data_by_state[level].price = data_by_state.get('price', -1)
+		res_data.data_by_state[level].value = data_by_state.get('value', -1)
 		
 	return res_data
 
@@ -103,90 +99,282 @@ var upgrade_db = {
 	# ---- HEATER ----
 	upg_ids.heater_efficiency: {
 		"max_state": 2,
-		"name_0": "EFFICIENCY I",
-		"price_0": 5000,
-		"name_1": "EFFICIENCY II",
-		"price_1": 10000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "EFFICIENCY I",
+				"price": 5000,
+				"value": 1,
+			},
+			# 1
+			{
+				"name": "EFFICIENCY IV",
+				"price": 10000,
+				"value": 1,
+			},
+			# 2
+			{
+				"name": "EFFICIENCY MAX",
+				"price": -1,
+				"value": 1,
+			},
+		],
 	},
 	upg_ids.heater_controller: {
 		"max_state": 1,
-		"name_0": "AUTO CONTROLLER",
-		"price_0": 10000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "AUTO CONTROLLER I",
+				"price": 10000,
+				"value": false,
+			},
+			# 1
+			{
+				"name": "AUTO CONTROLLER MAX",
+				"price": -1,
+				"value": true,
+			},
+		],
 	},
 	# ---- SKILLS ----
 	upg_ids.skills_hp_up: {
 		"max_state": 2,
-		"name_0": "MECHANICAL TRANSMUTATION",
-		"price_0": 5000,
-		"name_1": "MECHANICAL TRANSMUTATION\nEFFICIENCY",
-		"price_1": 10000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "MECHANICAL TRANSMUTATION",
+				"price": 5000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "MECHANICAL TRANSMUTATION\nEFFICIENCY",
+				"price": 10000,
+				"value": 1,
+			},
+			# 2
+			{
+				"name": "MECHANICAL TRANSMUTATION MAX",
+				"price": -1,
+				"value": 2,
+			},
+		],
 	},
 	upg_ids.skills_energy_up: {
 		"max_state": 2,
-		"name_0": "ENERGY TRANSMUTATION",
-		"price_0": 5000,
-		"name_1": "ENERGY TRANSMUTATION\nEFFICIENCY",
-		"price_1": 10000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "ENERGY TRANSMUTATION",
+				"price": 5000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "ENERGY TRANSMUTATION\nEFFICIENCY",
+				"price": 10000,
+				"value": 1,
+			},
+			# 2
+			{
+				"name": "ENERGY TRANSMUTATION MAX",
+				"price": -1,
+				"value": 2,
+			},
+		],
 	},
 	upg_ids.skills_temp_up: {
 		"max_state": 2,
-		"name_0": "EXOTHERMAL ACTIVITY",
-		"price_0": 5000,
-		"name_1": "EXOTHERMAL ACTIVITY\nEFFICIENCY",
-		"price_1": 10000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "EXOTHERMAL ACTIVITY",
+				"price": 5000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "EXOTHERMAL ACTIVITY\nEFFICIENCY",
+				"price": 10000,
+				"value": 1,
+			},
+			# 2
+			{
+				"name": "EXOTHERMAL ACTIVITY MAX",
+				"price": -1,
+				"value": 2,
+			},
+		],
 	},
 	upg_ids.skills_temp_down: {
 		"max_state": 1,
-		"name_0": "THERMAL RELEASE",
-		"price_0": 7000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "THERMAL RELEASE",
+				"price": 7000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "THERMAL RELEASE MAX",
+				"price": -1,
+				"value": 1,
+			},
+		],
 	},
 	# ---- FREQUENCIES ----
 	upg_ids.freq_closer_static: {
 		"max_state": 1,
-		"name_0": "CLOSER STATIC NODE",
-		"price_0": 1000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "CLOSER STATIC NODE",
+				"price": 1000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "CLOSER STATIC NODE",
+				"price": -1,
+				"value": 1,
+			},
+		],
 	},
 	upg_ids.freq_closer_relic: {
 		"max_state": 1,
-		"name_0": "CLOSER MEAT SERVER",
-		"price_0": 15000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "CLOSER MEAT SERVER",
+				"price": 15000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "CLOSER MEAT SERVER",
+				"price": -1,
+				"value": 1,
+			},
+		],
 	},
 	upg_ids.freq_: {
 		"max_state": 1,
-		"name_0": "???",
-		"price_0": 1,
+		"data_by_state": [
+			# 0
+			{
+				"name": "???",
+				"price": 1,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "???",
+				"price": -1,
+				"value": 1,
+			},
+		],
 	},
 	# ---- LIGHTS ----
 	upg_ids.light_eye: {
 		"max_state": 2,
-		"name_0": "EYE LIGHTS I",
-		"price_0": 5000,
-		"name_1": "EYE LIGHTS II",
-		"price_1": 10000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "EYE LIGHTS I",
+				"price": 5000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "EYE LIGHTS II",
+				"price": 10000,
+				"value": 1,
+			},
+			# 2
+			{
+				"name": "EYE LIGHTS MAX",
+				"price": -1,
+				"value": 2,
+			},
+		],
 	},
 	upg_ids.light_core: {
 		"max_state": 3,
-		"name_0": "SURROUNDING LIGHTS I",
-		"price_0": 2500,
-		"name_1": "SURROUNDING LIGHTS II",
-		"price_1": 5000,
-		"name_2": "SURROUNDING LIGHTS III",
-		"price_2": 10000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "SURROUNDING LIGHTS I",
+				"price": 2500,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "SURROUNDING LIGHTS II",
+				"price": 5000,
+				"value": 1,
+			},
+			# 2
+			{
+				"name": "SURROUNDING LIGHTS III",
+				"price": 10000,
+				"value": 2,
+			},
+			# 3
+			{
+				"name": "EYE LIGHTS MAX",
+				"price": -1,
+				"value": 3,
+			},
+		],
 	},
 	# ---- LIGHTSTICKS ----
 	upg_ids.lightstick: {
 		"max_state": 2,
-		"name_0": "AMOUNT I",
-		"price_0": 5000,
-		"name_1": "AMOUNT II",
-		"price_1": 10000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "AMOUNT I",
+				"price": 5000,
+				"value": 5,
+			},
+			# 1
+			{
+				"name": "AMOUNT II",
+				"price": 10000,
+				"value": 10,
+			},
+			# 2
+			{
+				"name": "AMOUNT MAX",
+				"price": -1,
+				"value": 15,
+			},
+		],
 	},
 	upg_ids.lightstick_glow: {
 		"max_state": 2,
-		"name_0": "GLOW I",
-		"price_0": 5000,
-		"name_1": "GLOW II",
-		"price_1": 10000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "GLOW I",
+				"price": 5000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "GLOW II",
+				"price": 10000,
+				"value": 1,
+			},
+			# 2
+			{
+				"name": "GLOW MAX",
+				"price": -1,
+				"value": 2,
+			},
+		],
 	},
 	# ---- HULL ----
 	upg_ids.hull_defense: {
@@ -220,10 +408,26 @@ var upgrade_db = {
 	},
 	upg_ids.hull_insulation: {
 		"max_state": 2,
-		"name_0": "INSULATION I",
-		"price_0": 5000,
-		"name_1": "INSULATION II",
-		"price_1": 15000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "INSULATION I",
+				"price": 5000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "INSULATION II",
+				"price": 15000,
+				"value": 1,
+			},
+			# 2
+			{
+				"name": "INSULATION MAX",
+				"price": -1,
+				"value": 2,
+			},
+		],
 	},
 	upg_ids.hull_depth_max: {
 		"max_state": 4,
@@ -292,8 +496,20 @@ var upgrade_db = {
 	},
 	upg_ids.static_insulation: {
 		"max_state": 1,
-		"name_0": "TANK INSULATION",
-		"price_0": 5000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "TANK INSULATION I",
+				"price": 5000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "TANK INSULATION MAX",
+				"price": -1,
+				"value": 1,
+			},
+		],
 	},
 	# ---- MOTOR ----
 	upg_ids.motor_turbo_boost: {
@@ -321,10 +537,26 @@ var upgrade_db = {
 	},
 	upg_ids.motor_boost_efficiency: {
 		"max_state": 2,
-		"name_0": "EFFICIENCY I",
-		"price_0": 10000,
-		"name_1": "EFFICIENCY II",
-		"price_1": 15000,
+		"data_by_state": [
+			# 0
+			{
+				"name": "EFFICIENCY I",
+				"price": 10000,
+				"value": 0,
+			},
+			# 1
+			{
+				"name": "EFFICIENCY II",
+				"price": 15000,
+				"value": 1,
+			},
+			# 2
+			{
+				"name": "EFFICIENCY MAX",
+				"price": -1,
+				"value": 2,
+			},
+		],
 	},
 	# ---- BATTERIES ----
 	upg_ids.batteries: {

@@ -36,10 +36,11 @@ var events = {
 
 var relics = {
 	RELIC_DB.relic_ids.relic_C0_0: false,
-	RELIC_DB.relic_ids.relic_C1_0: false,
+	RELIC_DB.relic_ids.relic_C1_E: false,
 	RELIC_DB.relic_ids.relic_W_0: false,
+	RELIC_DB.relic_ids.relic_C2_E: false,
 	RELIC_DB.relic_ids.relic_C2_0: false,
-	RELIC_DB.relic_ids.relic_C2_1: false,
+	RELIC_DB.relic_ids.relic_C3_E: false,
 	RELIC_DB.relic_ids.relic_C3_0: false,
 	RELIC_DB.relic_ids.relic_C3_1: false,
 	RELIC_DB.relic_ids.relic_C3_2: false,
