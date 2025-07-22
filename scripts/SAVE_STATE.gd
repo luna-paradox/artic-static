@@ -18,7 +18,7 @@ var upgrades = {
 	UPGRADE_DB.upg_ids.light_core: 0,
 	UPGRADE_DB.upg_ids.lightstick: 0,
 	UPGRADE_DB.upg_ids.lightstick_glow: 0,
-	UPGRADE_DB.upg_ids.hull_defense: 0,
+	UPGRADE_DB.upg_ids.hull_defense: 3,
 	UPGRADE_DB.upg_ids.hull_insulation: 0,
 	UPGRADE_DB.upg_ids.hull_depth_max: 0,
 	UPGRADE_DB.upg_ids.static_tank: 0,

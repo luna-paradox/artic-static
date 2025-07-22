@@ -1,5 +1,9 @@
 extends Node
 
+# THIS LIST HAS TO BE EXACTLY THE SAME
+# AS res://scenes/relic.gd relic_id enum
+# ID ENUM LIST, SAME ORDER EVEN
+# IDS FOR ALL UPGRADES
 enum relic_ids {
 	relic_C0_0,
 	relic_C1_E,
