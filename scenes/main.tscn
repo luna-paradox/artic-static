@@ -53649,6 +53649,7 @@ offset_bottom = 64.0
 texture = ExtResource("42_ia0bw")
 
 [node name="ui_dock_menu_v2" type="CanvasLayer" parent="."]
+visible = false
 script = ExtResource("72_wf2ay")
 
 [node name="main_container" type="Control" parent="ui_dock_menu_v2"]

@@ -119,7 +119,7 @@ func _ready() -> void:
 	dialog_ui.main_controller = self
 	ui_dock_menu_v2.init(self)
 	
-	reset_gampley_data_from_upgrade_state()
+	reset_gamplay_data_from_save_data()
 	current_hp = MAX_HP
 	
 	# INIT LIGHTSTICK MODE
@@ -331,6 +331,16 @@ func _input(event: InputEvent) -> void:
 		progress(5)
 		return
 
+func reset_gamplay_data_from_save_data() -> void:
+	update_depth_max_from_save()
+	update_max_energy_from_save()
+	update_max_hp_from_save()
+	update_max_player_static_from_save()
+	update_turbo_boost_gear_from_save()
+	#TODO ADD THE REST OF STATS
+
+
+# ---- DIALOG beta ----
 func execute_dialog_event(return_event_id: String) -> void:
 	if !return_event_id:
 		return
@@ -347,7 +357,7 @@ func execute_dialog_event(return_event_id: String) -> void:
 			return
 
 
-# ---- PROGRESSION v1? ----
+# ---- PROGRESSION beta ----
 func unlock_turbo():
 	print('UNLOCK TURBO')
 	#TURBO_BOOST_UNLOCKED = true
@@ -356,9 +366,10 @@ func unlock_turbo():
 var relics_found: int = 0
 var relics_available: int = 0
 
+
 # ---- SKILLS ----
-@export var SKILL_PRICE_HP_UP = 200
-@export var SKILL_HP_PLUS = 30
+var SKILL_PRICE_HP_UP = 200
+var SKILL_HP_PLUS = 30
 
 # SKILL HP UP
 func skill_hp_plus() -> void:
@@ -373,8 +384,8 @@ func skill_hp_plus() -> void:
 	update_static(-SKILL_PRICE_HP_UP)
 
 # SKILL ENERGY UP
-@export var SKILL_PRICE_ENERGY_UP = 200
-@export var SKILL_ENERGY_PLUS = 200
+var SKILL_PRICE_ENERGY_UP = 200
+var SKILL_ENERGY_PLUS = 200
 
 func skill_energy_plus() -> void:
 	if player_current_static < SKILL_PRICE_ENERGY_UP:
@@ -684,7 +695,7 @@ func start_dock_menu() -> void:
 	# PAUSE
 	update_pause(true)
 	
-	reset_gampley_data_from_upgrade_state()
+	reset_gamplay_data_from_save_data()
 	
 	# UNLOAD STATIC
 	if player_current_static > 0:
@@ -735,7 +746,7 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	
 	update_available_static(-upgrade_price)
 	SAVE_STATE.update_upgrade_state(upgrade_id, 1)
-	reset_gampley_data_from_upgrade_state()
+	reset_gamplay_data_from_save_data()
 	ui_dock_menu_v2.play_upgrade_click_sfx()
 	
 	# ---- UPGRADE SPECIFIC CODE ----
@@ -778,15 +789,6 @@ func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
 	
 	print(upgrade_id)
 	pass
-
-
-func reset_gampley_data_from_upgrade_state() -> void:
-	update_depth_max_from_save()
-	update_max_energy_from_save()
-	update_max_hp_from_save()
-	update_max_player_static_from_save()
-	update_turbo_boost_gear_from_save()
-	#TODO ADD THE REST OF STATS
 
 
 #UPGRADE_DB.upg_ids.hull_depth_max

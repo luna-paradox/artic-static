@@ -20,6 +20,8 @@ config/icon="res://icon.svg"
 AUDIO_MANAGER="*res://scripts/AUDIO_MANAGER.gd"
 SAVE_STATE="*res://scripts/SAVE_STATE.gd"
 UPGRADE_DB="*res://scripts/UPGRADE_DB.gd"
+EVENT_DB="*res://scripts/EVENT_DB.gd"
+RELIC_DB="*res://scripts/RELIC_DB.gd"
 
 [display]
 
