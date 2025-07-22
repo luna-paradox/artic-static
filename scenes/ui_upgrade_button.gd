@@ -54,14 +54,6 @@ func update_from_save() -> void:
 			elif save_state == 1 and !SAVE_STATE.get_relic_state(RELIC_DB.relic_ids.relic_C2_E):
 				is_hidden_by_relic = true
 		
-		UPGRADE_DB.upg_ids.hull_depth_max:
-			if save_state == 1 and !SAVE_STATE.get_relic_state(RELIC_DB.relic_ids.relic_C1_E):
-				is_hidden_by_relic = true
-			if save_state == 2 and !SAVE_STATE.get_relic_state(RELIC_DB.relic_ids.relic_C2_E):
-				is_hidden_by_relic = true
-			if save_state == 3 and !SAVE_STATE.get_relic_state(RELIC_DB.relic_ids.relic_C3_E):
-				is_hidden_by_relic = true
-		
 		UPGRADE_DB.upg_ids.freq_closer_relic:
 			if !SAVE_STATE.get_relic_state(RELIC_DB.relic_ids.relic_C3_E):
 				is_hidden_by_relic = true
@@ -138,8 +130,18 @@ func update_from_save() -> void:
 	var current_text = data_by_state.name
 	var current_price = data_by_state.price
 	text = "> " + current_text + "\n" + str(current_price)
-	
 	show()
 	
-	disabled = main_controller.available_static < current_price
+	var is_disabled_by_relic = false
+	if upgrade_id == UPGRADE_DB.upg_ids.hull_depth_max:
+		if save_state == 1 and !SAVE_STATE.get_relic_state(RELIC_DB.relic_ids.relic_C1_E):
+			is_disabled_by_relic = true
+		if save_state == 2 and !SAVE_STATE.get_relic_state(RELIC_DB.relic_ids.relic_C2_E):
+			is_disabled_by_relic = true
+		if save_state == 3 and !SAVE_STATE.get_relic_state(RELIC_DB.relic_ids.relic_C3_E):
+			is_disabled_by_relic = true
+	
+	var is_disabled_by_static = main_controller.available_static < current_price
+	
+	disabled = is_disabled_by_static or is_disabled_by_relic
 	
