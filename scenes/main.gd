@@ -53,6 +53,7 @@ class_name MainController
 # ---- DEBUG OPTIONS ----
 @export var _STATIC_DEBUG: int = 0
 @export var _TURBO_SAVE_STATE: int = -2
+@export var _DEPTH_MAX_STATE: int = -2
 @export var _DISABLE_HEAT_DAMAGE: bool = false
 @export var _ENABLE_PROGRESS: bool = true
 @export var _SPAWN_CHARACTER_ON_START_POS: bool = true
@@ -87,14 +88,19 @@ var pause = false
 var crusher_timer: Timer
 var heat_timer: Timer
 
-func _ready() -> void:
-	
+func ready_debug() -> void:
 	if _STATIC_DEBUG > 0:
 		update_available_static(_STATIC_DEBUG)
 	# If the save state is valid then overwrite, 
 	# otherwise, the original one will be used
 	if _TURBO_SAVE_STATE >= -1 and _TURBO_SAVE_STATE <= 2:
 		SAVE_STATE.upgrades[UPGRADE_DB.upg_ids.motor_turbo_boost] = _TURBO_SAVE_STATE
+	
+	if 	_DEPTH_MAX_STATE > -1 and _DEPTH_MAX_STATE <= 4:
+		SAVE_STATE.upgrades[UPGRADE_DB.upg_ids.hull_depth_max] = _DEPTH_MAX_STATE
+
+func _ready() -> void:
+	ready_debug()
 	
 	$global_mod.show()
 	$camera.show()
