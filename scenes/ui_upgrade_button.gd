@@ -144,4 +144,3 @@ func update_from_save() -> void:
 	var is_disabled_by_static = main_controller.available_static < current_price
 	
 	disabled = is_disabled_by_static or is_disabled_by_relic
-	
