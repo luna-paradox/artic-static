@@ -47,28 +47,27 @@ func get_upgrade_data(upgrade_id: upg_ids) -> UpgradeData:
 		printerr('NO UPGRADE DATA FOR ' + str(upgrade_id))
 		return
 	
-	var res_data: UpgradeData = UpgradeData.new()
 	var raw_data = upgrade_db[upgrade_id]
 	
-	res_data.max_state = raw_data.get("max_state", null)
-	
-	# If i added a 5th level it would be annoying but whatever
-	var levels = [0, 1, 2, 3, 4]
-	res_data.names = ["L ERROR", "L ERROR", "L ERROR", "L ERROR", "L ERROR"]
-	res_data.prices = [-1, -1, -1, -1, -1]
+	var max_state = raw_data.get("max_state", null)
+	if max_state == null:
+		return null
 	
 	var data_by_state_array = raw_data.get('data_by_state', null)
 	if data_by_state_array == null:
 		return null
 	
-	for level in res_data.max_state + 1:
+	var res_data: UpgradeData = UpgradeData.new()
+	res_data.max_state = max_state
+	
+	for level in max_state + 1:
 		var data_by_state = data_by_state_array[level]
 		
 		res_data.data_by_state.push_back(UpgradeDataByState.new())
 		res_data.data_by_state[level].name = data_by_state.get('name', 'DB: ERROR')
 		res_data.data_by_state[level].price = data_by_state.get('price', -1)
 		res_data.data_by_state[level].value = data_by_state.get('value', -1)
-		
+	
 	return res_data
 
 func get_upgrade_data_for_state(upgrade_id: upg_ids, state: int) -> UpgradeDataByState:
