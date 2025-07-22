@@ -904,15 +904,20 @@ enum SONAR_FREQ {
 		"order": 0,
 		"name": "Static Node"
 	},
+	SONAR_FREQ.RELIC: {
+		"id": SONAR_FREQ.RELIC,
+		"order": 1,
+		"name": "Meat Server"
+	},
 	SONAR_FREQ.TEST_0: {
 		"id": SONAR_FREQ.TEST_0,
-		"order": 1,
+		"order": 2,
 		"target_node": $sonar_freq_targets/freq_test_0,
 		"name": "Test Freq. 0"
 	},
 	SONAR_FREQ.TEST_1: {
 		"id": SONAR_FREQ.TEST_1,
-		"order": 2,
+		"order": 3,
 		"target_node": $sonar_freq_targets/freq_test_1,
 		"name": "Test Freq. 1"
 	},
@@ -924,31 +929,31 @@ enum SONAR_FREQ {
 	},
 	SONAR_FREQ.CAVE_OF_CURRENT: {
 		"id": SONAR_FREQ.CAVE_OF_CURRENT,
-		"order": 3,
+		"order": 4,
 		"target_node": $sonar_freq_targets/cave_of_current,
 		"name": "Cave of Current"
 	},
 	SONAR_FREQ.CAVE_OF_COLD: {
 		"id": SONAR_FREQ.CAVE_OF_COLD,
-		"order": 4,
+		"order": 5,
 		"target_node": $sonar_freq_targets/cave_of_cold,
 		"name": "Cave of Cold"
 	},
 	SONAR_FREQ.STATUE_3: {
 		"id": SONAR_FREQ.STATUE_3,
-		"order": 5,
+		"order": 6,
 		"target_node": $sonar_freq_targets/statue_3,
 		"name": "????"
 	},
 	SONAR_FREQ.PIVOT_CAVE: {
 		"id": SONAR_FREQ.PIVOT_CAVE,
-		"order": 6,
+		"order": 7,
 		"target_node": $sonar_freq_targets/pivot_cave,
 		"name": "Pivot Cave"
 	},
 	SONAR_FREQ.STATUE_2: {
 		"id": SONAR_FREQ.STATUE_2,
-		"order": 7,
+		"order": 8,
 		"target_node": $sonar_freq_targets/statue_2,
 		"name": "st2"
 	},
