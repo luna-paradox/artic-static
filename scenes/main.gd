@@ -337,6 +337,8 @@ func reset_gamplay_data_from_save_data() -> void:
 	update_max_hp_from_save()
 	update_max_player_static_from_save()
 	update_turbo_boost_gear_from_save()
+	update_freq_closer_static_from_save()
+	update_freq_closer_relic_from_save()
 	#TODO ADD THE REST OF STATS
 
 
@@ -845,6 +847,23 @@ func update_turbo_boost_gear_from_save() -> void:
 	
 	TURBO_BOOST_GEAR = upgrade_data.value
 
+#UPGRADE_DB.upg_ids.freq_closer_static
+func update_freq_closer_static_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.freq_closer_static
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var is_freq_available = is_sonar_freq_unlocked(SONAR_FREQ.STATIC_NODE)
+	
+	if save_state and !is_freq_available:
+		unlock_sonar_freq(SONAR_FREQ.STATIC_NODE)
+
+#UPGRADE_DB.upg_ids.freq_closer_relic
+func update_freq_closer_relic_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.freq_closer_relic
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var is_freq_available = is_sonar_freq_unlocked(SONAR_FREQ.RELIC)
+	
+	if save_state and !is_freq_available:
+		unlock_sonar_freq(SONAR_FREQ.RELIC)
 
 # ---- CRUSHING ----
 var current_crashing_volume = 0
@@ -874,7 +893,7 @@ func crush_by_depth_audio(delta: float) -> void:
 
 # ---- SONAR ----
 enum SONAR_FREQ { 
-	STATIC_NODE, 
+	STATIC_NODE, RELIC,
 	TEST_0, TEST_1, 
 	BASE, CAVE_OF_CURRENT, CAVE_OF_COLD, PIVOT_CAVE, 
 	STATUE_1, STATUE_2, STATUE_3,
@@ -984,6 +1003,12 @@ func unlock_sonar_freq(freq_id: SONAR_FREQ) -> void:
 	available_sonar_freq.append(freq)
 	
 	available_sonar_freq.sort_custom(func(a, b): return a.order < b.order)
+
+func is_sonar_freq_unlocked(freq_id: SONAR_FREQ) -> bool:
+	var freq = sonar_frequencies[freq_id]
+	var is_available = available_sonar_freq.any(func (val): return val == freq)
+	
+	return is_available
 
 func get_nearest_static_node() -> Node2D:
 	var nearest_node: Node2D = null
