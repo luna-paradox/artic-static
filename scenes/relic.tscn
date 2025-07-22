@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://ba845i1slugt4"]
+[gd_scene load_steps=27 format=3 uid="uid://ba845i1slugt4"]
 
 [ext_resource type="Script" path="res://scenes/relic.gd" id="1_3kres"]
 [ext_resource type="Shader" path="res://scenes/scanning.gdshader" id="2_k538t"]
@@ -19,6 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://qseq6ri5siro" path="res://assets/visual/SPR_relic_65p_circ_screen_v1.5.png" id="14_agieo"]
 [ext_resource type="Texture2D" uid="uid://1pcif53who5k" path="res://assets/visual/SPR_relic_v1.4_65p_squa_screen_code.png" id="14_jbhfc"]
 [ext_resource type="Script" path="res://scenes/relic_spr_tumor.gd" id="15_s2nva"]
+[ext_resource type="PackedScene" uid="uid://dwjsno2vbc62d" path="res://scenes/cold_area.tscn" id="20_gevy4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1qhxv"]
 size = Vector2(600, 350)
@@ -87,11 +88,13 @@ shader_parameter/grid_cell_size = 15.0
 shader_parameter/grid_line_thickness = 0.5
 shader_parameter/grid_color = Color(0, 1, 0, 0.117647)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ffx5i"]
+size = Vector2(966, 512)
+
 [node name="relic" type="Node2D"]
 script = ExtResource("1_3kres")
 
 [node name="detect_area_2d" type="Area2D" parent="."]
-visible = false
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("4_v8txm")
@@ -100,6 +103,7 @@ node_type = "RELIC"
 [node name="collision_shape" type="CollisionShape2D" parent="detect_area_2d"]
 position = Vector2(0, -32)
 shape = SubResource("RectangleShape2D_1qhxv")
+debug_color = Color(0.661719, 0.7, 0, 0.42)
 
 [node name="sprites" type="Node2D" parent="."]
 material = SubResource("ShaderMaterial_2hqne")
@@ -161,3 +165,12 @@ visible = false
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
 polygon = PackedVector2Array(-149, -164, -156, -157, -156, 161, -113, 166, -78, 168, -33, 170, 17, 172, 74, 161, 148, 162, 149, -155, 139, -163)
+
+[node name="cold_area" parent="." instance=ExtResource("20_gevy4")]
+heat_transfer = -2.0
+
+[node name="collider" parent="cold_area/area_2d" index="0"]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_ffx5i")
+
+[editable path="cold_area"]

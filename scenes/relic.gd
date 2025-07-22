@@ -1,5 +1,21 @@
 extends Node2D
 
+
+# THIS LIST HAS TO BE EXACTLY THE SAME
+# AS RELIC_DB.relic_ids, SAME ORDER EVEN
+@export_enum(
+	'relic_C0_0',
+	'relic_C1_E',
+	'relic_W_0',
+	'relic_C2_E',
+	'relic_C2_0',
+	'relic_C3_E',
+	'relic_C3_0',
+	'relic_C3_1',
+	'relic_C3_2',
+)
+var relic_id: int = 0
+
 @onready var sprites = $sprites
 var sprites_material: Material
 

@@ -23,20 +23,9 @@ class_name MainController
 # UI DOCK MENU
 @onready var alert_docking = $ui_exploration/top_right/dock_alert/docking_icon
 @onready var alert_can_dock = $ui_exploration/top_right/dock_alert/can_dock
-@onready var dock_menu = $ui_dock_menu
 @onready var dock_enable_sound = $global_audio/dock_enable_sound
-@onready var dock_menu_static_counter_label = $ui_dock_menu/container/static_counter/label
+@onready var ui_dock_menu_v2 = $ui_dock_menu_v2
 
-@onready var upgrade_crush_depth_ui = $ui_dock_menu/container/depth_upgrade
-@onready var upgrade_hp_ui = $ui_dock_menu/container/HP_upgrade
-@onready var upgrade_energy_ui = $ui_dock_menu/container/energy_upgrade
-@onready var upgrade_heat_efficiency_ui = $ui_dock_menu/container/heat_efficiency_upgrade
-@onready var upgrade_speed_ui = $ui_dock_menu/container/speed_upgrade
-@onready var upgrade_acceleration_ui = $ui_dock_menu/container/acceleration_upgrade
-@onready var upgrade_deceleration_ui = $ui_dock_menu/container/deceleration_upgrade
-@onready var upgrade_static_tank_ui = $ui_dock_menu/container/static_tank_upgrade
-
-@onready var shop_third_eye_ui = $ui_dock_menu/container/third_eye_ui
 # AUDIO
 @onready var sub_explossion = $global_audio/sub_explossion
 @onready var background_sound_0 = $global_audio/background_sound_0
@@ -53,48 +42,36 @@ class_name MainController
 # PROGRESS
 @onready var third_eye = $ui_exploration/top_right/third_eye
 
-@onready var area_1 = $room/A1
+#@onready var area_1 = $room/A1
 @onready var area_1_door = $room/A1_wall_to_hide
-@onready var area_2 = $room/A2
+#@onready var area_2 = $room/A2
 @onready var area_2_door = $room/A2_wall_to_hide
-@onready var area_3 = $room/A3
+#@onready var area_3 = $room/A3
 @onready var area_3_door = $room/A3_wall_to_hide
 @onready var follow_the_eye_ui = $follow_the_eye_ui
 
 # ---- DEBUG OPTIONS ----
-@export var _DISABLE_HEAT_DAMAGE = false
-@export var _ENABLE_PROGRESS = true
-@export var _SPAWN_CHARACTER_ON_START_POS = true
+@export var _STATIC_DEBUG: int = 0
+@export var _TURBO_SAVE_STATE: int = -2
+@export var _DEPTH_MAX_STATE: int = -2
+@export var _DISABLE_HEAT_DAMAGE: bool = false
+@export var _ENABLE_PROGRESS: bool = true
+@export var _SPAWN_CHARACTER_ON_START_POS: bool = true
 
 # ---- MOVEMENT STATS ----
-@export var ACCELERATION: int = 200
-@export var DECELERATION: int = 100
-@export var MAX_SPEED: int = 450
+var ACCELERATION: int = 200
+var DECELERATION: int = 100
+var MAX_SPEED: int = 450
 
 # ---- OTHER STATS ----
-@export var STATIC_CONSUMPTION_RATE: int = 250
-@export var TURBO_BOOST_ENERGY_RATE: int = 100
+var STATIC_CONSUMPTION_RATE: int = 250
+var TURBO_BOOST_ENERGY_RATE: int = 100
 
 # ---- DEPTH ----
-#@export var CRUSH_DEPTH = 5800
-@export var CRUSH_DEPTH: int = 7000
 var current_depth: int = 5550
-
-# ---- STORE ----
-# Cost in Static
-@export var CRUSH_DEPTH_UPGRADE = 1000
-@export var HP_UPGRADE_COST = 1000
-@export var ENERGY_UPGRADE_COST = 1000
-@export var HEAT_EFFICIENCY_UPGRADE_COST = 1000
-
-@export var SPEED_UPGRADE_COST = 1000
-@export var ACCELERATION_UPGRADE_COST = 1000
-@export var DECELERATION_UPGRADE_COST = 1000
-@export var STATIC_TANK_UPGRADE_COST = 1000
 
 
 # ---- PROGRESSION v1 ----
-var TURBO_BOOST_UNLOCKED = true
 
 
 # ---- PROGRESSION alpha ----
@@ -111,16 +88,25 @@ var pause = false
 var crusher_timer: Timer
 var heat_timer: Timer
 
+func ready_debug() -> void:
+	if _STATIC_DEBUG > 0:
+		update_available_static(_STATIC_DEBUG)
+	# If the save state is valid then overwrite, 
+	# otherwise, the original one will be used
+	if _TURBO_SAVE_STATE >= -1 and _TURBO_SAVE_STATE <= 2:
+		SAVE_STATE.upgrades[UPGRADE_DB.upg_ids.motor_turbo_boost] = _TURBO_SAVE_STATE
+	
+	if 	_DEPTH_MAX_STATE > -1 and _DEPTH_MAX_STATE <= 4:
+		SAVE_STATE.upgrades[UPGRADE_DB.upg_ids.hull_depth_max] = _DEPTH_MAX_STATE
+
 func _ready() -> void:
+	ready_debug()
+	
 	$global_mod.show()
 	$camera.show()
 	alert_docking.hide()
 	alert_can_dock.hide()
 	close_dock_menu()
-	
-	current_hp = MAX_HP
-	player.main_controller = self
-	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
 	
 	crusher_timer = Timer.new()
 	crusher_timer.wait_time = 0.5
@@ -134,40 +120,22 @@ func _ready() -> void:
 	heat_timer.timeout.connect(damage_by_heat)
 	add_child(heat_timer)
 	
+	player.main_controller = self
+	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
 	dialog_ui.main_controller = self
+	ui_dock_menu_v2.init(self)
 	
-	# CRUSH DEPTH
-	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
-	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
-	# HP
-	upgrade_hp_ui.update_value(MAX_HP)
-	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
-	# ENERGY
-	upgrade_energy_ui.update_value(MAX_ENERGY)
-	upgrade_energy_ui.update_cost(ENERGY_UPGRADE_COST)
-	# HEAT EFFICIENCY
-	#TODO HEAT EFFICIENCY UPGRADE SYSTEM
-	# SPEED
-	upgrade_speed_ui.update_value(MAX_SPEED)
-	upgrade_speed_ui.update_cost(SPEED_UPGRADE_COST)
-	# ACCELERATION
-	upgrade_acceleration_ui.update_value(ACCELERATION)
-	upgrade_acceleration_ui.update_cost(ACCELERATION_UPGRADE_COST)
-	# DECELERATION
-	upgrade_deceleration_ui.update_value(DECELERATION)
-	upgrade_deceleration_ui.update_cost(DECELERATION_UPGRADE_COST)
-	# STATIC TANK
-	upgrade_static_tank_ui.update_value(MAX_PLAYER_STATIC)
-	upgrade_static_tank_ui.update_cost(STATIC_TANK_UPGRADE_COST)
+	reset_gamplay_data_from_save_data()
+	current_hp = MAX_HP
+	
+	# INIT LIGHTSTICK MODE
+	exit_lightstick_mode()
 	
 	# UI BARS
 	hp_bar.init(MAX_HP)
 	static_bar.init(MAX_PLAYER_STATIC, player_current_static)
 	energy_bar.init(MAX_ENERGY)
-	depth_max_ui.update_depth(CRUSH_DEPTH)
-	
-	# INIT LIGHTSTICK MODE
-	exit_lightstick_mode()
+	depth_max_ui.update_depth(MAX_DEPTH)
 	
 	await restart()
 	#show_instructions()
@@ -182,12 +150,12 @@ func _ready() -> void:
 	#unlock_sonar_freq(SONAR_FREQ.PIVOT_CAVE)
 	#dialog_ui.load_dialog('res://dialogs/test_2.csv')
 	
+	
 	third_eye.mode = 0
 	
 	if !_ENABLE_PROGRESS:
 		return
 	
-	TURBO_BOOST_UNLOCKED = false
 	
 	dialog_ui.load_dialog(DIALOG_DB.dialog_files._00.intro_dialog.route)
 	
@@ -218,7 +186,7 @@ func _process(delta: float) -> void:
 			update_heater_state(false)
 	
 	# CRUSH BY DEPTH
-	if current_depth > CRUSH_DEPTH and crusher_timer.is_stopped():
+	if current_depth > MAX_DEPTH and crusher_timer.is_stopped():
 		crusher_timer.start()
 	
 	crush_by_depth_audio(delta)
@@ -268,9 +236,6 @@ func _process(delta: float) -> void:
 		update_scanning_relic(false)
 	elif relic_on_range == null:
 		update_scanning_relic(false)
-	
-
-var is_lightstick_mode_on = true
 
 func _input(event: InputEvent) -> void:
 	# DEBUG 
@@ -294,7 +259,7 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	# WHILE DOCK MENU IS VISIBLE
-	if dock_menu.visible:
+	if ui_dock_menu_v2.visible:
 		if event.is_action_pressed("exit_dock"):
 			close_dock_menu()
 		return
@@ -342,12 +307,13 @@ func _input(event: InputEvent) -> void:
 		update_heater_power(heater_power - 0.02)
 		return
 	
-	if event.is_action_pressed("turbo_boost_action") and current_energy > 0 and TURBO_BOOST_UNLOCKED:
-		player.turbo_boost()
-		return
-	elif event.is_action_released("turbo_boost_action"):
-		player.disable_turbo_boost()
-		return
+	if TURBO_BOOST_GEAR > 0 and current_energy > 0:
+		if event.is_action_pressed("turbo_boost_action"):
+			player.turbo_boost()
+			return
+		elif event.is_action_released("turbo_boost_action"):
+			player.disable_turbo_boost()
+			return
 	
 	# SKILLS
 	if event.is_action_pressed("skill_1"):
@@ -371,6 +337,18 @@ func _input(event: InputEvent) -> void:
 		progress(5)
 		return
 
+func reset_gamplay_data_from_save_data() -> void:
+	update_depth_max_from_save()
+	update_max_energy_from_save()
+	update_max_hp_from_save()
+	update_max_player_static_from_save()
+	update_turbo_boost_gear_from_save()
+	update_freq_closer_static_from_save()
+	update_freq_closer_relic_from_save()
+	#TODO ADD THE REST OF STATS
+
+
+# ---- DIALOG beta ----
 func execute_dialog_event(return_event_id: String) -> void:
 	if !return_event_id:
 		return
@@ -387,17 +365,19 @@ func execute_dialog_event(return_event_id: String) -> void:
 			return
 
 
-# ---- PROGRESSION v1? ----
+# ---- PROGRESSION beta ----
 func unlock_turbo():
 	print('UNLOCK TURBO')
-	TURBO_BOOST_UNLOCKED = true
+	#TURBO_BOOST_UNLOCKED = true
+
 
 var relics_found: int = 0
 var relics_available: int = 0
 
+
 # ---- SKILLS ----
-@export var SKILL_PRICE_HP_UP = 200
-@export var SKILL_HP_PLUS = 30
+var SKILL_PRICE_HP_UP = 200
+var SKILL_HP_PLUS = 30
 
 # SKILL HP UP
 func skill_hp_plus() -> void:
@@ -412,8 +392,8 @@ func skill_hp_plus() -> void:
 	update_static(-SKILL_PRICE_HP_UP)
 
 # SKILL ENERGY UP
-@export var SKILL_PRICE_ENERGY_UP = 200
-@export var SKILL_ENERGY_PLUS = 200
+var SKILL_PRICE_ENERGY_UP = 200
+var SKILL_ENERGY_PLUS = 200
 
 func skill_energy_plus() -> void:
 	if player_current_static < SKILL_PRICE_ENERGY_UP:
@@ -428,6 +408,8 @@ func skill_energy_plus() -> void:
 
 
 # ---- LIGHTSTICK MODE ----
+var is_lightstick_mode_on = true
+
 func enter_lightstick_mode():
 	is_lightstick_mode_on = true
 	player.update_lightstick_mode_ui(true)
@@ -452,11 +434,8 @@ func shoot_lightstick():
 
 
 # ---- STATS ----
-@export var MAX_HP: float = 200.0
 var current_hp: float = 200.0
-@export var MAX_ENERGY: float = 2000.0
 var current_energy: float = 2000.0
-@export var MAX_PLAYER_STATIC = 5000.0
 # Static stored on the submarine
 var player_current_static = 0.0
 # Static stored on the base
@@ -515,7 +494,7 @@ func update_static(delta_static: float) -> void:
 
 func update_available_static(delta_static: int):
 	available_static += delta_static
-	dock_menu_static_counter_label.text = "STATIC: " + str(available_static)
+	ui_dock_menu_v2.upgrade_static_counter(available_static)
 
 func update_temp(delta_temp: float):
 	delta_temp = round(delta_temp * 100.0) / 100.0
@@ -716,12 +695,15 @@ func _on_cage_interaction_area_2d_area_exited(area: Area2D) -> void:
 
 
 # ---- DOCKER MENU ----
-func _on_ui_dock_menu_close_btn_pressed() -> void:
+
+func _on_ui_dock_v2_menu_close_btn_pressed() -> void:
 	close_dock_menu()
 
 func start_dock_menu() -> void:
 	# PAUSE
 	update_pause(true)
+	
+	reset_gamplay_data_from_save_data()
 	
 	# UNLOAD STATIC
 	if player_current_static > 0:
@@ -747,130 +729,147 @@ func start_dock_menu() -> void:
 	#else:
 		#shop_third_eye_ui.hide()
 	
-	update_upgrade_buttons()
-	
 	# SHOW MENU
-	dock_menu.show()
+	ui_dock_menu_v2.show()
+	ui_dock_menu_v2.upgrade_ui_based_on_save_data()
 
 func close_dock_menu() -> void:
-	dock_menu.hide()
+	ui_dock_menu_v2.hide()
 	update_pause(false)
 
-func update_upgrade_buttons() -> void:
-	upgrade_crush_depth_ui.update_upgrade_btn_disabled(CRUSH_DEPTH_UPGRADE >= available_static)
-	upgrade_hp_ui.update_upgrade_btn_disabled(HP_UPGRADE_COST >= available_static)
-	upgrade_energy_ui.update_upgrade_btn_disabled(ENERGY_UPGRADE_COST >= available_static)
-	#TODO HEAT EFFICIENCY SYSTEM
-	upgrade_speed_ui.update_upgrade_btn_disabled(SPEED_UPGRADE_COST >= available_static)
-	upgrade_acceleration_ui.update_upgrade_btn_disabled(ACCELERATION_UPGRADE_COST >= available_static)
-	upgrade_deceleration_ui.update_upgrade_btn_disabled(DECELERATION_UPGRADE_COST >= available_static)
-	upgrade_static_tank_ui.update_upgrade_btn_disabled(STATIC_TANK_UPGRADE_COST >= available_static)
-
-
-func _on_upgrade_DEPTH_button_pressed() -> void:
-	if CRUSH_DEPTH_UPGRADE > available_static:
+func _on_upgrade_clicked(upgrade_id: UPGRADE_DB.upg_ids) -> void:
+	# ---- COMMON CODE I ----
+	var upgrade_data := UPGRADE_DB.get_upgrade_data(upgrade_id)
+	var save_state = SAVE_STATE.upgrades[upgrade_id]
+	
+	if save_state >= upgrade_data.max_state or save_state < 0:
+		ui_dock_menu_v2.upgrade_ui_based_on_save_data()
 		return
 	
-	update_available_static(-CRUSH_DEPTH_UPGRADE)
-	CRUSH_DEPTH += 100
-	CRUSH_DEPTH_UPGRADE *= 1.05
-	
-	depth_max_ui.update_depth(CRUSH_DEPTH)
-	upgrade_crush_depth_ui.update_crush_depth(CRUSH_DEPTH)
-	upgrade_crush_depth_ui.update_cost(CRUSH_DEPTH_UPGRADE)
-	
-	update_upgrade_buttons()
-
-func _on_upgrade_HP_button_pressed() -> void:
-	if HP_UPGRADE_COST > available_static:
+	var upgrade_data_for_state = upgrade_data.data_by_state[save_state]
+	var upgrade_price = upgrade_data_for_state.price
+	if available_static < upgrade_price:
+		ui_dock_menu_v2.upgrade_ui_based_on_save_data()
 		return
 	
-	update_available_static(-HP_UPGRADE_COST)
-	MAX_HP += 50
-	HP_UPGRADE_COST *= 1.05
+	update_available_static(-upgrade_price)
+	SAVE_STATE.update_upgrade_state(upgrade_id, 1)
+	reset_gamplay_data_from_save_data()
+	ui_dock_menu_v2.play_upgrade_click_sfx()
 	
-	upgrade_hp_ui.update_value(MAX_HP)
-	upgrade_hp_ui.update_cost(HP_UPGRADE_COST)
+	# ---- UPGRADE SPECIFIC CODE ----
+	if upgrade_id == UPGRADE_DB.upg_ids.hull_depth_max:
+		depth_max_ui.update_depth(MAX_DEPTH)
+		
+	if upgrade_id == UPGRADE_DB.upg_ids.hull_defense:
+		hp_bar.init(MAX_HP)
+		update_hp(MAX_HP)
 	
-	hp_bar.init(MAX_HP)
-	update_hp(MAX_HP)
+	if upgrade_id == UPGRADE_DB.upg_ids.batteries:
+		update_energy(MAX_ENERGY)
+		energy_bar.init(MAX_ENERGY)
 	
-	update_upgrade_buttons()
+	if upgrade_id == UPGRADE_DB.upg_ids.static_tank:
+		static_bar.init(MAX_PLAYER_STATIC, player_current_static)
+	
+	#TODO ADD THE REST OF STATS
+	
+	# ---- COMMON CODE II ----
+	ui_dock_menu_v2.upgrade_ui_based_on_save_data()
+	
+	
+	#UPGRADE_DB.upg_ids.heater_efficiency
+	#UPGRADE_DB.upg_ids.heater_controller
+	#UPGRADE_DB.upg_ids.skills_hp_up
+	#UPGRADE_DB.upg_ids.skills_energy_up
+	#UPGRADE_DB.upg_ids.skills_temp_up
+	#UPGRADE_DB.upg_ids.skills_temp_down
+	#UPGRADE_DB.upg_ids.freq_closer_static
+	#UPGRADE_DB.upg_ids.freq_closer_relic
+	#UPGRADE_DB.upg_ids.freq_
+	#UPGRADE_DB.upg_ids.light_eye
+	#UPGRADE_DB.upg_ids.light_core
+	#UPGRADE_DB.upg_ids.lightstick
+	#UPGRADE_DB.upg_ids.lightstick_glow
+	#UPGRADE_DB.upg_ids.hull_insulation
+	#UPGRADE_DB.upg_ids.static_insulation
+	#UPGRADE_DB.upg_ids.motor_boost_efficiency
+	
+	print(upgrade_id)
+	pass
 
-func _on_upgrade_ENERGY_button_pressed() -> void:
-	if ENERGY_UPGRADE_COST > available_static:
-		return
-	
-	update_available_static(-ENERGY_UPGRADE_COST)
-	MAX_ENERGY += 50
-	ENERGY_UPGRADE_COST *= 1.05
-	
-	upgrade_energy_ui.update_value(MAX_ENERGY)
-	upgrade_energy_ui.update_cost(ENERGY_UPGRADE_COST)
-	
-	energy_bar.init(MAX_ENERGY)
-	update_energy(MAX_ENERGY)
-	
-	update_upgrade_buttons()
 
-func _on_upgrade_MAX_SPEED_button_pressed() -> void:
-	if SPEED_UPGRADE_COST > available_static:
-		return
+#UPGRADE_DB.upg_ids.hull_depth_max
+# Set current max depth based on save data
+var MAX_DEPTH: int = 5300
+func update_depth_max_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.hull_depth_max
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
 	
-	update_available_static(-SPEED_UPGRADE_COST)
-	MAX_SPEED += 50
-	SPEED_UPGRADE_COST *= 1.05
-	
-	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
-	
-	upgrade_speed_ui.update_value(MAX_SPEED)
-	upgrade_speed_ui.update_cost(SPEED_UPGRADE_COST)
-	
-	update_upgrade_buttons()
+	MAX_DEPTH = upgrade_data.value
 
-func _on_upgrade_ACCELERATION_button_pressed() -> void:
-	if ACCELERATION_UPGRADE_COST > available_static:
-		return
+#UPGRADE_DB.upg_ids.batteries
+# Set current Energy based on save data
+var MAX_ENERGY: float = 2000.0
+func update_max_energy_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.batteries
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
 	
-	update_available_static(-ACCELERATION_UPGRADE_COST)
-	ACCELERATION += 10
-	ACCELERATION_UPGRADE_COST *= 1.05
-	
-	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
-	
-	upgrade_acceleration_ui.update_value(ACCELERATION)
-	upgrade_acceleration_ui.update_cost(ACCELERATION_UPGRADE_COST)
-	
-	update_upgrade_buttons()
+	MAX_ENERGY = upgrade_data.value
 
-func _on_upgrade_DECELERATION_button_pressed() -> void:
-	if DECELERATION_UPGRADE_COST > available_static:
-		return
+#UPGRADE_DB.upg_ids.hull_defense
+# Set current HP based on save data
+var MAX_HP: float = 200.0
+func update_max_hp_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.hull_defense
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
 	
-	update_available_static(-DECELERATION_UPGRADE_COST)
-	DECELERATION += 10
-	DECELERATION_UPGRADE_COST *= 1.05
-	
-	player.update_movement_stats(ACCELERATION, DECELERATION, MAX_SPEED)
-	
-	upgrade_deceleration_ui.update_value(DECELERATION)
-	upgrade_deceleration_ui.update_cost(DECELERATION_UPGRADE_COST)
-	
-	update_upgrade_buttons()
+	MAX_HP = upgrade_data.value
 
-func _on_upgrade_MAX_PLAYER_STATIC_button_pressed() -> void:
-	if STATIC_TANK_UPGRADE_COST > available_static:
-		return
-	
-	update_available_static(-STATIC_TANK_UPGRADE_COST)
-	MAX_PLAYER_STATIC += 500
-	STATIC_TANK_UPGRADE_COST *= 1.5
-	
-	upgrade_static_tank_ui.update_value(MAX_PLAYER_STATIC)
-	upgrade_static_tank_ui.update_cost(STATIC_TANK_UPGRADE_COST)
-	
-	update_upgrade_buttons()
 
+#UPGRADE_DB.upg_ids.static_tank
+# Set current HP based on save data
+var MAX_PLAYER_STATIC = 5000.0
+func update_max_player_static_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.static_tank
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
+	
+	MAX_PLAYER_STATIC = upgrade_data.value
+
+
+# Gear 0: Feature disabled
+# Gear 1: Only Gear 1 enabled
+# Gear 2: Gear 2 option enabled
+var TURBO_BOOST_GEAR = 0
+#UPGRADE_DB.upg_ids.motor_turbo_boost
+func update_turbo_boost_gear_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.motor_turbo_boost
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var upgrade_data = UPGRADE_DB.get_upgrade_data_for_state(upg_id, save_state)
+	
+	TURBO_BOOST_GEAR = upgrade_data.value
+
+#UPGRADE_DB.upg_ids.freq_closer_static
+func update_freq_closer_static_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.freq_closer_static
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var is_freq_available = is_sonar_freq_unlocked(SONAR_FREQ.STATIC_NODE)
+	
+	if save_state and !is_freq_available:
+		unlock_sonar_freq(SONAR_FREQ.STATIC_NODE)
+
+#UPGRADE_DB.upg_ids.freq_closer_relic
+func update_freq_closer_relic_from_save() -> void:
+	var upg_id = UPGRADE_DB.upg_ids.freq_closer_relic
+	var save_state = SAVE_STATE.upgrades[upg_id]
+	var is_freq_available = is_sonar_freq_unlocked(SONAR_FREQ.RELIC)
+	
+	if save_state and !is_freq_available:
+		unlock_sonar_freq(SONAR_FREQ.RELIC)
 
 # ---- CRUSHING ----
 var current_crashing_volume = 0
@@ -879,16 +878,16 @@ func damage_by_pressure() -> void:
 	update_hp(MAX_HP * -0.15)
 
 func crush_by_depth_audio(delta: float) -> void:
-	if current_depth > CRUSH_DEPTH and !getting_crushed_sound.playing:
+	if current_depth > MAX_DEPTH and !getting_crushed_sound.playing:
 		getting_crushed_sound.play()
 		current_crashing_volume = 0
 		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
-	if current_depth > CRUSH_DEPTH and getting_crushed_sound.playing:
+	if current_depth > MAX_DEPTH and getting_crushed_sound.playing:
 		current_crashing_volume += 1 * delta
 		if current_crashing_volume > 1:
 			current_crashing_volume = 1
 		getting_crushed_sound.volume_db = linear_to_db(current_crashing_volume)
-	elif current_depth <= CRUSH_DEPTH and getting_crushed_sound.playing:
+	elif current_depth <= MAX_DEPTH and getting_crushed_sound.playing:
 		current_crashing_volume -= 3 * delta
 		if current_crashing_volume < 0:
 			current_crashing_volume = 0
@@ -900,7 +899,7 @@ func crush_by_depth_audio(delta: float) -> void:
 
 # ---- SONAR ----
 enum SONAR_FREQ { 
-	STATIC_NODE, 
+	STATIC_NODE, RELIC,
 	TEST_0, TEST_1, 
 	BASE, CAVE_OF_CURRENT, CAVE_OF_COLD, PIVOT_CAVE, 
 	STATUE_1, STATUE_2, STATUE_3,
@@ -911,15 +910,20 @@ enum SONAR_FREQ {
 		"order": 0,
 		"name": "Static Node"
 	},
+	SONAR_FREQ.RELIC: {
+		"id": SONAR_FREQ.RELIC,
+		"order": 1,
+		"name": "Meat Server"
+	},
 	SONAR_FREQ.TEST_0: {
 		"id": SONAR_FREQ.TEST_0,
-		"order": 1,
+		"order": 2,
 		"target_node": $sonar_freq_targets/freq_test_0,
 		"name": "Test Freq. 0"
 	},
 	SONAR_FREQ.TEST_1: {
 		"id": SONAR_FREQ.TEST_1,
-		"order": 2,
+		"order": 3,
 		"target_node": $sonar_freq_targets/freq_test_1,
 		"name": "Test Freq. 1"
 	},
@@ -931,31 +935,31 @@ enum SONAR_FREQ {
 	},
 	SONAR_FREQ.CAVE_OF_CURRENT: {
 		"id": SONAR_FREQ.CAVE_OF_CURRENT,
-		"order": 3,
+		"order": 4,
 		"target_node": $sonar_freq_targets/cave_of_current,
 		"name": "Cave of Current"
 	},
 	SONAR_FREQ.CAVE_OF_COLD: {
 		"id": SONAR_FREQ.CAVE_OF_COLD,
-		"order": 4,
+		"order": 5,
 		"target_node": $sonar_freq_targets/cave_of_cold,
 		"name": "Cave of Cold"
 	},
 	SONAR_FREQ.STATUE_3: {
 		"id": SONAR_FREQ.STATUE_3,
-		"order": 5,
+		"order": 6,
 		"target_node": $sonar_freq_targets/statue_3,
 		"name": "????"
 	},
 	SONAR_FREQ.PIVOT_CAVE: {
 		"id": SONAR_FREQ.PIVOT_CAVE,
-		"order": 6,
+		"order": 7,
 		"target_node": $sonar_freq_targets/pivot_cave,
 		"name": "Pivot Cave"
 	},
 	SONAR_FREQ.STATUE_2: {
 		"id": SONAR_FREQ.STATUE_2,
-		"order": 7,
+		"order": 8,
 		"target_node": $sonar_freq_targets/statue_2,
 		"name": "st2"
 	},
@@ -1010,6 +1014,12 @@ func unlock_sonar_freq(freq_id: SONAR_FREQ) -> void:
 	available_sonar_freq.append(freq)
 	
 	available_sonar_freq.sort_custom(func(a, b): return a.order < b.order)
+
+func is_sonar_freq_unlocked(freq_id: SONAR_FREQ) -> bool:
+	var freq = sonar_frequencies[freq_id]
+	var is_available = available_sonar_freq.any(func (val): return val == freq)
+	
+	return is_available
 
 func get_nearest_static_node() -> Node2D:
 	var nearest_node: Node2D = null
@@ -1136,7 +1146,7 @@ func progress(new_mode: int) -> void:
 	
 	if new_mode == 1:
 		enable_third_eye()
-		shop_third_eye_ui.hide()
+		#shop_third_eye_ui.hide()
 	elif new_mode == 2:
 		$progress/point_1_area_2d.queue_free()
 		activate_area_1()
@@ -1183,7 +1193,7 @@ func _on_point_1_area_2d_area_entered(area: Area2D) -> void:
 func activate_area_1() -> void:
 	secret_success_sound.play()
 	area_1_door.queue_free()
-	area_1.show()
+	#area_1.show()
 
 # MODE 2
 var can_interact_with_statue_p2 = false
@@ -1214,7 +1224,7 @@ func _on_point_3_area_2d_area_entered(area: Area2D) -> void:
 func activate_area_2() -> void:
 	secret_success_sound.play()
 	area_2_door.queue_free()
-	area_2.show()
+	#area_2.show()
 
 # MODE 4
 var can_interact_with_statue_p4 = false
@@ -1227,7 +1237,7 @@ func _on_point_5_area_2d_area_entered(area: Area2D) -> void:
 func activate_area_3() -> void:
 	secret_success_sound.play()
 	area_3_door.queue_free()
-	area_3.show()
+	#area_3.show()
 
 # MODE 6
 func _on_final_sphere_area_2d_area_entered(_area: Area2D) -> void:
